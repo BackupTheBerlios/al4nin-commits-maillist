@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r451 - in trunk/purgatory: . db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r451%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200709141513.l8EFDqbl000270%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000212.html">
+   <LINK REL="Next"  HREF="000214.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r451 - in trunk/purgatory: . db</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r451%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200709141513.l8EFDqbl000270%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r451 - in trunk/purgatory: . db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 14 17:13:52 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000212.html">[Al4nin-commits] r450 - in trunk/purgatory: . db
+</A></li>
+        <LI>Next message: <A HREF="000214.html">[Al4nin-commits] r452 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#213">[ date ]</a>
+              <a href="thread.html#213">[ thread ]</a>
+              <a href="subject.html#213">[ subject ]</a>
+              <a href="author.html#213">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-09-14 17:13:51 +0200 (Fri, 14 Sep 2007)
+New Revision: 451
+
+Added:
+   trunk/purgatory/db/BibTeX2lout.awk
+   trunk/purgatory/db/lm.ld
+Removed:
+   trunk/purgatory/BibTeX2lout.awk
+   trunk/purgatory/lm.ld
+Modified:
+   trunk/purgatory/Thrist.lout
+   trunk/purgatory/db/acmrefs.ld
+Log:
+stash away more items under db/ and make it compilable again
+
+Deleted: trunk/purgatory/BibTeX2lout.awk
+===================================================================
+--- trunk/purgatory/BibTeX2lout.awk	2007-09-14 14:59:14 UTC (rev 450)
++++ trunk/purgatory/BibTeX2lout.awk	2007-09-14 15:13:51 UTC (rev 451)
+@@ -1,59 +0,0 @@
+-# Here is the complete set of values that you may give to the @Type option:
+-# Book TechReport Article InBook
+-# Proceedings MastersThesis InProceedings
+-# PhDThesis MiscP
+-
+-# /Book.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
+-# /Booklet.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
+-# /Proceedings.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
+-# /Conference.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
+-# /PhdThesis.*=.*/ {print &quot;PhDThesis { &quot; $4 &quot; }&quot;; next}
+-# /TechReport.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
+-# /Manual.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
+-# /MastersThesis.*=.*/ {print &quot;MastersThesis { &quot; $4 &quot; }&quot;; next}
+-# /Misc.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
+-# /Unpublished.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
+-# /Article.*=.*/ {print &quot;Article { &quot; $4 &quot; }&quot;; next}
+-# /InBook.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
+-# /InCollection.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
+-/@inproceedings[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { InProceedings }&quot;; have = 1; next}
+-
+-{ split($0, arr, &quot;{&quot;); split(arr[2], brr, &quot;}&quot;); cont = brr[1] }
+-
+-/typ.*=.*/ {print &quot;   @Type { &quot; cont &quot; }&quot;; next}
+-/tag.*=.*/ {print &quot;   @Tag { &quot; cont &quot; }&quot;; next}
+-# /.*=.*/ {print &quot;   @Abstract { &quot; cont &quot; }&quot;; next}
+-/address.*=.*/ {print &quot;   @Address { &quot; cont &quot; }&quot;; next}
+-/annote.*=.*/ {print &quot;   @Annote { &quot; cont &quot; }&quot;; next}
+-/author.*=.*/ {print &quot;   @Author { &quot; cont &quot; }&quot;; next}
+-/chapter.*=.*/ {} # print &quot; { &quot; cont &quot; }&quot;
+-# /.*=.*/ {print &quot;   @Day { &quot; cont &quot; }&quot;; next}
+-/edition.*=.*/ {print &quot;   @Edition { &quot; cont &quot; }&quot;; next}
+-/howpublished.*=.*/ {print &quot;   @HowPublished { &quot; cont &quot; }&quot;; next}
+-/editor.*=.*/ {print &quot;   @InAuthor { &quot; cont &quot; }&quot;; next}
+-/booktitle.*=.*/ {print &quot;   @InTitle { &quot; cont &quot; }&quot;; next}
+-/institution.*=.*/ {print &quot;   @Institution { &quot; cont &quot; }&quot;; next}
+-/journal.*=.*/ {print &quot;   @Journal { &quot; cont &quot; }&quot;; next}
+-/key.*=.*/ {print &quot; { &quot; cont &quot; }&quot;; next}
+-# /.*=.*/ {print &quot;   @Keywords { &quot; cont &quot; }&quot;; next}
+-# /.*=.*/ {print &quot;   @Label { &quot; cont &quot; }&quot;; next}
+-/month.*=.*/ {print &quot;   @Month { &quot; cont &quot; }&quot;; next}
+-/note.*=.*/ {print &quot;   @Note { &quot; cont &quot; }&quot;; next}
+-/number.*=.*/ {print &quot;   @Number { &quot; cont &quot; }&quot;; next}
+-/organization.*=.*/ {print &quot;   @Organization { &quot; cont &quot; }&quot;; next}
+-/pages.*=.*/ {print &quot;   @Pages { &quot; cont &quot; }&quot;; next}
+-#/pages.*=.*/ {print &quot;   @Page { &quot; cont &quot; }&quot;; next}
+-# /.*=.*/ {print &quot;   @Pinpoint { &quot; cont &quot; }&quot;; next}
+-/location.*=.*/ {print &quot;   # @Location { &quot; cont &quot; }&quot;; next}
+-/doi.*=.*/ {print &quot;   # @Doi { &quot; cont &quot; }&quot;; next}
+-/publisher.*=.*/ {print &quot;   @Publisher { &quot; cont &quot; }&quot;; next}
+-/title.*=.*/ {print &quot;   @Title { &quot; cont &quot; }&quot;; next}
+-# /.*=.*/ {print &quot;   @TitleNote { &quot; cont &quot; }&quot;; next}
+-/type.*=.*/ {print &quot;   @TRType { &quot; cont &quot; }&quot;; next}
+-/url.*=.*/ {print &quot;   @URL { &quot; cont &quot; }&quot;; next}
+-/volume.*=.*/ {print &quot;   @Volume { &quot; cont &quot; }&quot;; next}
+-/year.*=.*/ {print &quot;   @Year { &quot; cont &quot; }&quot;; next}
+-/isbn.*=.*/ {print &quot;   @ISBN { &quot; cont &quot; }&quot;; next}
+-
+-## close the record
+-{if (have) print &quot;}\n\n&quot;; have = 0; next}
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-09-14 14:59:14 UTC (rev 450)
++++ trunk/purgatory/Thrist.lout	2007-09-14 15:13:51 UTC (rev 451)
+@@ -4,7 +4,8 @@
+ @SysInclude { graph }
+ @SysInclude { eq }
+ @SysInclude { haskell }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Database</A> @FontDef {lm}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Database</A> @FontDef {&quot;db/lm&quot;}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Database</A> @Reference {&quot;db/acmrefs&quot;}
+ 
+ def @Prompt left input right output { { Helvetica Base } @Font { prompt&gt; @Haskell { input } @PP @I { output } } }
+ def @Omega { {@I {@Sym Omega}}mega }
+
+Copied: trunk/purgatory/db/BibTeX2lout.awk (from rev 450, trunk/purgatory/BibTeX2lout.awk)
+===================================================================
+--- trunk/purgatory/BibTeX2lout.awk	2007-09-14 14:59:14 UTC (rev 450)
++++ trunk/purgatory/db/BibTeX2lout.awk	2007-09-14 15:13:51 UTC (rev 451)
+@@ -0,0 +1,59 @@
++# Here is the complete set of values that you may give to the @Type option:
++# Book TechReport Article InBook
++# Proceedings MastersThesis InProceedings
++# PhDThesis MiscP
++
++# /Book.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
++# /Booklet.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
++# /Proceedings.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
++# /Conference.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
++# /PhdThesis.*=.*/ {print &quot;PhDThesis { &quot; $4 &quot; }&quot;; next}
++# /TechReport.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
++# /Manual.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
++# /MastersThesis.*=.*/ {print &quot;MastersThesis { &quot; $4 &quot; }&quot;; next}
++# /Misc.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
++# /Unpublished.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
++# /Article.*=.*/ {print &quot;Article { &quot; $4 &quot; }&quot;; next}
++# /InBook.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
++# /InCollection.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
++/@inproceedings[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { InProceedings }&quot;; have = 1; next}
++
++{ split($0, arr, &quot;{&quot;); split(arr[2], brr, &quot;}&quot;); cont = brr[1] }
++
++/typ.*=.*/ {print &quot;   @Type { &quot; cont &quot; }&quot;; next}
++/tag.*=.*/ {print &quot;   @Tag { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Abstract { &quot; cont &quot; }&quot;; next}
++/address.*=.*/ {print &quot;   @Address { &quot; cont &quot; }&quot;; next}
++/annote.*=.*/ {print &quot;   @Annote { &quot; cont &quot; }&quot;; next}
++/author.*=.*/ {print &quot;   @Author { &quot; cont &quot; }&quot;; next}
++/chapter.*=.*/ {} # print &quot; { &quot; cont &quot; }&quot;
++# /.*=.*/ {print &quot;   @Day { &quot; cont &quot; }&quot;; next}
++/edition.*=.*/ {print &quot;   @Edition { &quot; cont &quot; }&quot;; next}
++/howpublished.*=.*/ {print &quot;   @HowPublished { &quot; cont &quot; }&quot;; next}
++/editor.*=.*/ {print &quot;   @InAuthor { &quot; cont &quot; }&quot;; next}
++/booktitle.*=.*/ {print &quot;   @InTitle { &quot; cont &quot; }&quot;; next}
++/institution.*=.*/ {print &quot;   @Institution { &quot; cont &quot; }&quot;; next}
++/journal.*=.*/ {print &quot;   @Journal { &quot; cont &quot; }&quot;; next}
++/key.*=.*/ {print &quot; { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Keywords { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Label { &quot; cont &quot; }&quot;; next}
++/month.*=.*/ {print &quot;   @Month { &quot; cont &quot; }&quot;; next}
++/note.*=.*/ {print &quot;   @Note { &quot; cont &quot; }&quot;; next}
++/number.*=.*/ {print &quot;   @Number { &quot; cont &quot; }&quot;; next}
++/organization.*=.*/ {print &quot;   @Organization { &quot; cont &quot; }&quot;; next}
++/pages.*=.*/ {print &quot;   @Pages { &quot; cont &quot; }&quot;; next}
++#/pages.*=.*/ {print &quot;   @Page { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Pinpoint { &quot; cont &quot; }&quot;; next}
++/location.*=.*/ {print &quot;   # @Location { &quot; cont &quot; }&quot;; next}
++/doi.*=.*/ {print &quot;   # @Doi { &quot; cont &quot; }&quot;; next}
++/publisher.*=.*/ {print &quot;   @Publisher { &quot; cont &quot; }&quot;; next}
++/title.*=.*/ {print &quot;   @Title { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @TitleNote { &quot; cont &quot; }&quot;; next}
++/type.*=.*/ {print &quot;   @TRType { &quot; cont &quot; }&quot;; next}
++/url.*=.*/ {print &quot;   @URL { &quot; cont &quot; }&quot;; next}
++/volume.*=.*/ {print &quot;   @Volume { &quot; cont &quot; }&quot;; next}
++/year.*=.*/ {print &quot;   @Year { &quot; cont &quot; }&quot;; next}
++/isbn.*=.*/ {print &quot;   # @ISBN { &quot; cont &quot; }&quot;; next}
++
++## close the record
++{if (have) print &quot;}\n\n&quot;; have = 0; next}
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2007-09-14 14:59:14 UTC (rev 450)
++++ trunk/purgatory/db/acmrefs.ld	2007-09-14 15:13:51 UTC (rev 451)
+@@ -5,7 +5,7 @@
+    @Title { Dynamic optimization for functional reactive programming using generalized algebraic data types }
+    @InTitle { ICFP '05: Proceedings of the tenth ACM SIGPLAN international conference on Functional programming }
+    @Year { 2005 }
+-   @ISBN { 1-59593-064-7 }
++   # @ISBN { 1-59593-064-7 }
+    @Pages { 54--65 }
+    # @Location { Tallinn, Estonia }
+    # @Doi { <A HREF="http://doi.acm.org/10.1145/1086365.1086374">http://doi.acm.org/10.1145/1086365.1086374</A> }
+@@ -21,7 +21,7 @@
+    @Title { Programming monads operationally with Unimo }
+    @InTitle { ICFP '06: Proceedings of the eleventh ACM SIGPLAN international conference on Functional programming }
+    @Year { 2006 }
+-   @ISBN { 1-59593-309-3 }
++   # @ISBN { 1-59593-309-3 }
+    @Pages { 274--285 }
+    # @Location { Portland, Oregon, USA }
+    # @Doi { <A HREF="http://doi.acm.org/10.1145/1159803.1159840">http://doi.acm.org/10.1145/1159803.1159840</A> }
+@@ -37,7 +37,7 @@
+    @Title { Techniques for embedding postfix languages in Haskell }
+    @InTitle { Haskell '02: Proceedings of the 2002 ACM SIGPLAN workshop on Haskell }
+    @Year { 2002 }
+-   @ISBN { 1-58113-605-6 }
++   # @ISBN { 1-58113-605-6 }
+    @Pages { 105--113 }
+    # @Location { Pittsburgh, Pennsylvania }
+    # @Doi { <A HREF="http://doi.acm.org/10.1145/581690.581699">http://doi.acm.org/10.1145/581690.581699</A> }
+
+Copied: trunk/purgatory/db/lm.ld (from rev 446, trunk/purgatory/lm.ld)
+
+Deleted: trunk/purgatory/lm.ld
+===================================================================
+--- trunk/purgatory/lm.ld	2007-09-14 14:59:14 UTC (rev 450)
++++ trunk/purgatory/lm.ld	2007-09-14 15:13:51 UTC (rev 451)
+@@ -1,83 +0,0 @@
+-########
+-# LMnine
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMnine-Base }
+-     @Family { LMnine }
+-     @Face { Base }
+-     @Name { LMRoman9-Regular }
+-     @Metrics { lmr9.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMnine-Bold }
+-     @Family { LMnine }
+-     @Face { Bold }
+-     @Name { LMRoman9-Bold }
+-     @Metrics { lmbx9.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMnine-Slope }
+-     @Family { LMnine }
+-     @Face { Slope }
+-     @Name { LMRoman9-Italic }
+-     @Metrics { lmri9.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMnine-BoldSlope }
+-     @Family { LMnine }
+-     @Face { BoldSlope }
+-     @Name { LMRoman9-BoldItalic }
+-     @Metrics { lmbxi9.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-#######
+-# LMten
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMten-Base }
+-     @Family { LMten }
+-     @Face { Base }
+-     @Name { LMRoman10-Regular }
+-     @Metrics { lmr10.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMten-Bold }
+-     @Family { LMten }
+-     @Face { Bold }
+-     @Name { LMRoman10-Bold }
+-     @Metrics { lmbx10.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMten-Slope }
+-     @Family { LMten }
+-     @Face { Slope }
+-     @Name { LMRoman10-Italic }
+-     @Metrics { lmri10.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+-
+-{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FontDef</A>
+-     @Tag { LMten-BoldSlope }
+-     @Family { LMten }
+-     @Face { BoldSlope }
+-     @Name { LMRoman10-BoldItalic }
+-     @Metrics { lmbxi10.afm }
+-     @Mapping { LtLatin1.LCM }
+-}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000212.html">[Al4nin-commits] r450 - in trunk/purgatory: . db
+</A></li>
+	<LI>Next message: <A HREF="000214.html">[Al4nin-commits] r452 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#213">[ date ]</a>
+              <a href="thread.html#213">[ thread ]</a>
+              <a href="subject.html#213">[ subject ]</a>
+              <a href="author.html#213">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

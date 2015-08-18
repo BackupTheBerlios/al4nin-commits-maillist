@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r347 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r347%20-%20trunk/purgatory&In-Reply-To=%3C200704281032.l3SAWYXk023602%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000108.html">
+   <LINK REL="Next"  HREF="000110.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r347 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r347%20-%20trunk/purgatory&In-Reply-To=%3C200704281032.l3SAWYXk023602%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r347 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Apr 28 12:32:34 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000108.html">[Al4nin-commits] r346 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000110.html">[Al4nin-commits] r348 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-28 12:32:31 +0200 (Sat, 28 Apr 2007)
+New Revision: 347
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+we are in a dead end street. looks like fixing the unintuitive argument ordering will also fix our obligation problems
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-27 21:57:04 UTC (rev 346)
++++ trunk/purgatory/Thrist.omg	2007-04-28 10:32:31 UTC (rev 347)
+@@ -171,6 +171,60 @@
+   Empty :: Stack RNil
+   Pu :: a -&gt; Stack s -&gt; Stack (RCons a s)
+ 
++
++--blowLike1 :: Nat' f -&gt; Equal {blowLike #(1 + f) g (RCons h i)} (RCons j k) -&gt; Equal {blowLike #(1 + f) (u -&gt; v) (RCons h i)} (RCons j k)
++blowLike1 :: Nat' n -&gt; Equal {blowLike arty d (RCons c s)} r -&gt; Equal {blowLike (S arty) (c -&gt; d) s} r
++blowLike1 Z Eq = Eq --:: Equal {blowLike Z d (RCons c s)} r -&gt; Equal {blowLike (S Z) (c -&gt; d) s} r
++                    --&gt;  Equal               (RCons c s)  r -&gt; Equal {blowLike Z d (RCons c s)} r
++                    --&gt;  Equal               (RCons c s)  r -&gt; Equal               (RCons c s)  r
++blowLike1 (S n) Eq = Eq --:: Equal {blowLike (S n) d (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; d) s} r
++                        --%  Equal {blowLike (S (S n)) (e -&gt; f) (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; (e -&gt; f)) s} r
++      where theorem because = blowLike1 n
++
++
++
++
++
++
++
++
++
++
++
++blowLike1a :: Nat' n -&gt; Equal r {blowLike n d (RCons c s)} -&gt; exists cd . (Equal cd (c -&gt; d), Equal r {blowLike (S n) cd s})
++blowLike1a Z Eq = Ex (Eq, Eq) --:: Equal r {blowLike Z d (RCons c s)} -&gt; exists cd . (Equal cd (c -&gt; d), Equal r {blowLike (S Z) cd s})
++                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike (S Z) cd s})
++                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike (S Z) (c -&gt; d) s})
++                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike Z d (RCons c s)})
++                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s)               (RCons c s))
++blowLike1a (S n) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">f at Eq</A>) = Ex (Eq, Eq) --:: 
++--      where theorem because1 = blowLike1a n, because2 = blowLike1 (S n) f
++test234 :: Thrist Cat (Shape a) (Shape b) -&gt; IO (Stack a) -&gt; IO (Stack b)
++
++test234 (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Prim</A> (S (S n)) f) r) act = do
++                                            Pu a st &lt;- act
++				            check (test234 (Cons (Prim (S n) (f a)) r) (return st))
++                                                where monad ioM
++                                                      theorem because = blowLike1a (S n)
++--                                                    theorem because = blowLike1a n
++
++
++
++
++
++
++
++
++
++blowLike2 :: Nat' n -&gt; Equal {blowLike (S arty) d (RCons c s)} (RCons u r) -&gt; Equal {blowLike (S (S arty)) (c -&gt; d) s} (RCons u r)
++blowLike2 Z Eq = Eq --:: Equal {blowLike (S Z) d (RCons c s)} r -&gt; Equal {blowLike (S (S Z)) (c -&gt; d) s} r
++                    --&gt;  Equal               (RCons c s)  r -&gt; Equal {blowLike Z d (RCons c s)} r
++                    --&gt;  Equal               (RCons c s)  r -&gt; Equal               (RCons c s)  r
++blowLike2 (S n) Eq = Eq --:: Equal {blowLike (S n) d (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; d) s} r
++                        --%  Equal {blowLike (S (S n)) (e -&gt; f) (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; (e -&gt; f)) s} r
++      where theorem because = blowLike2 n
++
++
+ interpretCat :: (forall a . Thrist Cat (Shape a) (Shape a)) -&gt; IO (Stack RNil)
+ interpretCat thr = interpretCat' thr (returnIO Empty)
+ 
+@@ -207,7 +261,10 @@
+ 				 interpretCat' r (return (Pu (b &gt; a) st'))
+ 	     (Cons (Prim (S Z) f) r) -&gt; do
+ 	                                Pu a st &lt;- act
+-				        interpretCat' r (return (Pu (check (f a)) st))
++				        interpretCat' r (return (Pu (f a) st))
++--	     (Cons (Prim (S (S n)) (f :: x -&gt; y -&gt; z)) r) -&gt; do
++--	                                    Pu a st &lt;- act
++--				            interpretCat' (Cons (Prim (S n) (check (f a))) r) (return st)
+ 	     (Cons (If yes no) r) -&gt; do
+ 				     Pu cond st &lt;- act
+ 				     let act' = return st
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000108.html">[Al4nin-commits] r346 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000110.html">[Al4nin-commits] r348 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#109">[ date ]</a>
+              <a href="thread.html#109">[ thread ]</a>
+              <a href="subject.html#109">[ subject ]</a>
+              <a href="author.html#109">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

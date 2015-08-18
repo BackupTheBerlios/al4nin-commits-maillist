@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r476 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r476%20-%20trunk/purgatory&In-Reply-To=%3C200710241458.l9OEw3cW018785%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000237.html">
+   <LINK REL="Next"  HREF="000239.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r476 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r476%20-%20trunk/purgatory&In-Reply-To=%3C200710241458.l9OEw3cW018785%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r476 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Oct 24 16:58:03 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000237.html">[Al4nin-commits] r475 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000239.html">[Al4nin-commits] r477 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#238">[ date ]</a>
+              <a href="thread.html#238">[ thread ]</a>
+              <a href="subject.html#238">[ subject ]</a>
+              <a href="author.html#238">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-24 16:58:03 +0200 (Wed, 24 Oct 2007)
+New Revision: 476
+
+Added:
+   trunk/purgatory/Makefile
+Log:
+checkin of makefile, works on solaris
+
+Added: trunk/purgatory/Makefile
+===================================================================
+--- trunk/purgatory/Makefile	2007-10-22 13:58:40 UTC (rev 475)
++++ trunk/purgatory/Makefile	2007-10-24 14:58:03 UTC (rev 476)
+@@ -0,0 +1,9 @@
++LOUT = lout -F /home/ggreif/psres
++
++DISTILL = unset XUSERFILESEARCHPATH &amp;&amp; /vol/web/acro3.02/bin/distill
++
++%.pdf: %.ps
++	$(DISTILL) $^
++
++%.lout.ps: %.lout
++	$(LOUT) -r2 -o $@ $^
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000237.html">[Al4nin-commits] r475 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000239.html">[Al4nin-commits] r477 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#238">[ date ]</a>
+              <a href="thread.html#238">[ thread ]</a>
+              <a href="subject.html#238">[ subject ]</a>
+              <a href="author.html#238">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

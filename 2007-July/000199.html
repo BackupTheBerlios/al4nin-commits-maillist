@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r437 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r437%20-%20trunk/purgatory&In-Reply-To=%3C200707251300.l6PD0umR003999%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000198.html">
+   <LINK REL="Next"  HREF="000200.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r437 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r437%20-%20trunk/purgatory&In-Reply-To=%3C200707251300.l6PD0umR003999%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r437 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jul 25 15:00:56 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000198.html">[Al4nin-commits] r436 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000200.html">[Al4nin-commits] r438 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#199">[ date ]</a>
+              <a href="thread.html#199">[ thread ]</a>
+              <a href="subject.html#199">[ subject ]</a>
+              <a href="author.html#199">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-25 15:00:56 +0200 (Wed, 25 Jul 2007)
+New Revision: 437
+
+Modified:
+   trunk/purgatory/MonadPrime.omg
+   trunk/purgatory/Thrist.lout
+Log:
+expand appendix
+
+Modified: trunk/purgatory/MonadPrime.omg
+===================================================================
+--- trunk/purgatory/MonadPrime.omg	2007-07-24 13:29:55 UTC (rev 436)
++++ trunk/purgatory/MonadPrime.omg	2007-07-25 13:00:56 UTC (rev 437)
+@@ -92,3 +92,11 @@
+ 
+ flattenThrist []l = []l
+ flattenThrist [a; as]l = appendThrist a $ flattenThrist as
++
++-- Thrist instrumenting
++
++intersperseThrist :: (forall (x :: *). k x x) -&gt; Thrist k a b -&gt; Thrist k a b
++
++intersperseThrist i []l = [i]l
++intersperseThrist i [a; as]l = [i, a; intersperseThrist i as]l
++
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-07-24 13:29:55 UTC (rev 436)
++++ trunk/purgatory/Thrist.lout	2007-07-25 13:00:56 UTC (rev 437)
+@@ -258,7 +258,7 @@
+ corresponds to an empty board, and @Haskell { Cons } joins two stones with
+ a common edge. A simple, but important difference to our thrists is that the
+ dominoes' face numbers do not correspond to the contained value, but to the
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at I</A> type of the contained value.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> type of the contained value: we are playing dominoes at the type level.
+ 
+ @End @SubSection
+ 
+@@ -1072,19 +1072,75 @@
+ 
+ 
+ @Appendix
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Useful Functions on Thrists }
++  @Title { Useful Functions on Thrists }
+ @Begin
+ @PP
++Following functions are parametric in the thrist type, i.e.
++in the first type parameter to the thrist. Thus they are universal.
+ 
+-#@SubAppendix
+-extend, append, instrument (e.g. with tracepoints)
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at BeginSubAppendices</A>
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubAppendix</A>
++  @Title { Extending Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++extendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a).
++		Thrist b c d -&gt;
++		b d e -&gt;
++		Thrist b c e
+ 
++extendThrist []l a = [a]l
++extendThrist [b; r]l a = [b; extendThrist r a]l
++}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubAppendix
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubAppendix</A>
++  @Title { Appending Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++appendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a).
++		Thrist b c d -&gt;
++		Thrist b d e -&gt;
++		Thrist b c e
++
++appendThrist []l a = a
++appendThrist [b; r]l a = [b; appendThrist r a]l
++}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubAppendix
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubAppendix</A>
++  @Title { Flattening Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++flattenThrist :: Thrist (Thrist k) a b -&gt; Thrist k a b
++
++flattenThrist []l = []l
++flattenThrist [a; as]l = appendThrist a $ flattenThrist as
++}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubAppendix
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubAppendix</A>
++  @Title { Instrumenting Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
++It might be useful to wrap each thrist member with
++a special instrumentation, e.g. for tracing (tracepoints)
++or other ways of debugging.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A> Following function (using rank-2 polymorphism) accomplishes this.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++intersperseThrist :: (forall (x :: *). k x x) -&gt; Thrist k a b -&gt; Thrist k a b
++
++intersperseThrist i []l = [i]l
++intersperseThrist i [a; as]l = [i, a; intersperseThrist i as]l
++}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubAppendix
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at EndSubAppendices</A>
++
++
+ @End @Appendix
+ 
+ @Appendix
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { App2 }
++  @Title { A Complete Cat Example: @I fak }
+ @Begin
+ @PP
+ @End @Appendix
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000198.html">[Al4nin-commits] r436 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000200.html">[Al4nin-commits] r438 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#199">[ date ]</a>
+              <a href="thread.html#199">[ thread ]</a>
+              <a href="subject.html#199">[ subject ]</a>
+              <a href="author.html#199">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

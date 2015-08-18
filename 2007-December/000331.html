@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r568 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r568%20-%20trunk/purgatory&In-Reply-To=%3C200712120223.lBC2NJvi005342%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000330.html">
+   <LINK REL="Next"  HREF="000332.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r568 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r568%20-%20trunk/purgatory&In-Reply-To=%3C200712120223.lBC2NJvi005342%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r568 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 12 03:23:19 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000330.html">[Al4nin-commits] r567 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000332.html">[Al4nin-commits] r569 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#331">[ date ]</a>
+              <a href="thread.html#331">[ thread ]</a>
+              <a href="subject.html#331">[ subject ]</a>
+              <a href="author.html#331">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-12 03:23:15 +0100 (Wed, 12 Dec 2007)
+New Revision: 568
+
+Modified:
+   trunk/purgatory/SetEmulation.omg
+Log:
+second big problem. candidate for issue47
+
+Modified: trunk/purgatory/SetEmulation.omg
+===================================================================
+--- trunk/purgatory/SetEmulation.omg	2007-12-12 02:18:53 UTC (rev 567)
++++ trunk/purgatory/SetEmulation.omg	2007-12-12 02:23:15 UTC (rev 568)
+@@ -82,7 +82,20 @@
+ -- Some basic operations on SingleLabel records:
+ ------------------------------------------------
+ 
++--- separate the head of the record and assemble it again after that.
+ 
++-- SEE: issue46
++--apart :: SingleLabel row -&gt; exists a v tail . Maybe ((Label a, v, SingleLabel tail), Equal {a=v; tail}r row, Equal {exclude a tail} tail)
++--apart {}s = Ex Nothing
++--apart {l=v; rest}s = Ex (Just ((l, v, rest), Eq, check Eq))
++
++-- SEE: issue47
++join :: Label a -&gt; v -&gt; SingleLabel tail -&gt; Equal {exclude a tail} tail -&gt; SingleLabel row
++join a v t Eq = {a=v; t}s
++
++
++
++{- STILL TOO HARD FOR ME
+ -- pulling stuff to front
+ 
+ {-
+@@ -103,12 +116,27 @@
+ --contractLemma l Eq = Eq
+ 
+ idempotenceLemma :: Label l -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
+-idempotenceLemma l Eq = Eq
++idempotenceLemma l Eq = undefined -- Eq CHEAT
+ 
++idempotenceLemma' :: Label l -&gt; SingleLabel {exclude l a} -&gt; SingleLabel b -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
++idempotenceLemma' l s sb Eq = undefined -- Eq CHEAT
++
++
++------but, the current refinement fails because _c != {exclude _b _c}   vvvvvvvvvvvv
++--peel :: Label a -&gt; Equal row {exclude a row} -&gt; SingleLabel {exclude a row} -&gt; SingleLabel row
++--peel a Eq s = s
++
++peel :: Label a -&gt; Equal {exclude a row} b -&gt; SingleLabel {exclude a row} -&gt; SingleLabel b
++peel a Eq s = s
++
+ toFront :: Label a -&gt; SingleLabel row -&gt; (SingleLabel {a=v; {exclude a row}}r + (SingleLabel {exclude a row}, Equal {exclude a row} row))
+ toFront a (e@{}s) = R (e, Eq)
+ toFront a (got@{f=v; rest}s) = case labelEq a f of
+ 			       Nothing -&gt; case toFront a rest of
+-					  R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (check {f=v; free}s, Eq) where theorem t
++					  --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (check {f=v; free}s, Eq) where theorem t, idem = idempotenceLemma' f
++                                          --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (got, Eq)
++                                          R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (peel f t got, Eq)
+ 					  L {a'=v'; rest'}s -&gt; L {a'=v', f=v; rest'}s
+ 			       Just Eq -&gt; L got
++
++-}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000330.html">[Al4nin-commits] r567 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000332.html">[Al4nin-commits] r569 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#331">[ date ]</a>
+              <a href="thread.html#331">[ thread ]</a>
+              <a href="subject.html#331">[ subject ]</a>
+              <a href="author.html#331">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

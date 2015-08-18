@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r763 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r763%20-%20trunk/purgatory&In-Reply-To=%3C200908032206.n73M6JnJ006578%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000524.html">
+   <LINK REL="Next"  HREF="000526.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r763 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r763%20-%20trunk/purgatory&In-Reply-To=%3C200908032206.n73M6JnJ006578%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r763 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  4 00:06:19 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000524.html">[Al4nin-commits] r762 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000526.html">[Al4nin-commits] r764 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-04 00:06:16 +0200 (Tue, 04 Aug 2009)
+New Revision: 763
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+very humble beginnings of the buildBasicBlock2 function:
+- must have no uses yet
+- needs a bunch of more evidence about uses passed in
+
+There seems to be a mistyped expression: test9 starts with empty defs (because of the error at loading?).
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-03 21:40:38 UTC (rev 762)
++++ trunk/purgatory/LLVM2step.omg	2009-08-03 22:06:16 UTC (rev 763)
+@@ -83,6 +83,7 @@
+ data Props :: *1 where
+   A :: Defs ~&gt; Uses ~&gt; Props
+ 
++-- exec should only apply when the return type of the primitive is void!
+ data Instr :: Props ~&gt; Props ~&gt; * where
+   Def :: FreeDef t d =&gt; Label t -&gt; Prim Regular i us -&gt; Instr (A d {appendUses us u}) (A [t; d]d u)
+   Exec :: Prim Regular i us -&gt; Instr (A d {appendUses us u}) (A d u)
+@@ -105,4 +106,9 @@
+ test7 = Def `a $ Add (Const 40) (Const 2)
+ -}
+ 
+-test8 = [test5, test3]l
+\ No newline at end of file
++test8 = [test5, test3]l
++
++buildBasicBlock2 :: Label t -&gt; Prim Regular i us -&gt; Prim Terminator i us' -&gt; Maybe (Thrist Instr (A []d []u) (A [t]d []u))
++buildBasicBlock2 l (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Add</A> (Const _) (Const _)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> (Const _)) = Just [Def l a, Term r]l
++
++test9 = buildBasicBlock2 `t (Add (Const 40) (Const 2)) (Ret $ Const 2)
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000524.html">[Al4nin-commits] r762 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000526.html">[Al4nin-commits] r764 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

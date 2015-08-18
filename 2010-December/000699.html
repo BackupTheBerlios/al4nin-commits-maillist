@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r937 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r937%20-%20trunk/purgatory&In-Reply-To=%3C20101215173942.6AC5E480D3B%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000698.html">
+   <LINK REL="Next"  HREF="000700.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r937 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r937%20-%20trunk/purgatory&In-Reply-To=%3C20101215173942.6AC5E480D3B%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r937 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 15 18:39:42 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000698.html">[Al4nin-commits] r936 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000700.html">[Al4nin-commits] r938 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#699">[ date ]</a>
+              <a href="thread.html#699">[ thread ]</a>
+              <a href="subject.html#699">[ subject ]</a>
+              <a href="author.html#699">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-15 18:39:42 +0100 (Wed, 15 Dec 2010)
+New Revision: 937
+
+Modified:
+   trunk/purgatory/Kinding2.omg
+Log:
+do not use Appl any more (,)c is Appl' now
+
+
+Modified: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-15 17:32:32 UTC (rev 936)
++++ trunk/purgatory/Kinding2.omg	2010-12-15 17:39:42 UTC (rev 937)
+@@ -133,7 +133,7 @@
+            =&gt; Context Anchored ws
+            -&gt; Context Anchored [f, h; r]ws
+            -&gt; Context Anchored [h; r]ws
+- deriving syntax(c) List(Empty, Quantify) Pair(Appl)
++ deriving syntax(c) List(Empty, Quantify) Pair(Appl')
+ 
+ -- tau: classify context
+ upc :: Walks n ~&gt; Walks (1+n)t
+@@ -197,17 +197,17 @@
+ 
+ -- regular lambda2 : \x:Int.42
+ lambda2Int = ((Heart Type, Star)q`2)q
+-kt1 = (Term, [lambda2Int; Heart Term]c)c
++kt1 = (Heart Term, [lambda2Int; Heart Term]c)c
+ tkt1 = tau kt1
+ 
+ -- regular PI1 : pi (x:Int).Int
+ pi1Int = ((Heart Type, Star)q`1)q
+-kt2 = (Term, [pi1Int; Heart Type]c)c
++kt2 = (Heart Term, [pi1Int; Heart Type]c)c
+ tkt2 = tau kt2
+ 
+ -- type-level lambda2 : /\x:*:Int
+ lambda2star = ((Heart 0q, 1q)q`2)q
+-kt3 = (Type, [lambda2star; Heart Type]c)c
++kt3 = (Heart Type, [lambda2star; Heart Type]c)c
+ tkt3 = tau kt3
+ 
+ -- mixed form: \f:Int-&gt;Int.f 42
+@@ -216,18 +216,18 @@
+ --tkt4 = tau kt4
+ 
+ -- 2 args: \f i.f i
+-kt5 = (Term, (Appl' [lambda2Int; Heart Term]c [lambda2Int_Int, lambda2Int; Heart Term]c))c
++kt5 = (Heart Term, (Appl' [lambda2Int; Heart Term]c [lambda2Int_Int, lambda2Int; Heart Term]c))c
+ --tkt5 = tau kt5
+ 
+ -- type constructor: M :: * ~&gt; *
+ emq = ((Heart Star, 1q)q`2)q    -- * ~&gt;
+-kt6 = (Type, [emq; Heart Type]c)c  -- e.g. M Int
++kt6 = (Heart Type, [emq; Heart Type]c)c  -- e.g. M Int
+ tkt6 = tau kt6
+ 
+ 
+ -- \f : Int . return 42   (f :: Int -&gt; M Int)
+ ef = [((Heart Type, 0q)q`2)q; Heart Term {-By kt6-}]c  -- Int -&gt; M Int
+-kt7 = (Term, ef)c  -- f 42
++kt7 = (Heart Term, ef)c  -- f 42
+ tkt7 = tau kt7
+ 
+ -- \h (g :: Int-&gt;Int-&gt;Int) -&gt; Int
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000698.html">[Al4nin-commits] r936 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000700.html">[Al4nin-commits] r938 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#699">[ date ]</a>
+              <a href="thread.html#699">[ thread ]</a>
+              <a href="subject.html#699">[ subject ]</a>
+              <a href="author.html#699">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

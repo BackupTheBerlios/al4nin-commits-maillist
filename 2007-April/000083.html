@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r321 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r321%20-%20trunk/purgatory&In-Reply-To=%3C200704190013.l3J0Dxgv019631%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000082.html">
+   <LINK REL="Next"  HREF="000084.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r321 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r321%20-%20trunk/purgatory&In-Reply-To=%3C200704190013.l3J0Dxgv019631%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r321 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Apr 19 02:13:59 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000082.html">[Al4nin-commits] r320 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000084.html">[Al4nin-commits] r322 - in trunk: found-bugs purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#83">[ date ]</a>
+              <a href="thread.html#83">[ thread ]</a>
+              <a href="subject.html#83">[ subject ]</a>
+              <a href="author.html#83">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-19 02:13:59 +0200 (Thu, 19 Apr 2007)
+New Revision: 321
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+cleanups
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-19 00:02:56 UTC (rev 320)
++++ trunk/purgatory/ThristParser.omg	2007-04-19 00:13:59 UTC (rev 321)
+@@ -55,7 +55,6 @@
+   CataStar :: ([a] -&gt; b) -&gt; Parse [a] b
+   CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b
+   Wrap :: Thrist Parse a b -&gt; Parse a b
+---  Or :: (Parse a b, Parse a c) -&gt; Parse a (b, c)
+   Or :: Parse a b -&gt; Parse a b -&gt; Parse a b
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a])
+   Seq2 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a])
+@@ -77,7 +76,7 @@
+ propersnap = Try (\a -&gt; case a of { ([], _) -&gt; Nothing; (_, r:rest) -&gt; Nothing; _ -&gt; Just a })
+ 
+ base n = foldl (\acc x -&gt; (acc * n) + x) 0
+-num = Wrap #[Rep digit, crop, CataPlus (foldl (\acc x -&gt; (acc * 10) + x) 0)]l
++num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
+ chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), second, CataPlus (base 16)]l
+ 
+ unwrap (Wrap x) = x
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000082.html">[Al4nin-commits] r320 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000084.html">[Al4nin-commits] r322 - in trunk: found-bugs purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#83">[ date ]</a>
+              <a href="thread.html#83">[ thread ]</a>
+              <a href="subject.html#83">[ subject ]</a>
+              <a href="author.html#83">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r426 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r426%20-%20trunk/purgatory&In-Reply-To=%3C200707131429.l6DETcKV015061%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000187.html">
+   <LINK REL="Next"  HREF="000189.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r426 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r426%20-%20trunk/purgatory&In-Reply-To=%3C200707131429.l6DETcKV015061%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r426 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 13 16:29:38 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000187.html">[Al4nin-commits] r425 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000189.html">[Al4nin-commits] r427 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#188">[ date ]</a>
+              <a href="thread.html#188">[ thread ]</a>
+              <a href="subject.html#188">[ subject ]</a>
+              <a href="author.html#188">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-13 16:29:38 +0200 (Fri, 13 Jul 2007)
+New Revision: 426
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+some meat on arrows, monads
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-07-13 14:28:24 UTC (rev 425)
++++ trunk/purgatory/Thrist.lout	2007-07-13 14:29:38 UTC (rev 426)
+@@ -955,8 +955,39 @@
+ @SubSection
+   @Title { Connection to Arrows and Monads }
+ @Begin
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Since arrows in the Haskell world also originated from the generalization of function
++composition it is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
++our Thrist datastructure. Obviously any instance of the Haskell type class @Haskell { Arrow } can
++be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
++function that is rather canonic, and will be given in the Appendix. This semantics obviously
++guarantees the arrow laws {@Cite { hughes19xx } }. On the other hand thrists are not always
++easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
++to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
++mandates a function argument for the method @Haskell { arr }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Nilsson @Cite { nilsson2005 } embarks on optimization of a GADT-based @Haskell { Arrow } library, but he only
++considers the identity function as a special case. He observes a substantial
++speedup in microbenchmarks when the optimizer is able to discover and short-circuit
++the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
++e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
++significant win in using the former, when compiling to @Haskell { Code } the underlying
++metaprogramming system in @Omega presumably possesses all the information to recover
++the identity function from the @Omega interpreter's internals. In case of
++translation to a different programming system every function inside of @Haskell { Try } and @Haskell { Sure }
++constructors would need auxiliary denotation anyway, and could be optimized
++either on export or inside of the external system itself.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Monads can also be regarded as a specialization to arrows, so we expect that @Haskell { Thrist Monad' }
++can be canonically derived.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A> First we define the adapter to @Haskell { Monad }, @Haskell { Monad' } to have two parameters:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TODO</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell {
++data Monad' a b :: * ~&gt; * ~&gt; * where
++  Ret :: Monad' a (Monad b)
++  Bind :: Monad' a (Monad t) -&gt; (t -&gt; Monad' a' (Monad u)) -&gt; Monad' t (Monad u)
++}
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+ @End @SubSection
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000187.html">[Al4nin-commits] r425 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000189.html">[Al4nin-commits] r427 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#188">[ date ]</a>
+              <a href="thread.html#188">[ thread ]</a>
+              <a href="subject.html#188">[ subject ]</a>
+              <a href="author.html#188">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

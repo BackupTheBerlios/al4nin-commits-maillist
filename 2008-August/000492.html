@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r730 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r730%20-%20trunk/purgatory&In-Reply-To=%3C200808050255.m752tPMU000142%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000491.html">
+   <LINK REL="Next"  HREF="000493.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r730 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r730%20-%20trunk/purgatory&In-Reply-To=%3C200808050255.m752tPMU000142%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r730 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  5 04:55:25 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000491.html">[Al4nin-commits] r729 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000493.html">[Al4nin-commits] r731 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#492">[ date ]</a>
+              <a href="thread.html#492">[ thread ]</a>
+              <a href="subject.html#492">[ subject ]</a>
+              <a href="author.html#492">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-08-05 04:55:23 +0200 (Tue, 05 Aug 2008)
+New Revision: 730
+
+Modified:
+   trunk/purgatory/WayMark.lhs
+Log:
+some refactoring to cater for simplification
+
+Modified: trunk/purgatory/WayMark.lhs
+===================================================================
+--- trunk/purgatory/WayMark.lhs	2008-08-04 05:49:11 UTC (rev 729)
++++ trunk/purgatory/WayMark.lhs	2008-08-05 02:55:23 UTC (rev 730)
+@@ -27,11 +27,14 @@
+ First we define the datatype for tagged pointers.
+ The Fin constructor points back to the Value itself:
+ 
+-&gt; data UsePtr = Zero UsePtr | One UsePtr | Stop UsePtr | Fin Value
++&gt; data UseTag = Zero | One | Stop
++&gt;   deriving Show
++
++&gt; data UsePtr = Tagged UseTag UsePtr | Fin Value
+ &gt; instance Show UsePtr where
+-&gt;     show (Zero p) = &quot;0&quot; ++ show p
+-&gt;     show (One p) = &quot;1&quot; ++ show p
+-&gt;     show (Stop p) = &quot;s&quot; ++ show p
++&gt;     show (Tagged Zero p) = &quot;0&quot; ++ show p
++&gt;     show (Tagged One p) = &quot;1&quot; ++ show p
++&gt;     show (Tagged Stop p) = &quot;s&quot; ++ show p
+ &gt;     show (Fin (Val i _)) = &quot;S(&quot; ++ show i ++ &quot;)&quot;
+ 
+ Values (here) store the numerical integer for the bit pattern of the
+@@ -44,9 +47,9 @@
+ a check whether the computed Value* matches up with the reality.
+ 
+ &gt; verify :: Value -&gt; Bool
+-&gt; verify (Val i (p@(Zero p'))) = compute p == i &amp;&amp; verify (Val i p')
+-&gt; verify (Val i (p@(One p'))) = compute p == i &amp;&amp; verify (Val i p')
+-&gt; verify (Val i (p@(Stop p'))) = compute p == i &amp;&amp; verify (Val i p')
++&gt; verify (Val i (p@(Tagged Zero p'))) = compute p == i &amp;&amp; verify (Val i p')
++&gt; verify (Val i (p@(Tagged One p'))) = compute p == i &amp;&amp; verify (Val i p')
++&gt; verify (Val i (p@(Tagged Stop p'))) = compute p == i &amp;&amp; verify (Val i p')
+ &gt; verify (Val i (Fin (Val i' _))) = i == i'
+ 
+ Forwarding function supplying step counter and seed:
+@@ -61,14 +64,14 @@
+ &gt; requiredSteps = 3
+ 
+ &gt; compute' :: Int -&gt; Int -&gt; UsePtr -&gt; Int
+-&gt; compute' steps seed (Zero p) = compute' (steps + 1) (seed + seed) p
+-&gt; compute' steps seed (One p) = compute' (steps + 1) (seed + seed + 1) p
+-&gt; compute' steps seed (Stop p) = if steps == requiredSteps then seed else compute' 0 0 p
++&gt; compute' steps seed (Tagged Zero p) = compute' (steps + 1) (seed + seed) p
++&gt; compute' steps seed (Tagged One p) = compute' (steps + 1) (seed + seed + 1) p
++&gt; compute' steps seed (Tagged Stop p) = if steps == requiredSteps then seed else compute' 0 0 p
+ &gt; compute' steps seed (Fin (Val i _)) = i
+ 
+ Test section:
+ 
+-&gt; testcase = Val 5 (One $ Zero $ One $ Stop $ Zero $ Fin testcase)
++&gt; testcase = Val 5 (Tagged One $ Tagged Zero $ Tagged One $ Tagged Stop $ Tagged Zero $ Fin testcase)
+ &gt; testcase' = let (Val i p) = testcase in let v = Val (i+1) $ copy v p in v
+ 
+ 
+@@ -86,10 +89,11 @@
+ Some quickCheck helpers:
+ 
+ &gt; instance Arbitrary History where
++&gt;   coarbitrary = undefined
+ &gt;   arbitrary = sized history
+ &gt;     where
+ &gt;       history 0 = return Done
+-&gt;       history n | n&gt;0 = oneof
++&gt;       history n | n &gt; 0 = oneof
+ &gt;         [ return Done
+ &gt;         , liftM Insert subhistory
+ &gt;         , liftM2 Remove (fmap abs arbitrary) subhistory ]
+@@ -103,7 +107,7 @@
+ The actual mutating function is construct':
+ 
+ &gt; construct' v Done = v
+-&gt; construct' (Val i p) (Insert rest) = construct' (let v = Val i $ Stop $ copy v p in v) rest
++&gt; construct' (Val i p) (Insert rest) = construct' (let v = Val i $ Tagged Stop $ copy v p in v) rest
+ 
+ &gt; construct' v@(Val _ (Fin _)) (Remove _ rest) = v
+ &gt; construct' (Val i p) (Remove n rest) = let v = Val i $ copy v $ shp p (shorten p n) in v
+@@ -111,24 +115,24 @@
+ &gt; shp p (Left p') = p'
+ &gt; shp p (Right n) = shp p (shorten p n)
+  
+-&gt; shorten (Zero p) 0 = Left p
+-&gt; shorten (One p) 0 = Left p
+-&gt; shorten (Stop p) 0 = Left p
++&gt; shorten (Tagged Zero p) 0 = Left p
++&gt; shorten (Tagged One p) 0 = Left p
++&gt; shorten (Tagged Stop p) 0 = Left p
+ &gt; shorten (Fin _) n = Right n
+-&gt; shorten (Zero p) (n+1) = ext Zero $ shorten p n
+-&gt; shorten (One p) (n+1) = ext One $ shorten p n
+-&gt; shorten (Stop p) (n+1) = ext Stop $ shorten p n
++&gt; shorten (Tagged Zero p) (n+1) = ext Zero $ shorten p n
++&gt; shorten (Tagged One p) (n+1) = ext One $ shorten p n
++&gt; shorten (Tagged Stop p) (n+1) = ext Stop $ shorten p n
+ 
+-&gt; ext constr (Left p) = Left $ constr p
++&gt; ext constr (Left p) = Left $ Tagged constr p
+ &gt; ext _ r@(Right n) = r
+ 
+ The copy function ensures that we maintain the invariant that
+ Fin actually points to the same Val (sharing)
+ 
+ &gt; copy v (Fin _) = Fin v
+-&gt; copy v (Zero p) = Zero $ copy v p
+-&gt; copy v (One p) = One $ copy v p
+-&gt; copy v (Stop p) = Stop $ copy v p
++&gt; copy v (Tagged Zero p) = Tagged Zero $ copy v p
++&gt; copy v (Tagged One p) = Tagged One $ copy v p
++&gt; copy v (Tagged Stop p) = Tagged Stop $ copy v p
+ 
+ Declare some QuickCheck properties
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000491.html">[Al4nin-commits] r729 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000493.html">[Al4nin-commits] r731 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#492">[ date ]</a>
+              <a href="thread.html#492">[ thread ]</a>
+              <a href="subject.html#492">[ subject ]</a>
+              <a href="author.html#492">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

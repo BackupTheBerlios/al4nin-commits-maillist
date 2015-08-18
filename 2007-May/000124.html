@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r362 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r362%20-%20trunk/purgatory&In-Reply-To=%3C200705152014.l4FKE8DZ025740%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000123.html">
+   <LINK REL="Next"  HREF="000125.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r362 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r362%20-%20trunk/purgatory&In-Reply-To=%3C200705152014.l4FKE8DZ025740%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r362 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue May 15 22:14:08 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000123.html">[Al4nin-commits] r361 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000125.html">[Al4nin-commits] r363 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-05-15 22:14:07 +0200 (Tue, 15 May 2007)
+New Revision: 362
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+some improvements related to Prim, but replacing Greater with gt does not work (bug11)
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-05-15 19:25:47 UTC (rev 361)
++++ trunk/purgatory/Thrist.omg	2007-05-15 20:14:07 UTC (rev 362)
+@@ -140,17 +140,33 @@
+   ArrTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a -&gt; b)
+   CatTractable :: ShapeTractable a -&gt; ShapeTractable b -&gt; Tractable (Cat a b)
+ 
++data Primitive
++    = Padd
++    | Psub
++    | Pmul
++    | Pdiv
++    | Pgt
++    | Plt
++    | Pgteq
++    | Plteq
++    | Pneg
++    | Peq
++    | Pneq
++    | Pmin
++    | Pmax
++    | Pmap -- made up
++    | Pord
+ 
++
+ data Cat :: (Row *0) ~&gt; (Row *0) ~&gt; *0 where
+   Push :: Tractable a -&gt; a -&gt; Cat s (RCons a s)
+-  Prim :: Tractable c -&gt; (a -&gt; c) -&gt; Cat (RCons a {blowLike {countArr c} c s}) (RCons {range {countArr c} c} s)
++  Prim :: Tractable c -&gt; Primitive -&gt; (a -&gt; c) -&gt; Cat (RCons a {blowLike {countArr c} c s}) (RCons {range {countArr c} c} s)
+   Dup :: Cat (RCons t s) (RCons t (RCons t s))
+ --  Dig :: Pick Row Nat -&gt; Cat (RCons t s) (RCons t (RCons t s))
+   Print :: Cat (RCons t s) s
+   PopN :: Nat' (S n) -&gt; Cat {blow (S n) s} s
+   Swap :: Cat (RCons a (RCons b s)) (RCons b (RCons a s))
+ -- Perm :: Pick Row Nat -- TODO
+-  Add :: Cat (RCons Int (RCons Int s)) (RCons Int s)      -- use Prim instead
+   Greater :: Cat (RCons Int (RCons Int s)) (RCons Bool s) -- use Prim instead
+   Block :: Thrist Cat b c -&gt; Cat a (RCons (Cat b c) a)
+   Quote :: Thrist Cat a b -&gt; Cat a b
+@@ -171,8 +187,20 @@
+ tc3 = #[Push tc0 (Push IntTractable 42), Eval, Print]l
+ 
+ strTract = ListTractable CharTractable
+-te1 = #[Push IntTractable 42, Dup, Greater, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, Add, Print, Push strTract &quot;hh&quot;]l]l
+ 
++intPrim = Prim (ArrTractable IntTractable IntTractable)
++add = intPrim Padd (+)
++sub = intPrim Psub (-)
++
++intPred = Prim (ArrTractable IntTractable BoolTractable)
++gt = intPred Pgt (&gt;)
++gteq = intPred Pgteq (&gt;=)
++
++pop = PopN #1
++
++te1 = #[Push IntTractable 42, Dup, Greater, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
++--te1a = #[Push IntTractable 42, Dup, gt, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
++
+ {- This needs more magic:
+ showThrist :: (t a b -&gt; String) -&gt; Thrist t a b -&gt; String
+ showThrist f Nil = &quot;&quot;
+@@ -181,14 +209,14 @@
+ 
+ cat' :: Thrist Cat a b -&gt; String
+ cat' Nil = &quot;&quot;
+-cat' (Cons (Push rep a) r) = &quot;Push &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
+---cat' (Cons (Prim t f) r) = &quot;Prim &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
+-cat' (Cons Dup r) = &quot;Dup&quot; ++ &quot;\n&quot; ++ cat' r
+-cat' (Cons Print r) = &quot;Print&quot; ++ &quot;\n&quot; ++ cat' r
++cat' (Cons (Push _ a) r) = &quot;Push &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
++cat' (Cons (Prim _ Padd _) r) = &quot;add\n&quot; ++ cat' r
++cat' (Cons (Prim _ Psub _) r) = &quot;sub\n&quot; ++ cat' r
++cat' (Cons (Prim _ Pgt  _) r) = &quot;gt\n&quot; ++ cat' r
++cat' (Cons Dup r) = &quot;Dup\n&quot; ++ cat' r
++cat' (Cons Print r) = &quot;Print\n&quot; ++ cat' r
+ cat' (Cons (PopN n) r) = &quot;PopN &quot; ++ show n ++ &quot;\n&quot; ++ cat' r
+-cat' (Cons Swap r) = &quot;Swap&quot; ++ &quot;\n&quot; ++ cat' r
+-cat' (Cons Add r) = &quot;Add&quot; ++ &quot;\n&quot; ++ cat' r
+-cat' (Cons Greater r) = &quot;Greater&quot; ++ &quot;\n&quot; ++ cat' r
++cat' (Cons Swap r) = &quot;Swap\n&quot; ++ cat' r
+ cat' (Cons (If yes no) r) = &quot;If &quot; ++ show yes ++ &quot; ELSE &quot; ++ show no ++ &quot;\n&quot; ++ cat' r
+ 
+ data Stack :: Row *0 ~&gt; *0 where
+@@ -233,31 +261,23 @@
+ 			      Pu a st &lt;- act
+ 			      let (Pu b st') = st
+ 			      interpretCat' r (return (Pu b (Pu a st')))
+-	     (Cons Add r) -&gt; do
+-			     Pu a st &lt;- act
+-			     let (Pu b st') = st
+-			     interpretCat' r (return (Pu (a + b) st'))
+-	     (Cons Greater r) -&gt; do
+-				 Pu a st &lt;- act
+-				 let (Pu b st') = st
+-				 interpretCat' r (return (Pu (b &gt; a) st'))
+-	     (Cons (Prim (ArrTractable x y) f) r) -&gt; do
++	     (Cons (Prim (ArrTractable x y) p f) r) -&gt; do
+ 	                                             Pu a st &lt;- act
+-				                     interpretCat' (Cons (Prim y (f a)) r) (return st)
++				                     interpretCat' (Cons (Prim y p (f a)) r) (return st)
+                                                          -- where theorem because = proveRange y x
+-	     (Cons (Prim IntTractable f) r) -&gt; do
++	     (Cons (Prim IntTractable _ f) r) -&gt; do
+ 	                                       Pu a st &lt;- act
+ 				               interpretCat' r (return (Pu (f a) st))
+-	     (Cons (Prim BoolTractable f) r) -&gt; do
++	     (Cons (Prim BoolTractable _ f) r) -&gt; do
+ 	                                        Pu a st &lt;- act
+ 				                interpretCat' r (return (Pu (f a) st))
+-	     (Cons (Prim CharTractable f) r) -&gt; do
++	     (Cons (Prim CharTractable _ f) r) -&gt; do
+ 	                                        Pu a st &lt;- act
+ 				                interpretCat' r (return (Pu (f a) st))
+-	     (Cons (Prim (PairTractable _ _) f) r) -&gt; do
++	     (Cons (Prim (PairTractable _ _) _ f) r) -&gt; do
+ 	                                              Pu a st &lt;- act
+ 				                      interpretCat' r (return (Pu (f a) st))
+-	     (Cons (Prim (ListTractable _) f) r) -&gt; do
++	     (Cons (Prim (ListTractable _) _ f) r) -&gt; do
+ 	                                            Pu a st &lt;- act
+ 				                    interpretCat' r (return (Pu (f a) st))
+ 	     (Cons (If yes no) r) -&gt; do
+@@ -273,8 +293,6 @@
+ 	       interpretCat' r (interpretCat' thr act')
+       where monad ioM
+ 
+-pop = PopN #1
+-
+ popMore :: Nat' n -&gt; Stack {blow n b} -&gt; IO (Stack b)
+ popMore Z st = return st
+     where monad ioM
+@@ -292,11 +310,11 @@
+ pushStr = Push (ListTractable CharTractable)
+ 
+ te3 = interpretCat #[pushI 23, pop]l
+-te4 = interpretCat #[pushI 42, pushI 11, Greater, If #[pushB True]l #[pushB False]l, Print]l
+-te5 = interpretCat #[pushI 42, pushI 32, pushI 1, Add, Swap, Print, Print]l
+-te6 = interpretCat #[pushI 42, pushI 32, pushI 1, Add, Swap, Print, Dup, PopN #2]l
+-te7 = interpretCat #[pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) map, Print]l
+-te8 = interpretCat #[pushC 'Z', Prim IntTractable ord, pushI 2, Prim (ArrTractable IntTractable IntTractable) (+), Print]l
++te4 = interpretCat #[pushI 42, pushI 11, gt, If #[pushB True]l #[pushB False]l, Print]l
++te5 = interpretCat #[pushI 42, pushI 32, pushI 1, add, Swap, Print, Print]l
++te6 = interpretCat #[pushI 42, pushI 32, pushI 1, add, Swap, Print, Dup, PopN #2]l
++te7 = interpretCat #[pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) Pmap map, Print]l
++te8 = interpretCat #[pushC 'Z', Prim IntTractable Pord ord, pushI 2, add, Print]l
+ te9 = interpretCat #[pushI 42, Block #[Print]l, Eval]l
+ 
+ optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000123.html">[Al4nin-commits] r361 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000125.html">[Al4nin-commits] r363 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

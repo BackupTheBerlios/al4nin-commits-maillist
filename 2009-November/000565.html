@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r803 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r803%20-%20trunk/purgatory&In-Reply-To=%3C200911030900.nA3907ax013296%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r803 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r803%20-%20trunk/purgatory&In-Reply-To=%3C200911030900.nA3907ax013296%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r803 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov  3 10:00:07 CET 2009</I>
+    <P><UL>
+        
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#565">[ date ]</a>
+              <a href="thread.html#565">[ thread ]</a>
+              <a href="subject.html#565">[ subject ]</a>
+              <a href="author.html#565">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-11-03 10:00:04 +0100 (Tue, 03 Nov 2009)
+New Revision: 803
+
+Modified:
+   trunk/purgatory/Applicative.omg
+Log:
+folding to applicative
+
+Modified: trunk/purgatory/Applicative.omg
+===================================================================
+--- trunk/purgatory/Applicative.omg	2009-10-18 19:55:58 UTC (rev 802)
++++ trunk/purgatory/Applicative.omg	2009-11-03 09:00:04 UTC (rev 803)
+@@ -34,9 +34,19 @@
+ --concretize (Val a) = Val a -- need representation types here
+ concretize (App f a) = App (concretize f) (concretize a)
+ 
++-- okay now let's see if we can fold things
++
++--foldArith comb seed = App (Fun comb) `foldr` Val seed
++attempt1 = (\a b -&gt; App (App (Fun Plus) (Val a)) b) `foldr` (Val 0)
++
+ {-
+ I want something like
+ 
+ [map, [plus, 1]l, [from, 1, 5]l ]l
+ 
+ -}
++
++data A :: * ~&gt; * ~&gt; * where
++  F :: (a -&gt; b) -&gt; A b a
++  A :: a -&gt; A a ()
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#565">[ date ]</a>
+              <a href="thread.html#565">[ thread ]</a>
+              <a href="subject.html#565">[ subject ]</a>
+              <a href="author.html#565">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

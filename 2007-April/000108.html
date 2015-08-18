@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r346 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r346%20-%20trunk/purgatory&In-Reply-To=%3C200704272157.l3RLv54T010789%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000107.html">
+   <LINK REL="Next"  HREF="000109.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r346 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r346%20-%20trunk/purgatory&In-Reply-To=%3C200704272157.l3RLv54T010789%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r346 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Apr 27 23:57:05 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000107.html">[Al4nin-commits] r345 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000109.html">[Al4nin-commits] r347 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#108">[ date ]</a>
+              <a href="thread.html#108">[ thread ]</a>
+              <a href="subject.html#108">[ subject ]</a>
+              <a href="author.html#108">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-27 23:57:04 +0200 (Fri, 27 Apr 2007)
+New Revision: 346
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+arity #1 implemented
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-27 21:11:10 UTC (rev 345)
++++ trunk/purgatory/Thrist.omg	2007-04-27 21:57:04 UTC (rev 346)
+@@ -115,27 +115,27 @@
+ {blow Z s} = s
+ {blow (S n) s} = RCons t {blow n s}
+ 
+-blowLike :: *0 ~&gt; Row *0 ~&gt; Row *0
+-{blowLike (c -&gt; d) s} = {blowLike d (RCons c s)}
+-{blowLike Int s} = s
+-{blowLike Char s} = s
+-{blowLike Bool s} = s
+-{blowLike [a] s} = s
++blowLike :: Nat ~&gt; *0 ~&gt; Row *0 ~&gt; Row *0
++{blowLike (S arty) (c -&gt; d) s} = {blowLike arty d (RCons c s)}
++{blowLike Z a s} = s
++--{blowLike Z Char s} = s
++--{blowLike Z Bool s} = s
++--{blowLike Z [a] s} = s
+ 
+-range :: *0 ~&gt; *0
+-{range (c -&gt; d)} = {range d}
++range :: Nat ~&gt; *0 ~&gt; *0
++{range (S arty) (c -&gt; d)} = {range arty d}
+ --{range (c -&gt; d)} = {range d}
+-{range Int} = Int
+-{range Char} = Char
+-{range Bool} = Bool
++{range Z a} = a
++--{range Char} = Char
++--{range Bool} = Bool
+ --{range ((a :: x ~&gt; y) b)} = (a b)
+-{range [a]} = [a]
++--{range [a]} = [a]
+ 
+ kind CatShape = Shape (Row *0)
+ 
+ data Cat :: CatShape ~&gt; CatShape ~&gt; *0 where
+   Push :: a -&gt; Cat (Shape s) (Shape (RCons a s))
+-  Prim :: (a -&gt; b) -&gt; Cat (Shape {blowLike b (RCons a s)}) (Shape (RCons {range b} s))
++  Prim :: Nat' (S arty) -&gt; (a -&gt; b) -&gt; Cat (Shape {blowLike arty b (RCons a s)}) (Shape (RCons {range arty b} s))
+   Dup :: Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
+ --  Dig :: Pick Row Nat -&gt; Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
+   Print :: Cat (Shape (RCons t s)) (Shape s)
+@@ -205,6 +205,9 @@
+ 				 Pu a st &lt;- act
+ 				 let (Pu b st') = st
+ 				 interpretCat' r (return (Pu (b &gt; a) st'))
++	     (Cons (Prim (S Z) f) r) -&gt; do
++	                                Pu a st &lt;- act
++				        interpretCat' r (return (Pu (check (f a)) st))
+ 	     (Cons (If yes no) r) -&gt; do
+ 				     Pu cond st &lt;- act
+ 				     let act' = return st
+@@ -228,6 +231,7 @@
+ te4 = interpretCat #[Push 42, Push 11, Greater, If #[Push True]l #[Push False]l, Print]l
+ te5 = interpretCat #[Push 42, Push 32, Push 1, Add, Swap, Print, Print]l
+ te6 = interpretCat #[Push 42, Push 32, Push 1, Add, Swap, Print, Dup, PopN #2]l
++te7 = interpretCat #[Push ord, Push &quot;Fun&quot;, Prim #2 map, Print]l
+ 
+ ##test &quot;Mixup in Decs (not reported yet)&quot;
+  Weee :: CatShape
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000107.html">[Al4nin-commits] r345 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000109.html">[Al4nin-commits] r347 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#108">[ date ]</a>
+              <a href="thread.html#108">[ thread ]</a>
+              <a href="subject.html#108">[ subject ]</a>
+              <a href="author.html#108">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

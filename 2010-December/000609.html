@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r847 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r847%20-%20trunk/purgatory&In-Reply-To=%3C20101201150007.1B81D480ABE%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000610.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r847 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r847%20-%20trunk/purgatory&In-Reply-To=%3C20101201150007.1B81D480ABE%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r847 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec  1 16:00:06 CET 2010</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000610.html">[Al4nin-commits] r848 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#609">[ date ]</a>
+              <a href="thread.html#609">[ thread ]</a>
+              <a href="subject.html#609">[ subject ]</a>
+              <a href="author.html#609">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-01 16:00:06 +0100 (Wed, 01 Dec 2010)
+New Revision: 847
+
+Added:
+   trunk/purgatory/Kinding.omg
+Log:
+this may one day be a type constraint system
+
+Added: trunk/purgatory/Kinding.omg
+===================================================================
+--- trunk/purgatory/Kinding.omg	                        (rev 0)
++++ trunk/purgatory/Kinding.omg	2010-12-01 15:00:06 UTC (rev 847)
+@@ -0,0 +1,10 @@
++import &quot;LangPrelude.prg&quot;
++
++--                  v-- pre-* distance
++--           v-- stratum
++data Walk :: Nat ~&gt; Nat ~&gt; * where
++  Origin :: Walk 0t 0t
++  Up :: Walk n 0t -&gt; Walk (1+n)t 0t
++  SE :: Walk (1+n)t m -&gt; Walk n (1+m)t
++ deriving syntax (s) Nat(Origin, Up) Tick(SE)
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000610.html">[Al4nin-commits] r848 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#609">[ date ]</a>
+              <a href="thread.html#609">[ thread ]</a>
+              <a href="subject.html#609">[ subject ]</a>
+              <a href="author.html#609">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

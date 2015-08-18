@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r967 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r967%20-%20trunk/purgatory&In-Reply-To=%3C20101217212900.6A783480BFF%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000728.html">
+   <LINK REL="Next"  HREF="000730.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r967 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r967%20-%20trunk/purgatory&In-Reply-To=%3C20101217212900.6A783480BFF%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r967 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 17 22:29:00 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000728.html">[Al4nin-commits] r966 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000730.html">[Al4nin-commits] r968 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-17 22:29:00 +0100 (Fri, 17 Dec 2010)
+New Revision: 967
+
+Modified:
+   trunk/purgatory/Evidence.omg
+Log:
+handle (_,_)va case, makes h_is_Int well-formed
+
+Modified: trunk/purgatory/Evidence.omg
+===================================================================
+--- trunk/purgatory/Evidence.omg	2010-12-17 21:04:51 UTC (rev 966)
++++ trunk/purgatory/Evidence.omg	2010-12-17 21:29:00 UTC (rev 967)
+@@ -60,22 +60,25 @@
+ verifyFree bf (Ref l) = case checkInside l bf of
+                         Nothing -&gt; Ex Nothing
+                         Just ev -&gt; Ex (Just (One l, ev))
+-verifyFree bf Sole = Ex Nothing
++verifyFree bf []va = Ex Nothing
+ verifyFree bf [a]va = verifyFree bf a
+ verifyFree bf [f; a]va = case (verifyFree bf f, verifyFree bf a) of
+                          (Ex (Just (ls, ev)), Ex (Just (ls', ev'))) -&gt; Ex (Just ((ls, ls')ls, (ev, ev')i))
+                          _ -&gt; Ex Nothing
++verifyFree bf (cat, v)va = verifyFree bf v
+ 
+ checkWellformedness :: NamesSofar bf
+                     -&gt; VerboseContext Raw Value Value
+-                    -&gt; (VerboseContext WellFormed bf sf, NamesSofar sf)
+-checkWellformedness bf {}ve = cast ({}ve, bf)
++                    -&gt; Maybe (VerboseContext WellFormed bf sf, NamesSofar sf)
++checkWellformedness bf {}ve = Just $ cast ({}ve, bf)
+                                 where cast :: (VerboseContext WellFormed bf bf, NamesSofar bf)
+                                            -&gt; (VerboseContext WellFormed bf sf, NamesSofar sf)
+                                       cast = unsafeCast
+-checkWellformedness bf {l=(_, v)ra; r}ve = ({l=DefFormed (Def v) new; follows}ve, newest)
+-                                             where new = [bf; l]nsf
+-                                                   (follows, newest) = checkWellformedness new r
++checkWellformedness bf {l=(_, v)ra; r}ve = case (verifyFree bf v, checkWellformedness new r) of
++                                             (Ex (Just (ls, ev)), Just (follows, newest))
++                                               -&gt; Just ({l=DefFormed (Def v) new; follows}ve, newest)
++                                             _ -&gt; Nothing
++                                           where new = [bf; l]nsf
+ 
+ 
+ data WellLevelled :: Nat ~&gt; * where
+@@ -95,4 +98,4 @@
+            , `h=([]va, [(Ref `Foo, [Ref `Karr, Ref `Star, Ref `Star]va)va, Ref `Int]va)ra
+            }ve
+ 
+-(well_h_is_Int, defs_h_is_Int@[`Int, `h]nsf) = checkWellformedness []nsf h_is_Int
++Just (well_h_is_Int, defs_h_is_Int@[`Int, `h]nsf) = checkWellformedness [`Star, `Karr]nsf h_is_Int
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000728.html">[Al4nin-commits] r966 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000730.html">[Al4nin-commits] r968 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

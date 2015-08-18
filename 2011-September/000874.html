@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1112 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1112%20-%20trunk/purgatory&In-Reply-To=%3C20110910125439.75007481270%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000873.html">
+   <LINK REL="Next"  HREF="000875.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1112 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1112%20-%20trunk/purgatory&In-Reply-To=%3C20110910125439.75007481270%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1112 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 10 14:54:39 CEST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000873.html">[Al4nin-commits] r1111 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000875.html">[Al4nin-commits] r1113 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#874">[ date ]</a>
+              <a href="thread.html#874">[ thread ]</a>
+              <a href="subject.html#874">[ subject ]</a>
+              <a href="author.html#874">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-09-10 14:54:38 +0200 (Sat, 10 Sep 2011)
+New Revision: 1112
+
+Modified:
+   trunk/purgatory/GrammarLike.lhs
+Log:
+clean up and generalize to closed categories; this is pure mental masturbation :-)
+
+Modified: trunk/purgatory/GrammarLike.lhs
+===================================================================
+--- trunk/purgatory/GrammarLike.lhs	2011-09-10 12:15:02 UTC (rev 1111)
++++ trunk/purgatory/GrammarLike.lhs	2011-09-10 12:54:38 UTC (rev 1112)
+@@ -1,26 +1,24 @@
+-&gt; {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances, UndecidableInstances, TypeSynonymInstances #-}
++&gt; {-# LANGUAGE TypeFamilies, MultiParamTypeClasses, FlexibleInstances, UndecidableInstances, TypeOperators, TypeSynonymInstances #-}
+ 
+ 
+ &gt; import Data.Char
+ &gt; import Control.Monad
+ &gt; import Control.Monad.Identity
+-&gt; import Control.Arrow
++&gt; import Control.Category
+ 
+-We need a pseudo-Parsec for demonstration
++&gt; class Category (-&gt;-) =&gt; Apply (-&gt;-) where
++&gt;   (&lt;$&gt;) :: a -&gt;- b -&gt; a -&gt; b
+ 
+-&gt; -- data Parser what = P what
++&gt; instance Apply (-&gt;) where
++&gt;   (&lt;$&gt;) = ($)
+ 
+-It is the identity monad (for now)
++We need a pseudo-Parsec for demonstration
++which  is the identity monad (for now)
+ 
+ &gt; type Parser = Identity
+ &gt; runParser = runIdentity
+ 
+-&gt; --instance Monad Parser where
+-&gt; --  return v = P v
+-&gt; --  v &gt;&gt;= t = t v
+-
+ &gt; anyChar = return '%'
+-
+ &gt; natural = return 42
+ 
+ My new invention is something that behaves like
+@@ -45,13 +43,13 @@
+ 
+ The tricky part is how function types can determine monads
+ 
+-&gt; instance (Monad m, GrammarLike m d, d ~ Final d, GrammarLike m r)
+-&gt;     =&gt; GrammarLike m (d -&gt; r) where
+-&gt;   type Final (d -&gt; r) = Final r
+-&gt;   produce f = do { d &lt;- pd; produce (f d) }
+-&gt;     where converse :: (d -&gt; r) -&gt; (r -&gt; d)
++&gt; instance (Monad m, GrammarLike m d, d ~ Final d, GrammarLike m r, Apply (-&gt;-))
++&gt;     =&gt; GrammarLike m (d -&gt;- r) where
++&gt;   type Final (d -&gt;- r) = Final r
++&gt;   produce f = do { d &lt;- pd; produce (f &lt;$&gt; d) }
++&gt;     where converse :: (d -&gt;- r) -&gt; (r -&gt;- d)
+ &gt;           converse = undefined
+-&gt;           pd = produce $ converse f undefined
++&gt;           pd = produce $ converse f &lt;$&gt; undefined
+ 
+ &gt; theAnswer :: Parser Int
+ &gt; theAnswer = produce ord
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000873.html">[Al4nin-commits] r1111 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000875.html">[Al4nin-commits] r1113 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#874">[ date ]</a>
+              <a href="thread.html#874">[ thread ]</a>
+              <a href="subject.html#874">[ subject ]</a>
+              <a href="author.html#874">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

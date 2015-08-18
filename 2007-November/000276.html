@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r513 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r513%20-%20trunk/purgatory&In-Reply-To=%3C200711121450.lACEoCT2016767%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000275.html">
+   <LINK REL="Next"  HREF="000277.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r513 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r513%20-%20trunk/purgatory&In-Reply-To=%3C200711121450.lACEoCT2016767%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r513 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 12 15:50:12 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000275.html">[Al4nin-commits] r512 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000277.html">[Al4nin-commits] r514 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#276">[ date ]</a>
+              <a href="thread.html#276">[ thread ]</a>
+              <a href="subject.html#276">[ subject ]</a>
+              <a href="author.html#276">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-12 15:50:11 +0100 (Mon, 12 Nov 2007)
+New Revision: 513
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+add unary ops, produce all op now
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-12 14:37:56 UTC (rev 512)
++++ trunk/purgatory/ThristParser.omg	2007-11-12 14:50:11 UTC (rev 513)
+@@ -310,10 +310,13 @@
+ 		 | Pdotdotdot                           -- ...
+ 
+ 
+--- binary operators. some already occur as Punctuation (- = ==)
++-- binary operators. some already occur as Punctuation (- = ==), these are not listed
+ data Binop = Bplus | Bstar | Bdiv | Braise | Bnequiv | Bneqal
+ 	   | Ble | Blt | Bge | Bgt | Band | Bor | Bassign
+ 
++-- unary operators. some already occur as Punctuation (-), these are not listed
++data Unop = Unot
++
+ -- the below lists are maximum munch sorted
+ punctSymbols = [ &quot;(&quot;, &quot;)&quot;, &quot;,&quot;, &quot;...&quot;, &quot;.&quot;, &quot;;&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;::&quot;, &quot;-&quot;
+                , &quot;==&quot;, &quot;=&gt;&quot;, &quot;=&quot;, &quot;#(&quot;, &quot;#[&quot;, &quot;##&quot;, &quot;??&quot;, &quot;?=&quot;, &quot;?&quot;]
+@@ -330,6 +333,10 @@
+ 
+ binop = [ Bplus, Bstar, Bdiv, Braise, Bnequiv, Bneqal, Ble, Blt, Bge, Bgt, Band, Bor, Bassign ]
+ 
++unaryOpSymbols = [ &quot;~&quot; {-&quot;-&quot;-} ]
++
++unop = [ Unot ]
++
+ coreWords = [&quot;define&quot;, &quot;end&quot;, &quot;handler&quot;, &quot;let&quot;, &quot;local&quot;, &quot;macro&quot;, &quot;otherwise&quot;]
+ core = [Rdefine, Rend, Rhandler, Rlet, Rlocal, Rmacro, Rotherwise]
+ 
+@@ -341,7 +348,13 @@
+ 				  drosel (sy:sys) (se:ses) = Wrap [word sy, Sure (\(_, rest) -&gt; (conv se, rest))]l : drosel sys ses
+ 				  drosel [] [] = []
+ 
+-data Token = Resv Reserved | Str String | Num Int | P Punctuation | H HashWord
++data Token = Resv Reserved
++	   | Str String
++	   | Num Int
++	   | P Punctuation
++	   | H HashWord
++	   | B Binop
++	   | U Unop
+ 
+ data Token' = Token Token | Whitespace String | Test (exists (n :: Nat) . Nat' n)
+ 
+@@ -411,6 +424,8 @@
+ 		   , Sure snd
+ 		   ; extendThrist binnum (sureFirst (Token . Num))]l
+ 	    , bulkWords punctSymbols punct (Token . P)
++	    , bulkWords binOpSymbols binop (Token . B)
++	    , bulkWords unaryOpSymbols unop (Token . U)
+ 	    , bulkWords coreWords core (Token . Resv)
+ 	    , bulkWords hashWords hash (Token . H)
+ 	    , Wrap [Seq (word &quot;//&quot;) (Rep1 $ ButNot1 (Sure id) (letter '\n')), sureFirst (\(boring, comment) -&gt; Whitespace (boring ++ comment))]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000275.html">[Al4nin-commits] r512 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000277.html">[Al4nin-commits] r514 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#276">[ date ]</a>
+              <a href="thread.html#276">[ thread ]</a>
+              <a href="subject.html#276">[ subject ]</a>
+              <a href="author.html#276">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

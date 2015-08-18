@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r971 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r971%20-%20trunk/purgatory&In-Reply-To=%3C20101228142615.BC2B548065D%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000732.html">
+   <LINK REL="Next"  HREF="000734.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r971 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r971%20-%20trunk/purgatory&In-Reply-To=%3C20101228142615.BC2B548065D%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r971 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Dec 28 15:26:15 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000732.html">[Al4nin-commits] r970 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000734.html">[Al4nin-commits] r972 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#733">[ date ]</a>
+              <a href="thread.html#733">[ thread ]</a>
+              <a href="subject.html#733">[ subject ]</a>
+              <a href="author.html#733">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-28 15:26:15 +0100 (Tue, 28 Dec 2010)
+New Revision: 971
+
+Modified:
+   trunk/purgatory/LambdaPath.omg
+Log:
+add an insight
+
+Modified: trunk/purgatory/LambdaPath.omg
+===================================================================
+--- trunk/purgatory/LambdaPath.omg	2010-12-28 14:09:33 UTC (rev 970)
++++ trunk/purgatory/LambdaPath.omg	2010-12-28 14:26:15 UTC (rev 971)
+@@ -12,6 +12,15 @@
+   AppLT :: LT (Left a) ~&gt; LT (Right a) ~&gt; LT a
+ 
+ 
++-- Key insight (for now) is that the semantics
++-- of lambdas and applications occurs _in place_
++-- whereas references possess semantics from
++-- another place, so each term must have two indices:
++--  o where it is located
++--  o where the semantics is
++
++-- Terms 
++
+ data Term :: (LT d) ~&gt; * where
+   Lam :: Term a -&gt; Term (AbsLT a)
+   App :: Term a -&gt; Term b -&gt; Term (AppLT a b)
+@@ -27,7 +36,7 @@
+ -- Example: \x f a = f a
+ e1 = Lam (Lam (App (Up $ Up AboveR) (Up AboveL)))
+ 
+--- this stytem still admits flawed references:
++-- this system still admits flawed references:
+ e1' = Lam (Lam (App (Up $ UpL AboveR) (Up AboveL)))
+ ----------------------------^----------------------
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000732.html">[Al4nin-commits] r970 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000734.html">[Al4nin-commits] r972 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#733">[ date ]</a>
+              <a href="thread.html#733">[ thread ]</a>
+              <a href="subject.html#733">[ subject ]</a>
+              <a href="author.html#733">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

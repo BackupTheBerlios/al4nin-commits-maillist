@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r534 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r534%20-%20trunk/purgatory&In-Reply-To=%3C200711141436.lAEEaRdQ026323%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000296.html">
+   <LINK REL="Next"  HREF="000298.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r534 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r534%20-%20trunk/purgatory&In-Reply-To=%3C200711141436.lAEEaRdQ026323%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r534 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 14 15:36:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000296.html">[Al4nin-commits] r533 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000298.html">[Al4nin-commits] r535 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#297">[ date ]</a>
+              <a href="thread.html#297">[ thread ]</a>
+              <a href="subject.html#297">[ subject ]</a>
+              <a href="author.html#297">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-14 15:36:27 +0100 (Wed, 14 Nov 2007)
+New Revision: 534
+
+Modified:
+   trunk/purgatory/Levels.omg
+Log:
+get level-lopping working.
+
+[Int, Tau]l still produces strange result,
+because Lev is not mentioned at all
+
+
+
+Modified: trunk/purgatory/Levels.omg
+===================================================================
+--- trunk/purgatory/Levels.omg	2007-11-14 14:04:16 UTC (rev 533)
++++ trunk/purgatory/Levels.omg	2007-11-14 14:36:27 UTC (rev 534)
+@@ -2,10 +2,10 @@
+ 
+ --import &quot;Thrist.omg&quot; 
+ --  (Thrist, Nil, Cons, syntax List(l))
+-data Thrist :: level st su . forall (l :: *(1+st)) (m :: *(1+su)) . (l ~&gt; m ~&gt; *)  ~&gt; l ~&gt; m ~&gt; * where
++data Thrist :: level st su sv . forall (l :: *(1+st)) (m :: *(1+su)) . (l ~&gt; m ~&gt; *)  ~&gt; l ~&gt; m ~&gt; * where
+   Nil :: Thrist k a a
+ 
+-  Cons :: level st . forall (l:: *(1+st)) (k::l ~&gt; l ~&gt; *0) (a::l) (b::l) (c::l).k a b -&gt; Thrist k b c -&gt; Thrist k a c
++  Cons :: forall (l :: *(1+st)) (m :: *(1+su)) (n :: *(1+sv)) (k::l ~&gt; m ~&gt; *0) (k'::m ~&gt; n ~&gt; *0) (k''::l ~&gt; n ~&gt; *0) (a :: l) (b :: m) (c :: n) . k a b -&gt; Thrist k' b c -&gt; Thrist k'' a c
+   --Cons :: k a b -&gt; Thrist k b c -&gt; Thrist k a c
+   --Cons :: level st su sv . forall (l :: *(1+st)) (m :: *(1+su)) (n :: *(1+sv)) (a :: l) (b :: m) (c :: n) . k a b -&gt; Thrist k b c -&gt; Thrist k a c
+  deriving List(l)
+@@ -14,7 +14,7 @@
+ 
+ 
+ data Lev :: level n . forall (a :: *(1+n)) (b :: *(2+n)) . a ~&gt; b ~&gt; * where
+-  Tau :: level n . forall (a :: *(1+n)) . Lev a *(1+n)
++  Tau :: {-level n . -}forall (a :: *(1+n)) . Lev a *(1+n)
+   Int :: Lev Int *
+ 
+ 
+@@ -23,4 +23,4 @@
+ -- 2) how to express that Cons can accept level-hopping k ?
+ -- 3) [Int]l causes looping in type checker (:set X for investigation?)
+ -- 4) Equal k k' as a =&gt; constraint?
+--- 5) level st su sv cannot establish a third level binding (&quot;unknown level sv&quot;)
++-- 5) level st su sv cannot establish a third level binding (&quot;unknown level sv&quot;) -- issue37
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000296.html">[Al4nin-commits] r533 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000298.html">[Al4nin-commits] r535 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#297">[ date ]</a>
+              <a href="thread.html#297">[ thread ]</a>
+              <a href="subject.html#297">[ subject ]</a>
+              <a href="author.html#297">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r784 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r784%20-%20trunk/purgatory&In-Reply-To=%3C200908061348.n76DmutI006719%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000545.html">
+   <LINK REL="Next"  HREF="000547.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r784 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r784%20-%20trunk/purgatory&In-Reply-To=%3C200908061348.n76DmutI006719%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r784 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Aug  6 15:48:56 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000545.html">[Al4nin-commits] r783 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000547.html">[Al4nin-commits] r785 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-06 15:48:52 +0200 (Thu, 06 Aug 2009)
+New Revision: 784
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+code up FreeName witness type, but do not use yet
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-06 13:11:35 UTC (rev 783)
++++ trunk/purgatory/LLVM2step.omg	2009-08-06 13:48:52 UTC (rev 784)
+@@ -198,9 +198,14 @@
+ 
+ kind Target = F Tag | B Tag
+ 
++prop FreeName :: Target ~&gt; Row Target a ~&gt; * where
++  TriviallyN :: FreeName (B t) {F l=b}r
++  MoreNames :: DiffLabel t t' -&gt; FreeName (B t) r -&gt; FreeName (B t) {B t'=b; r}r
++ deriving List(fn)
++
+ data Blocks :: Row Target (Row Lab Term) ~&gt; * where
+   Entry :: Label l -&gt; Block b -&gt; Blocks {F l=b}r
+-  Successor :: Label l -&gt; Block b -&gt; Blocks r -&gt; Blocks {B l=b; r}r
++  Successor :: {-FreeName (B l) r =&gt;-} Label l -&gt; Block b -&gt; Blocks r -&gt; Blocks {B l=b; r}r
+  -- deriving Record(bs)
+ 
+ test17 = Entry `fak test2
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000545.html">[Al4nin-commits] r783 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000547.html">[Al4nin-commits] r785 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r374 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r374%20-%20trunk/purgatory&In-Reply-To=%3C200706131237.l5DCbHF3009302%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000135.html">
+   <LINK REL="Next"  HREF="000137.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r374 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r374%20-%20trunk/purgatory&In-Reply-To=%3C200706131237.l5DCbHF3009302%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r374 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun 13 14:37:17 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000135.html">[Al4nin-commits] r373 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000137.html">[Al4nin-commits] r375 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#136">[ date ]</a>
+              <a href="thread.html#136">[ thread ]</a>
+              <a href="subject.html#136">[ subject ]</a>
+              <a href="author.html#136">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-13 14:37:16 +0200 (Wed, 13 Jun 2007)
+New Revision: 374
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+revitalize Atom, it generates cuter code when compiled
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-06-13 12:26:23 UTC (rev 373)
++++ trunk/purgatory/ThristParser.omg	2007-06-13 12:37:16 UTC (rev 374)
+@@ -45,7 +45,7 @@
+ 
+ data Parse :: *0 ~&gt; *0 ~&gt; *0 where
+   Epsilon :: Parse [a] ([b], [a])       -- always match
+---  Atom :: Char -&gt; Parse Char Char       -- exact match
++  Atom :: Char -&gt; Parse Char Char       -- exact match
+   Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
+   Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
+   Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
+@@ -62,7 +62,8 @@
+   UpTo :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- scan for c then match b
+ 
+ 
+-letter a = Pred (\(c :: Char) -&gt; ord c == ord a)
++--letter a = Pred (\(c :: Char) -&gt; ord c == ord a)
++letter a = Atom a
+ ---char = Sure (id :: Char -&gt; Char)
+ 
+ digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
+@@ -103,8 +104,7 @@
+ 
+ parse (Cons (Epsilon) r) as = parse r ([], as)
+ 
+--- Get rid of Atom, it should be @Code { Pred (chrEqual c) } ###
+----parse (Cons (Atom c) r) a = if ord c == ord a then parse r a else Nothing
++parse (Cons (Atom c) r) a = if ord c == ord a then parse r a else Nothing
+ 
+ parse (Cons (Pred p) r) a = if p a then parse r a else Nothing
+ 
+@@ -177,12 +177,15 @@
+ -- ##########################################
+ 
+ compileParse :: Thrist Parse a b -&gt; Code (a -&gt; Maybe b)
++
+ compileParse Nil = [| Just |]
++
+ compileParse (Cons (Epsilon) r) = [| \as -&gt; $parseR ([], as)  |]
+ 				 where parseR = compileParse r
+---compileParse (Cons (Atom c) r) = [| \a -&gt; if ord c == ord a then $parseR a else Nothing |]
+---				 where parseR = compileParse r
+ 
++compileParse (Cons (Atom c) r) = [| \a -&gt; if ord c == ord a then $parseR a else Nothing |]
++				 where parseR = compileParse r
++
+ compileParse (Cons (Pred p) r) = [| \a -&gt; if p a then $(compileParse r) a else Nothing |]
+ 
+ compileParse (Cons (Or p1 p2) r) = [| \a -&gt;
+@@ -193,13 +196,13 @@
+ 					 parseP1 = compileParse [p1]l
+ 					 parseP2 = compileParse [p2]l
+ 
+-t0 =  (run compileParse $ [Or (letter 's') (letter 'm')]l) 's'
+-t0a = (run compileParse $ [Or (letter 's') (letter 'm')]l) 'm'
+-
+ -- ###############################
+ -- ############ tests ############
+ -- ###############################
+ 
++t0 =  (run compileParse $ [Or (letter 's') (letter 'm')]l) 's'
++t0a = (run compileParse $ [Or (letter 's') (letter 'm')]l) 'm'
++
+ t1 = parse [Seq (Wrap [Rep1 $ letter 'a', proper]l) (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
+ t1a = parse [Seq (proper' $ Rep1 $ letter 'a') (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000135.html">[Al4nin-commits] r373 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000137.html">[Al4nin-commits] r375 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#136">[ date ]</a>
+              <a href="thread.html#136">[ thread ]</a>
+              <a href="subject.html#136">[ subject ]</a>
+              <a href="author.html#136">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

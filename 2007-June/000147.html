@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r385 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r385%20-%20trunk/purgatory&In-Reply-To=%3C200706211315.l5LDFIZP004454%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000146.html">
+   <LINK REL="Next"  HREF="000148.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r385 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r385%20-%20trunk/purgatory&In-Reply-To=%3C200706211315.l5LDFIZP004454%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r385 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jun 21 15:15:18 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000146.html">[Al4nin-commits] r384 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000148.html">[Al4nin-commits] r386 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#147">[ date ]</a>
+              <a href="thread.html#147">[ thread ]</a>
+              <a href="subject.html#147">[ subject ]</a>
+              <a href="author.html#147">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-21 15:15:18 +0200 (Thu, 21 Jun 2007)
+New Revision: 385
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+minor improvements
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-06-20 21:37:31 UTC (rev 384)
++++ trunk/purgatory/Thrist.lout	2007-06-21 13:15:18 UTC (rev 385)
+@@ -100,7 +100,7 @@
+ Now, functions are a bit more interesting than Lists above, they can be composed!
+ Interestingly, composition (written as (.)) is again a function:
+ @LD {
+-{{(.)} @Prompt
++{(.)} @Prompt
+   {&lt;fn&gt; : forall a b c.(a -&gt; b) -&gt; (c -&gt; a) -&gt; c -&gt; b}
+ }
+ This function signature has several interpretations, but the most common one tells us that
+@@ -110,10 +110,10 @@
+ We can play with our new toy in the following way:
+ 
+ @LD {
+-{ let locase = chr . (\x -&gt; x + 32) . ord } @Prompt
++{ let locase = chr . (&quot;\\&quot;x -&gt; x + 32) . ord } @Prompt
+ { locase }
+ 
+-{  locase 'G' }  @Prompt
++{  locase 'G' } @Prompt
+ {  'g' : Char }
+ }
+ 
+@@ -122,13 +122,14 @@
+ of the first. (universal types will always match, monotypes must be equal).
+ Violating this rule gives a type error:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LD</A> @Verbatim {
+-prompt&gt; ord . ord
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> {
++{ ord . ord } @Prompt
++{
+ In the expression: ord
+ the result type: Char -&gt; Int
+ was not what was expected: a -&gt; Char
+ }
++}
+ 
+ This crucial property of the composition function will guide our explorations in this
+ paper.
+@@ -139,7 +140,7 @@
+ @Title { Generalizing Function Composition }
+ @Begin
+ @PP
+- While function composition seems to be a cute artifact of mathematics, (where
++While function composition seems to be a cute artifact of mathematics, (where
+ nevertheless all computable functions can be derived from), this is no reason
+ for us to stop at this point! First, we observe that function composition is a one-way
+ street: once two functions are composed, they amalgamate beyond recognition.
+@@ -153,8 +154,8 @@
+ Our crucial observation from the introduction was that the types at the ends of the function
+ arrows must thread up (we turn around the arrow for this demonstration), intuitively:
+ 
+-b &lt;- a (.) a &lt;- c  ===  b &lt;- c
+-        ^^^^^
++&quot;b &lt;- a (.) a &lt;- c  ===  b &lt;- c&quot;
++&quot;        ^^^^^&quot;
+ 
+ We also observe that the intermediate types do not show up in the end result's type.
+ 
+@@ -171,7 +172,7 @@
+ 
+ @Haskell { Cons ('g', 103) (Cons (103, 71) (Cons (71, 'G') Nil)) }
+ 
+-Also we have obtained a datatype that is not amnesiac, it can be
++Also we have obtained a datatype that is not amnesiac, i.e. it can be
+ torn apart at any place by pattern matching, though we have to pay
+ the price that the intermediate types are a bit hard to deal with (we revisit this issue later).
+ @PP
+@@ -203,7 +204,7 @@
+ All that remains of the pair is the bitter taste and the letter &quot;p&quot; in the definition of Thrist.
+ It looks like we are getting closer now:
+ @LD {
+-{ Cons chr (Cons (\x -&gt; x + 32) (Cons ord Nil)) } @Prompt
++{ Cons chr (Cons (&quot;\\&quot;x -&gt; x + 32) (Cons ord Nil)) } @Prompt
+ { ... : Thrist (-&gt;) Char Char }
+ }
+ We have created an arrow thrist!
+@@ -248,7 +249,7 @@
+ generic interface to cover nontrivial cases, time has come to look for
+ real-world applications. Specifically we shall describe a combinator
+ library for creating ASTs of the Cat language, a statically typed stack-
+-oriented language (<A HREF="http://www.cat-language.com/">http://www.cat-language.com/</A>), and a parser
++oriented language (&quot;<A HREF="http://www.cat-language.com/">http://www.cat-language.com/</A>&quot;), and a parser
+ combinator library. We shall sketch the use of thrists in transition
+ arrows of state machines and finally give some curious examples
+ that may have some practical value.
+@@ -331,6 +332,7 @@
+ @LD {
+ { [Pop, Pop]l } @Prompt
+ { [Pop, Pop]l :: Thrist Cat (a, (b, c)) c }
++}
+ 
+ The inferred type reflects the function of this Cat fragment,
+ namely starting out with a stack that has at least two elements
+@@ -342,6 +344,7 @@
+ @LD {
+ { [Push 'a', Dup, Add]l } @Prompt
+ { TYPE ERROR (TODO) }
++}
+ 
+ The GADT-based type inference fails, because Add
+ expects two integers on the stack, but there are two
+@@ -703,11 +706,12 @@
+ }
+ 
+ Of course there are some pitfalls here but the principle is clear:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at DashList</A>
++   @ListItem { the interesting prefix is split off the rest, }
++   @ListItem { if the prefix is semantically important it gets condensed to a more appropriate form or else discarded, }
++   @ListItem { parallel processing is used if both components of an input pair are relevant. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at EndList</A>
+ 
+-- the interesting prefix is split off the rest,
+-- if the prefix is semantically important it gets condensed to a more appropriate form or else discarded,
+-- parallel processing is used if both components of an input pair are relevant.
+-
+ @End @SubSubSection
+ 
+ @SubSubSection
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000146.html">[Al4nin-commits] r384 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000148.html">[Al4nin-commits] r386 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#147">[ date ]</a>
+              <a href="thread.html#147">[ thread ]</a>
+              <a href="subject.html#147">[ subject ]</a>
+              <a href="author.html#147">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

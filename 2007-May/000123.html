@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r361 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r361%20-%20trunk/found-bugs&In-Reply-To=%3C200705151925.l4FJPl1E021870%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000122.html">
+   <LINK REL="Next"  HREF="000124.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r361 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r361%20-%20trunk/found-bugs&In-Reply-To=%3C200705151925.l4FJPl1E021870%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r361 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue May 15 21:25:47 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000122.html">[Al4nin-commits] r360 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000124.html">[Al4nin-commits] r362 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#123">[ date ]</a>
+              <a href="thread.html#123">[ thread ]</a>
+              <a href="subject.html#123">[ subject ]</a>
+              <a href="author.html#123">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-05-15 21:25:47 +0200 (Tue, 15 May 2007)
+New Revision: 361
+
+Modified:
+   trunk/found-bugs/bug11-Thrist.omg
+Log:
+corrected all compile errors, reverted some stuff for demonstration purposes, te1 now compiles fine, te1a exposes the bug
+
+Modified: trunk/found-bugs/bug11-Thrist.omg
+===================================================================
+--- trunk/found-bugs/bug11-Thrist.omg	2007-05-15 19:06:48 UTC (rev 360)
++++ trunk/found-bugs/bug11-Thrist.omg	2007-05-15 19:25:47 UTC (rev 361)
+@@ -154,6 +154,8 @@
+     | Pneq
+     | Pmin
+     | Pmax
++    | Pmap -- made up
++    | Pord
+ 
+ 
+ data Cat :: (Row *0) ~&gt; (Row *0) ~&gt; *0 where
+@@ -165,6 +167,8 @@
+   PopN :: Nat' (S n) -&gt; Cat {blow (S n) s} s
+   Swap :: Cat (RCons a (RCons b s)) (RCons b (RCons a s))
+ -- Perm :: Pick Row Nat -- TODO
++  Add :: Cat (RCons Int (RCons Int s)) (RCons Int s)      -- use Prim instead
++  Greater :: Cat (RCons Int (RCons Int s)) (RCons Bool s) -- use Prim instead
+   Block :: Thrist Cat b c -&gt; Cat a (RCons (Cat b c) a)
+   Quote :: Thrist Cat a b -&gt; Cat a b
+   Eval :: Cat (RCons (Cat a b) a) b
+@@ -195,8 +199,8 @@
+ 
+ pop = PopN #1
+ 
+---te1 = #[Push IntTractable 42, Dup, gt, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
+-te1 = #[Push IntTractable 42, Dup, gt, If #[PopN #1, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
++te1 = #[Push IntTractable 42, Dup, Greater, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, Add, Print, Push strTract &quot;hh&quot;]l]l
++te1a = #[Push IntTractable 42, Dup, gt, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, Add, Print, Push strTract &quot;hh&quot;]l]l
+ 
+ {- This needs more magic:
+ showThrist :: (t a b -&gt; String) -&gt; Thrist t a b -&gt; String
+@@ -258,9 +262,9 @@
+ 			      Pu a st &lt;- act
+ 			      let (Pu b st') = st
+ 			      interpretCat' r (return (Pu b (Pu a st')))
+-	     (Cons (Prim (ArrTractable x y) _ f) r) -&gt; do
++	     (Cons (Prim (ArrTractable x y) p f) r) -&gt; do
+ 	                                             Pu a st &lt;- act
+-				                     interpretCat' (Cons (Prim y (f a)) r) (return st)
++				                     interpretCat' (Cons (Prim y p (f a)) r) (return st)
+                                                          -- where theorem because = proveRange y x
+ 	     (Cons (Prim IntTractable _ f) r) -&gt; do
+ 	                                       Pu a st &lt;- act
+@@ -310,8 +314,8 @@
+ te4 = interpretCat #[pushI 42, pushI 11, gt, If #[pushB True]l #[pushB False]l, Print]l
+ te5 = interpretCat #[pushI 42, pushI 32, pushI 1, add, Swap, Print, Print]l
+ te6 = interpretCat #[pushI 42, pushI 32, pushI 1, add, Swap, Print, Dup, PopN #2]l
+-te7 = interpretCat #[pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) map, Print]l
+-te8 = interpretCat #[pushC 'Z', Prim IntTractable ord, pushI 2, Prim (ArrTractable IntTractable IntTractable) (+), Print]l
++te7 = interpretCat #[pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) Pmap map, Print]l
++te8 = interpretCat #[pushC 'Z', Prim IntTractable Pord ord, pushI 2, add, Print]l
+ te9 = interpretCat #[pushI 42, Block #[Print]l, Eval]l
+ 
+ optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000122.html">[Al4nin-commits] r360 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000124.html">[Al4nin-commits] r362 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#123">[ date ]</a>
+              <a href="thread.html#123">[ thread ]</a>
+              <a href="subject.html#123">[ subject ]</a>
+              <a href="author.html#123">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

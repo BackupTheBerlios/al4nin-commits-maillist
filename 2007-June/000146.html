@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r384 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r384%20-%20trunk/purgatory&In-Reply-To=%3C200706202137.l5KLbVe4020115%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000145.html">
+   <LINK REL="Next"  HREF="000147.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r384 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r384%20-%20trunk/purgatory&In-Reply-To=%3C200706202137.l5KLbVe4020115%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r384 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun 20 23:37:31 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000145.html">[Al4nin-commits] r383 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000147.html">[Al4nin-commits] r385 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#146">[ date ]</a>
+              <a href="thread.html#146">[ thread ]</a>
+              <a href="subject.html#146">[ subject ]</a>
+              <a href="author.html#146">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-20 23:37:31 +0200 (Wed, 20 Jun 2007)
+New Revision: 384
+
+Modified:
+   trunk/purgatory/Cat.omg
+Log:
+first step towards compilation
+
+Modified: trunk/purgatory/Cat.omg
+===================================================================
+--- trunk/purgatory/Cat.omg	2007-06-20 17:39:24 UTC (rev 383)
++++ trunk/purgatory/Cat.omg	2007-06-20 21:37:31 UTC (rev 384)
+@@ -297,3 +297,12 @@
+ to1 = optimizeCat [If [pushI 42]l [pushI 43]l, Print]l
+ 
+ 
++
++compile :: Thrist Cat a b -&gt; Code (IO (Stack a) -&gt; IO (Stack b))
++
++compile []l = lift id
++
++compile [Push rep a; r]l = [| \act -&gt; let monad ioM in do
++                                       st &lt;- act
++				       $(compile r) (return (Pu a st)) |]
++                    --           where compiledRest = compile r
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000145.html">[Al4nin-commits] r383 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000147.html">[Al4nin-commits] r385 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#146">[ date ]</a>
+              <a href="thread.html#146">[ thread ]</a>
+              <a href="subject.html#146">[ subject ]</a>
+              <a href="author.html#146">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

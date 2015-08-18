@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r656 - in trunk/purgatory: . db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r656%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200806241429.m5OET8lX031195%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000418.html">
+   <LINK REL="Next"  HREF="000420.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r656 - in trunk/purgatory: . db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r656%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200806241429.m5OET8lX031195%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r656 - in trunk/purgatory: . db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Jun 24 16:29:08 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000418.html">[Al4nin-commits] r655 - trunk/purgatory/db
+</A></li>
+        <LI>Next message: <A HREF="000420.html">[Al4nin-commits] r657 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#419">[ date ]</a>
+              <a href="thread.html#419">[ thread ]</a>
+              <a href="subject.html#419">[ subject ]</a>
+              <a href="author.html#419">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-24 16:29:07 +0200 (Tue, 24 Jun 2008)
+New Revision: 656
+
+Modified:
+   trunk/purgatory/Thrist.lout
+   trunk/purgatory/db/refs.ld
+Log:
+add more refs
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-24 13:59:38 UTC (rev 655)
++++ trunk/purgatory/Thrist.lout	2008-06-24 14:29:07 UTC (rev 656)
+@@ -621,7 +621,8 @@
+ @PP
+ The language @Cat is intended as an intermediate language produced by
+ front-end compilers and consumed by back-ends that target stack based
+-virtual machines like JVM and CIL. It is advisable to generalize @Haskell {Cat} in a way
++virtual machines like JVM @Cite { $jvm.intro } and CIL @Cite { $cil.intro }.
++It is advisable to generalize @Haskell {Cat} in a way
+ that @Haskell {Pop} gets a count parameter that tells how many elements are to be
+ popped of the stack. Also instead of @Haskell {Swap} it would be beneficial to have
+ a @Haskell {Permute} primitive that subsumes all variants of stack shuffling operations,
+
+Modified: trunk/purgatory/db/refs.ld
+===================================================================
+--- trunk/purgatory/db/refs.ld	2008-06-24 13:59:38 UTC (rev 655)
++++ trunk/purgatory/db/refs.ld	2008-06-24 14:29:07 UTC (rev 656)
+@@ -43,6 +43,6 @@
+ { @Reference
+    @Type { Misc }
+    @Tag { gcc.ssa }
+-   @Title {  }
+-   @URL { <A HREF="http://">http://</A> }
++   @Title { GCC: SSA for Trees }
++   @URL { <A HREF="http://gcc.gnu.org/projects/tree-ssa/">http://gcc.gnu.org/projects/tree-ssa/</A> }
+ }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000418.html">[Al4nin-commits] r655 - trunk/purgatory/db
+</A></li>
+	<LI>Next message: <A HREF="000420.html">[Al4nin-commits] r657 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#419">[ date ]</a>
+              <a href="thread.html#419">[ thread ]</a>
+              <a href="subject.html#419">[ subject ]</a>
+              <a href="author.html#419">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

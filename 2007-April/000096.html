@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r334 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r334%20-%20trunk/purgatory&In-Reply-To=%3C200704231818.l3NII2q5007651%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000095.html">
+   <LINK REL="Next"  HREF="000097.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r334 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r334%20-%20trunk/purgatory&In-Reply-To=%3C200704231818.l3NII2q5007651%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r334 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Apr 23 20:18:02 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000095.html">[Al4nin-commits] r333 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000097.html">[Al4nin-commits] r335 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-23 20:18:02 +0200 (Mon, 23 Apr 2007)
+New Revision: 334
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+preparation for punctuation
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-23 18:16:27 UTC (rev 333)
++++ trunk/purgatory/ThristParser.omg	2007-04-23 18:18:02 UTC (rev 334)
+@@ -63,7 +63,7 @@
+ 
+ 
+ letter = (Atom :: Char -&gt; Parse Char Char)
+-char = Sure (id :: Char -&gt; Char)
++---char = Sure (id :: Char -&gt; Char)
+ 
+ digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
+ 
+@@ -153,9 +153,11 @@
+ compileParse Nil = [| Just |]
+ compileParse (Cons (Epsilon) r) = [| \as -&gt; $parseR ([], as)  |]
+ 				 where parseR = compileParse r
+-compileParse (Cons (Atom c) r) = [| \b -&gt; if ord c == ord b then $parseR b else Nothing |]
++compileParse (Cons (Atom c) r) = [| \a -&gt; if ord c == ord a then $parseR a else Nothing |]
+ 				 where parseR = compileParse r
+ 
++compileParse (Cons (Pred p) r) = [| \a -&gt; if p a then $(compileParse r) a else Nothing |]
++
+ compileParse (Cons (Or p1 p2) r) = [| \a -&gt;
+ 				    case $parseP1 a of
+ 				    (Just b1) -&gt; $parseR b1
+@@ -201,24 +203,34 @@
+ 	      | Rmacro
+ 	      | Rotherwise
+ 
+-data Punctuation = PparenthesisOpen | PparenthesisClose
+-		 | Pcomma
+-		 | Pdot
+-		 | PbracketOpen | PbracketClose
+-		 | PbraceOpen | PbraceClose
+-		 | Pcoloncolon
+-		 | Pminus
+-		 | Pequal
+-		 | Pequalequal
+-		 | Pequalgreater
+-		 | Phashparenthesis
+-		 | Phashbracket
+-		 | Phashhash
+-		 | Pquestion
+-		 | Pquestionquestion
+-		 | Pquestionequal
+-		 | Pdotdotdot
++data Punctuation = PparenthesisOpen | PparenthesisClose -- ( )
++		 | Pcomma                               -- ,
++		 | Pdot                                 -- .
++		 | PbracketOpen | PbracketClose         -- [ ]
++		 | PbraceOpen | PbraceClose             -- { }
++		 | Pcoloncolon                          -- ::
++		 | Pminus                               -- -
++		 | Pequal                               -- =
++		 | Pequalequal                          -- ==
++		 | Pequalgreater                        -- =&gt;
++		 | Phashparenthesis                     -- #(
++		 | Phashbracket                         -- #[
++		 | Phashhash                            -- ##
++		 | Pquestion                            -- ?
++		 | Pquestionquestion                    -- ??
++		 | Pquestionequal                       -- ?=
++		 | Pdotdotdot                           -- ...
+ 
++punct = [ PparenthesisOpen, PparenthesisClose, Pcomma, Pdot, PbracketOpen, PbracketClose
++        , PbraceOpen, PbraceClose, Pcoloncolon, Pminus, Pequal, Pequalequal, Pequalgreater
++        , Phashparenthesis, Phashbracket, Phashhash, Pquestion, Pquestionquestion
++        , Pquestionequal, Pdotdotdot ]
++
++punctSymbols = [ &quot;(&quot;, &quot;)&quot;, &quot;,&quot;, &quot;.&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;::&quot;, &quot;-&quot;
++               , &quot;=&quot;, &quot;==&quot;, &quot;=&gt;&quot;, &quot;#(&quot;, &quot;#[&quot;, &quot;##&quot;, &quot;?&quot;, &quot;??&quot;, &quot;?=&quot;, &quot;...&quot;]
++
++
++
+ data Token = R Reserved | Str String | Num Int | P Punctuation
+ 
+ data Token' = Token Token | Whitespace String
+@@ -272,6 +284,14 @@
+ notEmpty ([], _) = False
+ notEmpty (_, _) = True
+ 
++isAlpha caseinsensitive c = case (caseinsensitive, ord 'A' &lt;= o, o &lt;= ord 'Z') of
++                            (_, True, True) -&gt; True
++                            (True, _, False) -&gt; case (ord 'a' &lt;= o, o &lt;= ord 'z') of
++                                                (True, True) -&gt; True
++                                                _ -&gt; False
++                            _ -&gt; False
++                  where o = ord c
++
+ token' :: Parse [Char] (Token', [Char])
+ token' = or [ Wrap $ extendThrist num (sureFirst (Token . Num))
+             , Wrap $ Cons (Seq1 (letter '#') (alts letter &quot;xX&quot;)) (Cons (Sure snd) (extendThrist hexnum (sureFirst (Token . Num))))
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000095.html">[Al4nin-commits] r333 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000097.html">[Al4nin-commits] r335 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

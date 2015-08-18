@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1128 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1128%20-%20trunk/purgatory&In-Reply-To=%3C20111218004415.1A7154829D2%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000889.html">
+   <LINK REL="Next"  HREF="000891.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1128 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1128%20-%20trunk/purgatory&In-Reply-To=%3C20111218004415.1A7154829D2%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1128 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Dec 18 01:44:14 CET 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000889.html">[Al4nin-commits] r1127 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000891.html">[Al4nin-commits] r1129 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#890">[ date ]</a>
+              <a href="thread.html#890">[ thread ]</a>
+              <a href="subject.html#890">[ subject ]</a>
+              <a href="author.html#890">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-12-18 01:44:14 +0100 (Sun, 18 Dec 2011)
+New Revision: 1128
+
+Modified:
+   trunk/purgatory/Appli.hs
+Log:
+constrain Arg so we can show it
+
+
+Modified: trunk/purgatory/Appli.hs
+===================================================================
+--- trunk/purgatory/Appli.hs	2011-12-18 00:40:07 UTC (rev 1127)
++++ trunk/purgatory/Appli.hs	2011-12-18 00:44:14 UTC (rev 1128)
+@@ -42,7 +42,7 @@
+ 
+ data Appli :: (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * where
+   Fun :: (a ~&gt; b) -&gt; Appli (~&gt;) (a ~&gt; b) Peg
+-  Arg :: a -&gt; Appli (~&gt;) b (a ~&gt; b)
++  Arg :: Show a =&gt; a -&gt; Appli (~&gt;) b (a ~&gt; b)
+   Par :: Thrist (Appli (~&gt;)) a Peg -&gt; Appli (~&gt;) b (a ~&gt; b)
+ 
+ t0 = Cons (Arg c) $ Cons (Arg b) $ Cons (Arg a) $ Cons (Fun f) Nil
+@@ -60,7 +60,7 @@
+ deriving instance Show (Arith a b)
+ instance Show (Appli Arith a b) where
+   show (Fun f) = show f
+-  show (Arg a) = &quot;&lt;arg&gt;&quot; -- show f
++  show (Arg a) = show a
+   show (Par p) = show p
+ 
+ instance Show (Thrist (Appli Arith) a b) where
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000889.html">[Al4nin-commits] r1127 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000891.html">[Al4nin-commits] r1129 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#890">[ date ]</a>
+              <a href="thread.html#890">[ thread ]</a>
+              <a href="subject.html#890">[ subject ]</a>
+              <a href="author.html#890">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

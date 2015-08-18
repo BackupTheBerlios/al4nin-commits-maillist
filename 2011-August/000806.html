@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1044 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1044%20-%20trunk/purgatory&In-Reply-To=%3C20110822053839.4C4434815C0%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000807.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1044 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1044%20-%20trunk/purgatory&In-Reply-To=%3C20110822053839.4C4434815C0%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1044 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug 22 07:38:39 CEST 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000807.html">[Al4nin-commits] r1045 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#806">[ date ]</a>
+              <a href="thread.html#806">[ thread ]</a>
+              <a href="subject.html#806">[ subject ]</a>
+              <a href="author.html#806">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-08-22 07:38:39 +0200 (Mon, 22 Aug 2011)
+New Revision: 1044
+
+Added:
+   trunk/purgatory/PoorKinds.lhs
+Log:
+simulate kinds with type class instances over phantom types
+
+Added: trunk/purgatory/PoorKinds.lhs
+===================================================================
+--- trunk/purgatory/PoorKinds.lhs	                        (rev 0)
++++ trunk/purgatory/PoorKinds.lhs	2011-08-22 05:38:39 UTC (rev 1044)
+@@ -0,0 +1,92 @@
++&gt; {-# LANGUAGE GADTs, TypeFamilies, TypeSynonymInstances #-}
++
++&gt; module Poor where
++
++We first define the phantom types in the usual manner
++
++&gt; data Z where
++&gt; data S n where
++
++To simulate a kind, we declare a type class with no methods
++
++&gt; class Nat n where
++
++and include the phantom types Z and (S n) with the obvious
++inference rules
++
++&gt; instance Nat Z
++&gt; instance Nat n =&gt; Nat (S n)
++
++Now we can define our indexed data types that
++adhere to the kind's regime as long as the constructors
++are annotated with the corresponding class constraint
++
++&gt; data Nat' :: * -&gt; * where
++&gt;   Z :: Nat' Z
++&gt;   S :: Nat n =&gt; Nat' n -&gt; Nat' (S n)
++&gt;   -- rouge constructors
++&gt;   Z' :: Nat' Int
++&gt;   S' :: Nat' n -&gt; Nat' (S n)
++
++I have included two (primed) data constructors
++that intentionally violate the kinding rules
++so that I can provoke certain errors in GHCi.
++
++| *Poor&gt; :t S Z
++| S Z :: Nat' (S Z)
++
++So far, so good. Now, can GHC detect the violations?
++
++| *Poor&gt; :t S Z'
++| 
++| &lt;interactive&gt;:1:1:
++|     No instance for (Nat Int)
++|       arising from a use of `S'
++|     Possible fix: add an instance declaration for (Nat Int)
++|     In the expression: S Z'
++| *Poor&gt; :t S (S' Z')
++| 
++| &lt;interactive&gt;:1:1:
++|     No instance for (Nat Int)
++|       arising from a use of `S'
++|     Possible fix: add an instance declaration for (Nat Int)
++|     In the expression: S (S' Z')
++
++Apparently, it can!
++
++When we write type level functions on the Nat
++kind we resort to type families. Here is a
++function that computes the sum of two naturals
++on the type level
++
++&gt; type family Plus m n :: *
++&gt; type instance Plus Z n = n
++&gt; type instance Plus (S m) n = S (Plus m n)
++
++[the above three lines are shamelessly frobbed from
++<A HREF="http://byorgey.wordpress.com/2010/07/06/typed-type-level-programming-in-haskell-part-ii-type-families/">http://byorgey.wordpress.com/2010/07/06/typed-type-level-programming-in-haskell-part-ii-type-families/</A>]
++
++But we cannot index Nat' with (Plus m n) unless...
++
++&gt; dummy :: Nat' (Plus m Z)
++&gt; dummy = undefined
++
++| *Poor&gt; S dummy
++| 
++| &lt;interactive&gt;:1:1:
++|     No instance for (Nat (Plus m0 Z))
++|       arising from a use of `S'
++|     Possible fix: add an instance declaration for (Nat (Plus m0 Z))
++|     In the expression: S dummy
++|     In an equation for `it': it = S dummy
++
++... we add the inference rules to include (Plus m n) into the kind Nat
++
++| &gt; instance (Nat m,Nat n) =&gt; Nat (Plus m n)
++
++Alas, GHC (v7.0.3) does not yet support this :-(
++
++| PoorKinds.lhs:85:29:
++|     Illegal type synonym family application in instance: Plus m n
++|     In the instance declaration for `Nat (Plus m n)'
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000807.html">[Al4nin-commits] r1045 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#806">[ date ]</a>
+              <a href="thread.html#806">[ thread ]</a>
+              <a href="subject.html#806">[ subject ]</a>
+              <a href="author.html#806">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r612 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r612%20-%20trunk/purgatory&In-Reply-To=%3C200803012153.m21Lr70X020556%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000374.html">
+   <LINK REL="Next"  HREF="000376.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r612 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r612%20-%20trunk/purgatory&In-Reply-To=%3C200803012153.m21Lr70X020556%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r612 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Mar  1 22:53:07 CET 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000374.html">[Al4nin-commits] r611 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000376.html">[Al4nin-commits] r613 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#375">[ date ]</a>
+              <a href="thread.html#375">[ thread ]</a>
+              <a href="subject.html#375">[ subject ]</a>
+              <a href="author.html#375">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-03-01 22:53:06 +0100 (Sat, 01 Mar 2008)
+New Revision: 612
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+throw out hacks, hopefully unsafeCast lives up to our expectations
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-03-01 15:29:40 UTC (rev 611)
++++ trunk/purgatory/Thrist.lout	2008-03-01 21:53:06 UTC (rev 612)
+@@ -1466,28 +1466,19 @@
+ -- infer :: Thrist Cat a b -&gt; Thrist Sound (Cat opaque opaque) (Cat a b)
+ -- infer [Push a]l = 
+ 
+--- non-working hack
+-peelIO :: IO a -&gt; a
+-peelIO _ = undefined
+-
+-fixIO :: (a -&gt; IO a) -&gt; IO a
+-fixIO f = undefined -- another ugly placeholder
+-
+ fakFunc :: IO (Function (Int, op) (Int, op))
+-fakFunc = fixIO fix
+-    where
+-     fix :: Function (Int, op) (Int, op) -&gt; IO (Function (Int, op) (Int, op))
+-     fix f = let monad ioM in do
++fakFunc = let monad ioM in do
++      a &lt;- freshAtom
+       let fak = [Dup, Push 0, equals,
+                    Block [Pop, Push 1]l,
+                    Block [Dup, Push 1, minus, Fun (unsafeCast f), Apply, times]l,
+                  If]l
+-      a &lt;- freshAtom
+-      return $ Function &quot;fak&quot; [Nop a, In IntT, Out IntT]l fak
++          f = Function &quot;fak&quot; [Nop a, In IntT, Out IntT]l fak
++      return f
+ 
+ usecase = let monad ioM in do
+     fak &lt;- fakFunc
+-    return [Push 42, Fun fak, Apply, Print]l
++    return ([Push 42, Fun fak, Apply, Print]l, fak)
+ 
+ sameRep :: Tractable a -&gt; Tractable b -&gt; Maybe (Equal a b)
+ sameRep IntT IntT = Just Eq
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000374.html">[Al4nin-commits] r611 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000376.html">[Al4nin-commits] r613 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#375">[ date ]</a>
+              <a href="thread.html#375">[ thread ]</a>
+              <a href="subject.html#375">[ subject ]</a>
+              <a href="author.html#375">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

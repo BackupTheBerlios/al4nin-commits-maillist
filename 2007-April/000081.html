@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r319 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r319%20-%20trunk/purgatory&In-Reply-To=%3C200704182204.l3IM4jcW031460%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000080.html">
+   <LINK REL="Next"  HREF="000082.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r319 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r319%20-%20trunk/purgatory&In-Reply-To=%3C200704182204.l3IM4jcW031460%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r319 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Apr 19 00:04:45 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000080.html">[Al4nin-commits] r318 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000082.html">[Al4nin-commits] r320 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#81">[ date ]</a>
+              <a href="thread.html#81">[ thread ]</a>
+              <a href="subject.html#81">[ subject ]</a>
+              <a href="author.html#81">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-19 00:04:44 +0200 (Thu, 19 Apr 2007)
+New Revision: 319
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+Rep now returns the oversize rest
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-18 21:28:53 UTC (rev 318)
++++ trunk/purgatory/ThristParser.omg	2007-04-18 22:04:44 UTC (rev 319)
+@@ -46,11 +46,11 @@
+ 
+ 
+ data Parse :: *0 ~&gt; *0 ~&gt; *0 where
+-  Atom :: Char -&gt; Parse Char Char                -- exact match
+---  Atom :: a -&gt; (a -&gt; Bool) Parse a a                -- exact match
++  Atom :: Char -&gt; Parse Char Char       -- exact match
++  Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
+   Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
+   Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
+-  Rep :: Parse a b -&gt; Parse [a] [b]     -- consume as many as matches
++  Rep :: Parse a b -&gt; Parse [a] ([b], [a])    -- consume as many as matches
+   Group :: [Parse a b] -&gt; Parse [a] [b] -- all must match
+   CataStar :: ([a] -&gt; b) -&gt; Parse [a] b
+   CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b
+@@ -60,15 +60,22 @@
+ char = Sure (id :: Char -&gt; Char)
+ digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
+ 
+-num = Wrap #[Rep digit, CataPlus (foldl (\acc x -&gt; (acc * 10) + x) 0)]l
++hexdigit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else
++                      if ord 'a' &lt;= ord c &amp;&amp; ord c &lt;= ord 'f' then Just (ord c - ord '0') else Nothing)
+ 
++crop = Try (\(good, rest) -&gt; Just good)
+ 
++num = Wrap #[Rep digit, Try (\(good, rest) -&gt; Just good), CataPlus (foldl (\acc x -&gt; (acc * 10) + x) 0)]l
++
++
+ abcd = Group [letter 'a', letter 'b', letter 'c', letter 'd']
+ 
+ -- ###############################
+ -- ############ parse ############
+ -- ###############################
++
+ parse :: Thrist Parse a b -&gt; a -&gt; Maybe b
++
+ parse Nil a = Just a
+ 
+ parse (Cons (Atom a) r) b = if ord a == ord b then parse r b else Nothing
+@@ -78,9 +85,9 @@
+ parse (Cons (Try f) r) a = do { b &lt;- f a; parse r b } where monad maybeM
+ 
+ parse (Cons (Rep p) r) as = parse r (parseRep p as) where
+-      parseRep :: Parse a b -&gt; [a] -&gt; [b]
+-      parseRep _ [] = []
+-      parseRep p (a:as) = case parse #[p]l a of { Nothing -&gt; []; Just b -&gt; b:parseRep p as }
++      parseRep :: Parse a b -&gt; [a] -&gt; ([b], [a])
++      parseRep _ [] = ([], [])
++      parseRep p (a:as) = case parse #[p]l a of { Nothing -&gt; ([], a:as); Just b -&gt; (b:bs, rest) where (bs, rest) = parseRep p as }
+ 
+ parse (Cons (Group ps) r) as = do { bs &lt;- parseGroup ps as; parse r bs } where
+       monad maybeM
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000080.html">[Al4nin-commits] r318 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000082.html">[Al4nin-commits] r320 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#81">[ date ]</a>
+              <a href="thread.html#81">[ thread ]</a>
+              <a href="subject.html#81">[ subject ]</a>
+              <a href="author.html#81">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

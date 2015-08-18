@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r529 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r529%20-%20trunk/purgatory&In-Reply-To=%3C200711132031.lADKVW7I017711%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000291.html">
+   <LINK REL="Next"  HREF="000293.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r529 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r529%20-%20trunk/purgatory&In-Reply-To=%3C200711132031.lADKVW7I017711%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r529 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 13 21:31:32 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000291.html">[Al4nin-commits] r528 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000293.html">[Al4nin-commits] r530 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-13 21:31:02 +0100 (Tue, 13 Nov 2007)
+New Revision: 529
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+parseArgument/s, infinite loop on tExprParens
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-13 17:19:11 UTC (rev 528)
++++ trunk/purgatory/ThristParser.omg	2007-11-13 20:31:02 UTC (rev 529)
+@@ -350,6 +350,7 @@
+ 
+ data Token = Resv Reserved
+ 	   | Str String
++           | Sy String
+ 	   | Num Int
+ 	   | P Punctuation
+ 	   | H HashWord
+@@ -541,12 +542,31 @@
+               where monad maybeM
+           one _ = Nothing
+ 
++--optionally :: ([a] -&gt; Maybe b) -&gt; Parse [a] (Maybe b, [a])
++--optionally p = Or (Try p
++
++parseArgument :: Parse [Token] (Phrase PHargument, [Token])
++parseArgument = or [ Wrap [ Seq (Try symbol) (Or (Wrap [parseExpression, sureFirst Just]l)
++                                                 (Wrap [epsilon, sureFirst (\_ -&gt; Nothing)]l))
++                          , sureFirst buildSymExpr
++                          ]l
++                   , Wrap [ parseExpression, sureFirst buildExpr ]l
++                   ]
++    where buildSymExpr (sym, Just expr) = ArgumentKeyword sym expr
++          buildSymExpr (sym, Nothing) = ArgumentSymbol sym
++          buildExpr expr = ArgumentExpression expr
++          symbol ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Sy</A> _):t) = Just (h, t)
++          symbol _ = Nothing
++
+ parseArguments :: Parse [Token] ([Phrase PHargument], [Token])
+ parseArguments = Or
+ 		 (Wrap [Seq parseArgument (Rep $ Seq (Try isComma) parseArgument), sureFirst flat]l)
+-		 (Sure (always [])
++		 (Sure none)
+     where isComma (P Pcomma:t) = Just ((), t)
+ 	  isComma _ = Nothing
++          flat (arg1, []) = [arg1]
++          flat (arg1, args) = arg1 : map snd args
++          none t = ([], t)
+ 
+ parseOperand :: Parse [Token] (Phrase PHoperand, [Token])
+ parseOperand = or [ Wrap [Try isLit, sureFirst (OperandLeaf . LeafLit)]l
+@@ -555,7 +575,7 @@
+ 				     , sureFirst (\n o -&gt; OperandAccess o n)
+ 				     ]l
+ 			      , Wrap [Try isParen, Sure snd, parseArguments --- Try isClosingParen
+-				     , sureFirst (\args o -&gt; OperandCall o n)
++				     , sureFirst (\args o -&gt; OperandCall o args)
+ 				     ]l
+ 			      ])
+ 			 , sureFirst (\ (o, builder) -&gt; builder o)]l
+@@ -567,6 +587,10 @@
+ 	  isLit _ = Nothing
+ 	  isDot (P Pdot:t) = Just ((), t)
+ 	  isDot _ = Nothing
++	  isParen (P PparenthesisOpen:t) = Just ((), t)
++	  isParen _ = Nothing
++	  isClosingParen (P PparenthesisOpen:t) = Just ((), t)
++	  isClosingParen _ = Nothing
+ 	  isName ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Resv</A> _):t) = Just (h, t)
+ 	  isName _ = Nothing
+ 
+@@ -577,18 +601,20 @@
+     where detectUnary ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at U</A> _):t) = (Just h, t)
+ 	  detectUnary t = (Nothing, t)
+ 
+-parseExpr :: Parse [Token] (Phrase PHexpression, [Token])
+-parseExpr = Wrap $ [Seq parseBinaryOperand
+-                        (Rep $ Seq parseBinOp parseBinaryOperand)
+-                   , sureFirst (Expression . thristize)]l
++parseExpression :: Parse [Token] (Phrase PHexpression, [Token])
++parseExpression = Wrap $ [Seq parseBinaryOperand
++                              (Rep $ Seq parseBinOp parseBinaryOperand)
++                              , sureFirst (Expression . thristize)]l
+     where thristize (operand1, ((op, operand2):rest)) = [operand1, BinaryOperandOperator op; thristize (operand2, rest)]l
+           thristize (operand, []) = [operand]l
+ 
+ 
+ tExpr = [U Unot, Num 42, B Bplus, Num 25, B Band, H Ht]
+ 
+-tExpr0 = parse [parseExpr]l tExpr
++tExpr0 = parse [parseExpression]l tExpr
+ 
++tExprParens = [U Unot, Num 42, B Bplus, P PparenthesisOpen, Num 25, B Band, H Ht]
++
+ -- ############### Cat syntax ###############
+ 
+ -- see: <A HREF="http://www.cat-language.com/manual.html#syntax">http://www.cat-language.com/manual.html#syntax</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000291.html">[Al4nin-commits] r528 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000293.html">[Al4nin-commits] r530 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#292">[ date ]</a>
+              <a href="thread.html#292">[ thread ]</a>
+              <a href="subject.html#292">[ subject ]</a>
+              <a href="author.html#292">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

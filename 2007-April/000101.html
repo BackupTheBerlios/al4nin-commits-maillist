@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r339 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r339%20-%20trunk/purgatory&In-Reply-To=%3C200704241030.l3OAUMpB007006%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000100.html">
+   <LINK REL="Next"  HREF="000102.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r339 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r339%20-%20trunk/purgatory&In-Reply-To=%3C200704241030.l3OAUMpB007006%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r339 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Apr 24 12:30:22 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000100.html">[Al4nin-commits] r338 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000102.html">[Al4nin-commits] r340 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#101">[ date ]</a>
+              <a href="thread.html#101">[ thread ]</a>
+              <a href="subject.html#101">[ subject ]</a>
+              <a href="author.html#101">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-24 12:30:21 +0200 (Tue, 24 Apr 2007)
+New Revision: 339
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+added punctuation and reserved words
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-24 08:37:46 UTC (rev 338)
++++ trunk/purgatory/ThristParser.omg	2007-04-24 10:30:21 UTC (rev 339)
+@@ -210,6 +210,7 @@
+ data Punctuation = PparenthesisOpen | PparenthesisClose -- ( )
+ 		 | Pcomma                               -- ,
+ 		 | Pdot                                 -- .
++		 | Psemicolon                           -- ;
+ 		 | PbracketOpen | PbracketClose         -- [ ]
+ 		 | PbraceOpen | PbraceClose             -- { }
+ 		 | Pcoloncolon                          -- ::
+@@ -225,16 +226,25 @@
+ 		 | Pquestionequal                       -- ?=
+ 		 | Pdotdotdot                           -- ...
+ 
+-punct = [ PparenthesisOpen, PparenthesisClose, Pcomma, Pdot, PbracketOpen, PbracketClose
+-        , PbraceOpen, PbraceClose, Pcoloncolon, Pminus, Pequal, Pequalequal, Pequalgreater
+-        , Phashparenthesis, Phashbracket, Phashhash, Pquestion, Pquestionquestion
+-        , Pquestionequal, Pdotdotdot ]
++-- the below lists are maximum munch sorted
++punctSymbols = [ &quot;(&quot;, &quot;)&quot;, &quot;,&quot;, &quot;...&quot;, &quot;.&quot;, &quot;;&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;::&quot;, &quot;-&quot;
++               , &quot;==&quot;, &quot;=&gt;&quot;, &quot;=&quot;, &quot;#(&quot;, &quot;#[&quot;, &quot;##&quot;, &quot;??&quot;, &quot;?=&quot;, &quot;?&quot;]
+ 
+-punctSymbols = [ &quot;(&quot;, &quot;)&quot;, &quot;,&quot;, &quot;.&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;::&quot;, &quot;-&quot;
+-               , &quot;=&quot;, &quot;==&quot;, &quot;=&gt;&quot;, &quot;#(&quot;, &quot;#[&quot;, &quot;##&quot;, &quot;?&quot;, &quot;??&quot;, &quot;?=&quot;, &quot;...&quot;]
++punct = [ PparenthesisOpen, PparenthesisClose, Pcomma, Pdotdotdot, Pdot, Psemicolon, PbracketOpen, PbracketClose
++        , PbraceOpen, PbraceClose, Pcoloncolon, Pminus, Pequalequal, Pequalgreater, Pequal
++        , Phashparenthesis, Phashbracket, Phashhash, Pquestionquestion
++        , Pquestionequal, Pquestion ]
+ 
+ 
++reservedWords = [&quot;define&quot;, &quot;end&quot;, &quot;handler&quot;, &quot;let&quot;, &quot;local&quot;, &quot;macro&quot;, &quot;otherwise&quot;]
+ 
++reserved = [Rdefine, Rend, Rhandler, Rlet, Rlocal, Rmacro, Rotherwise]
++
++bulkWords :: [[Char]] -&gt; [a] -&gt; (a -&gt; Token') -&gt; Parse [Char] (Token', [Char])
++bulkWords syntax semantics conv = or $ drosel syntax semantics where
++				  drosel (sy:sys) (se:ses) = Wrap #[word sy, Sure (\(_, rest) -&gt; (conv se, rest))]l : drosel sys ses
++				  drosel [] [] = []
++
+ data Token = R Reserved | Str String | Num Int | P Punctuation
+ 
+ data Token' = Token Token | Whitespace String
+@@ -301,5 +311,7 @@
+             , Wrap $ Cons (Seq1 (letter '#') (alts letter &quot;xX&quot;)) (Cons (Sure snd) (extendThrist hexnum (sureFirst (Token . Num))))
+             , Wrap #[Rep1 whitespace, Pred notEmpty, sureFirst Whitespace]l
+             , Wrap $ Cons (Seq1 (letter '#') (alts letter &quot;bB&quot;)) (Cons (Sure snd) (extendThrist binnum (sureFirst (Token . Num))))
++	    , bulkWords punctSymbols punct (Token . P)
++	    , bulkWords reservedWords reserved (Token . R)
+             ]
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000100.html">[Al4nin-commits] r338 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000102.html">[Al4nin-commits] r340 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#101">[ date ]</a>
+              <a href="thread.html#101">[ thread ]</a>
+              <a href="subject.html#101">[ subject ]</a>
+              <a href="author.html#101">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

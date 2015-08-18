@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r771 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r771%20-%20trunk/purgatory&In-Reply-To=%3C200908041913.n74JDU7w029233%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000532.html">
+   <LINK REL="Next"  HREF="000534.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r771 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r771%20-%20trunk/purgatory&In-Reply-To=%3C200908041913.n74JDU7w029233%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r771 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Aug  4 21:13:30 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000532.html">[Al4nin-commits] r770 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000534.html">[Al4nin-commits] r772 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#533">[ date ]</a>
+              <a href="thread.html#533">[ thread ]</a>
+              <a href="subject.html#533">[ subject ]</a>
+              <a href="author.html#533">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-04 21:13:29 +0200 (Tue, 04 Aug 2009)
+New Revision: 771
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+my instinct says, that we'll need DefEvidence to be passed around
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-04 18:00:56 UTC (rev 770)
++++ trunk/purgatory/LLVM2step.omg	2009-08-04 19:13:29 UTC (rev 771)
+@@ -113,6 +113,11 @@
+   AddUse :: Label l -&gt; UseEvidence r -&gt; UseEvidence [l; r]u
+  deriving List(ue)
+ 
++data DefEvidence :: Defs ~&gt; * where
++  NoDefs :: DefEvidence []d
++  AddDef :: Label l -&gt; DefEvidence r -&gt; DefEvidence [l; r]d
++ deriving List(de)
++
+ buildBasicBlock2 :: Label t -&gt;
+                     Prim Regular i us -&gt;
+                     Prim Terminator i us' -&gt;
+@@ -156,15 +161,17 @@
+ 
+ -- NO LEMMA YET! collectUses (Ret u) ev = collectUses' u ev
+ 
+-buildBasicBlock :: Block r -&gt; exists u . Maybe (Thrist Instr (A []d u) (A {defsOnly r} []u), UseEvidence u)
+-buildBasicBlock {}b = Ex Nothing
+---buildBasicBlock {Anon=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> (Const _))}b = Ex (Just ([Term r]l, NoUses))
+---buildBasicBlock {Anon=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> (Use l))}b = Ex (Just ([Term r]l, [l]ue))
+-buildBasicBlock {Anon=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> _)}b = Ex (Just ([Term r]l, collectUses r []ue))
+-buildBasicBlock {Tag l=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Add</A> _ _); r}b = case buildBasicBlock r of
+-                                            Ex Nothing -&gt; Ex Nothing
+-                                            Ex (Just (thr, ue)) -&gt; Ex (Just ([Def l a; thr]l, collectUses a ue))
+-buildBasicBlock _ = Ex Nothing
++-- Defs should be a snoc-list tho get this beautiful
++prependDefs :: Defs ~&gt; Defs ~&gt; Defs
++{prependDefs []d ds} = ds
++{prependDefs [d; r]d ds} = [d; {prependDefs r ds}]d
+ 
++buildBasicBlock :: DefEvidence ds -&gt; Block r -&gt; exists u . Maybe (DefEvidence {prependDefs {defsOnly r} ds}, Thrist Instr (A ds u) (A {prependDefs {defsOnly r} ds} []u), UseEvidence u)
++buildBasicBlock ds {Anon=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> _)}b = Ex (Just (ds, [Term r]l, collectUses r []ue))
++--buildBasicBlock ds {Tag l=(<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Add</A> _ _); r}b = case buildBasicBlock r of
++--                                             Ex Nothing -&gt; Ex Nothing
++--                                             Ex (Just (thr, ue)) -&gt; Ex (Just ([Def l a; thr]l, collectUses a ue))
++buildBasicBlock _ _ = Ex Nothing
+ 
+-test13 = buildBasicBlock {Anon=(Ret (Use `a))}b
++
++test13 = buildBasicBlock []de {Anon=(Ret (Use `a))}b
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000532.html">[Al4nin-commits] r770 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000534.html">[Al4nin-commits] r772 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#533">[ date ]</a>
+              <a href="thread.html#533">[ thread ]</a>
+              <a href="subject.html#533">[ subject ]</a>
+              <a href="author.html#533">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

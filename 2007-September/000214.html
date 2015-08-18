@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r452 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r452%20-%20trunk/purgatory&In-Reply-To=%3C200709142023.l8EKNqEk001628%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000213.html">
+   <LINK REL="Next"  HREF="000215.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r452 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r452%20-%20trunk/purgatory&In-Reply-To=%3C200709142023.l8EKNqEk001628%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r452 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 14 22:23:52 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000213.html">[Al4nin-commits] r451 - in trunk/purgatory: . db
+</A></li>
+        <LI>Next message: <A HREF="000215.html">[Al4nin-commits] r453 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#214">[ date ]</a>
+              <a href="thread.html#214">[ thread ]</a>
+              <a href="subject.html#214">[ subject ]</a>
+              <a href="author.html#214">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-09-14 22:23:52 +0200 (Fri, 14 Sep 2007)
+New Revision: 452
+
+Modified:
+   trunk/purgatory/MonadPrime.omg
+Log:
+implement a comonadic semantics
+
+Modified: trunk/purgatory/MonadPrime.omg
+===================================================================
+--- trunk/purgatory/MonadPrime.omg	2007-09-14 15:13:51 UTC (rev 451)
++++ trunk/purgatory/MonadPrime.omg	2007-09-14 20:23:52 UTC (rev 452)
+@@ -125,21 +125,51 @@
+ -- #################################################
+ -- see Uustalu
+ 
+-data Comonad d :: (* ~&gt; *) ~&gt; * where
+-  Counit :: d a -&gt; a
+-  Cobind :: (d a -&gt; b) -&gt; (d a -&gt; d b)
++data Comonad :: (*0 ~&gt; *0) ~&gt; *0 where
++  Comonad :: forall (m :: *0 ~&gt; *0) .
++                    ((forall a . m a -&gt; a)) -&gt;
++                    ((forall a b . (m a -&gt; b) -&gt; m a -&gt; m b)) -&gt;
++--                  ((forall a . String -&gt; m a)) -&gt;
++                    Comonad m
+ 
+ 
+ data Comonad' :: (* ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
+-  Peel :: m b -&gt; Monad' m a b
+-  Peel' :: b -&gt; Monad' m a b
+-  Bind :: (t -&gt; m u) -&gt; Monad' m t u
+-  Bind' :: (t -&gt; u) -&gt; Monad' m t u
++  Peel :: m b -&gt; Comonad' m a b
++  Peek :: (m t -&gt; u) -&gt; Comonad' m t u
+ 
++data Stream a = Then a (Stream a) -- coinductive
+ 
++streamCM = Comonad counit
++                   coextend
++           where
++             counit (Then a _) = a
++             coextend k (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">af at Then</A> a as) = Then (k af) (lazy (coextend k as))
++
++ones = Then 1 ones
++twos = Then 2 twos
++
++first3 (Then a (Then b (Then c _))) = (a, b + a + c, c)
++
++add3 (Then (a, b, c) _) = a + b + c
++fut (Then _ (Then b _)) = b
++
++c1 = [Peel ones, Peek first3]l
++c2 = [Peel ones, Peek first3, Peek add3]l
++c3 = [Peel ones, Peek first3, Peek add3, Peek fut]l
++
++runCMP :: Comonad c -&gt; c a -&gt; Thrist (Comonad' c) a b -&gt; c b
++runCMP _ ca []l = ca
++runCMP (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">com at Comonad</A> _ coextend) ca [Peek comp; rest]l = runCMP com (coextend comp ca) rest
++runCMP com _ [Peel new; rest]l = runCMP com new rest
++
++runCMP' :: Comonad c -&gt; c a -&gt; Thrist (Comonad' c) a b -&gt; b
++runCMP' (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">com at Comonad</A> counit _) sta thr = counit (runCMP com sta thr)
++
+ -- #################################################
+ -- see Unimo paper
+ -- construct monadic law preserving interpreter for
+ -- Monad'
++-- 1) operationally defined Thrist interpreters
++-- 2) use Unimo framework to create Omega Monads (Comonads?)
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000213.html">[Al4nin-commits] r451 - in trunk/purgatory: . db
+</A></li>
+	<LI>Next message: <A HREF="000215.html">[Al4nin-commits] r453 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#214">[ date ]</a>
+              <a href="thread.html#214">[ thread ]</a>
+              <a href="subject.html#214">[ subject ]</a>
+              <a href="author.html#214">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

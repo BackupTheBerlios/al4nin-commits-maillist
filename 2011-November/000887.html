@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1125 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1125%20-%20trunk/purgatory&In-Reply-To=%3C20111127132420.3F11D48283A%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000886.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1125 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1125%20-%20trunk/purgatory&In-Reply-To=%3C20111127132420.3F11D48283A%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1125 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Nov 27 14:24:19 CET 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000886.html">[Al4nin-commits] r1124 - in trunk/purgatory: . db
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#887">[ date ]</a>
+              <a href="thread.html#887">[ thread ]</a>
+              <a href="subject.html#887">[ subject ]</a>
+              <a href="author.html#887">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-11-27 14:24:19 +0100 (Sun, 27 Nov 2011)
+New Revision: 1125
+
+Modified:
+   trunk/purgatory/haskellfx
+   trunk/purgatory/prg2lout.c
+Log:
+add back KindArrowToken with its own glyph
+
+Modified: trunk/purgatory/haskellfx
+===================================================================
+--- trunk/purgatory/haskellfx	2011-11-27 13:15:23 UTC (rev 1124)
++++ trunk/purgatory/haskellfx	2011-11-27 13:24:19 UTC (rev 1125)
+@@ -531,7 +531,7 @@
+ 		right x
+ 	{
+ 	    style @Case {
+-		symbol	@Yield { @PO {@A sym {arrowright} x |0.0fo {white @Colour +0.09f @HShift @A sym {arrowright} x} |0.0fo +3p @Font @A sym {similar} &quot;~&quot;} }
++		symbol	@Yield { { AMSYten Base } @Font { @PO { @Char squiggleright } } }
+ 		else	@Yield { @PO x			}
+ 	    }
+ 	}
+
+Modified: trunk/purgatory/prg2lout.c
+===================================================================
+--- trunk/purgatory/prg2lout.c	2011-11-27 13:15:23 UTC (rev 1124)
++++ trunk/purgatory/prg2lout.c	2011-11-27 13:24:19 UTC (rev 1125)
+@@ -1324,7 +1324,7 @@
+ TOKEN HaskellOrToken		= FixedToken(&quot;||&quot;, &quot;@PO&quot;);
+ TOKEN HaskellAndToken		= FixedToken(&quot;&amp;&amp;&quot;, &quot;@PO&quot;);
+ TOKEN HaskellArrowBindToken     = FixedToken(&quot;&gt;&gt;&gt;&quot;, &quot;@PARROWBIND&quot;);
+-/* TOKEN KindArrowToken         = FixedToken(&quot;~&gt;&quot;, &quot;@PKINDARROW&quot;); */
++TOKEN KindArrowToken            = FixedToken(&quot;~&gt;&quot;, &quot;@PKINDARROW&quot;);
+ /* TOKEN HaskellBacktickToken	= FixedToken(&quot;`&quot;, &quot;@PO&quot;); unused */
+ TOKEN PythonPowerToken          = FixedToken( &quot;**&quot;,  &quot;@PO&quot; );
+ TOKEN PythonBitLeftShiftToken   = FixedToken( &quot;&lt;&lt;&quot;,  &quot;@PO&quot; );
+@@ -3149,7 +3149,7 @@
+     &amp;ImpliesToken, &amp;GreaterEqualToken, &amp;HaskellConcatenationToken,
+     &amp;HaskellOperatorToken, &amp;HaskellOrToken, &amp;HaskellAndToken,
+     &amp;HaskellAtPatternToken, &amp;HaskellBracketBarToken, &amp;HaskellBarBracketToken,
+-    &amp;HaskellArrowBindToken/*, &amp;KindArrowToken*/
++    &amp;HaskellArrowBindToken, &amp;KindArrowToken
+   },
+   {
+     &quot;case&quot;, &quot;class&quot;, &quot;data&quot;, &quot;default&quot;, &quot;deriving&quot;, &quot;do&quot;,
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000886.html">[Al4nin-commits] r1124 - in trunk/purgatory: . db
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#887">[ date ]</a>
+              <a href="thread.html#887">[ thread ]</a>
+              <a href="subject.html#887">[ subject ]</a>
+              <a href="author.html#887">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

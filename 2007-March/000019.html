@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r257 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r257%20-%20trunk/purgatory&In-Reply-To=%3C200703171349.l2HDnutG028445%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000018.html">
+   <LINK REL="Next"  HREF="000020.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r257 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r257%20-%20trunk/purgatory&In-Reply-To=%3C200703171349.l2HDnutG028445%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r257 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Mar 17 14:49:56 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000018.html">[Al4nin-commits] r256 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000020.html">[Al4nin-commits] r258 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-17 14:49:56 +0100 (Sat, 17 Mar 2007)
+New Revision: 257
+
+Modified:
+   trunk/purgatory/LLVM.omg
+Log:
+distinguishing returnable types from nonreturnables
+
+Modified: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-03-17 13:22:14 UTC (rev 256)
++++ trunk/purgatory/LLVM.omg	2007-03-17 13:49:56 UTC (rev 257)
+@@ -22,26 +22,30 @@
+  -}
+ 
+ 
+-import &quot;LangPrelude.prg&quot; 
++import &quot;LangPrelude.prg&quot;
+   (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal)
+ 
+ kind TypeClass :: *1 where
+   FstClass :: TypeClass
+   SndClass :: TypeClass
+ 
+-kind Type :: TypeClass ~&gt; *1 where
+- LVoid :: Type SndClass
+- LInt :: Nat ~&gt; Type FstClass
+- LFloat :: Type FstClass
+- LDouble :: Type FstClass
+- LPointer :: Type a ~&gt; Type FstClass
+- LFunction :: Type a ~&gt; Type b ~&gt; Type SndClass
+- LVector :: Nat ~&gt; Type FstClass ~&gt; Type FstClass
++kind Returnability :: *1 where
++  Returnable :: Returnability
++  Nonreturnable :: Returnability
+ 
++kind Type :: TypeClass ~&gt; Returnability ~&gt; *1 where
++ LVoid :: Type SndClass Returnable
++ LInt :: Nat ~&gt; Type FstClass Returnable
++ LFloat :: Type FstClass Returnable
++ LDouble :: Type FstClass Returnable
++ LPointer :: Type a r ~&gt; Type FstClass Returnable
++ LFunction :: Type FstClass Returnable ~&gt; Type b Returnable ~&gt; Type SndClass Nonreturnable
++ LVector :: Nat ~&gt; Type FstClass Returnable ~&gt; Type FstClass Returnable
++
+ kind HasLType :: *1 where
+-  HasL :: forall (c :: TypeClass) . Tag ~&gt; Type c ~&gt; HasLType
++  HasL :: Tag ~&gt; Type FstClass Returnable ~&gt; HasLType
+ 
+-i1 :: Type c
++i1 :: Type FstClass Returnable
+ --{i1} = LInt *1
+ -- type i1 = LInt #1
+ 
+@@ -50,12 +54,12 @@
+ kind ComesFrom :: *1 where
+   From :: Row HasLType ~&gt; ComesFrom
+ 
+-data Departures :: forall (c :: TypeClass) . Type FstClass ~&gt; Type c ~&gt; Row ComesFrom ~&gt; * where
++data Departures :: forall (c :: TypeClass) . Type FstClass Returnable ~&gt; Type c Returnable ~&gt; Row ComesFrom ~&gt; * where
+   Nowhere :: Departures prodV t RNil
+   Comes :: (Value prod, BasicBlock t n' def) -&gt; Departures prod t alts -&gt; Departures prod t (RCons (From def) alts)
+  deriving List(d)
+ 
+-data Instr :: forall (c :: TypeClass) . Type c ~&gt; BB ~&gt; Row HasLType ~&gt; * where
++data Instr :: forall (c :: TypeClass) . Type c Returnable ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+   -- Terminators
+   Unwind :: Instr t n RNil
+   Branch :: BasicBlock t Normal otherdefs -&gt; Instr t n RNil
+@@ -67,10 +71,10 @@
+   Phi :: Label l -&gt; Departures a t deps -&gt; Instr t n defs -&gt; Instr t Normal (RCons (HasL l a) defs)
+ 
+ 
+-data BasicBlock :: Type FstClass ~&gt; BB ~&gt; Row HasLType ~&gt; * where
++data BasicBlock :: forall (c :: TypeClass) . Type c Returnable ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+   BB :: Label bl -&gt; Instr t n defs -&gt; BasicBlock t n defs
+ 
+-data Value :: forall (c :: TypeClass) . Type c ~&gt; * where
++data Value :: forall (c :: TypeClass) . Type c Returnable ~&gt; * where
+   Nada :: Value LVoid
+   LitI :: Int -&gt; Value (LInt #32)
+   LitB :: Bool -&gt; Value (LInt #1)
+@@ -78,7 +82,8 @@
+   Undef :: Value t
+   P :: Value t -&gt; Value (LPointer t)
+ 
+-data Function :: forall (c :: TypeClass) . Type c ~&gt; * where
++--data Function :: forall (c :: TypeClass) . Type c ~&gt; * where
++data Function :: Type SndClass Nonreturnable ~&gt; * where
+   Function :: Value a -&gt; BasicBlock b Entry defs -&gt; Function (LFunction a b)
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000018.html">[Al4nin-commits] r256 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000020.html">[Al4nin-commits] r258 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#19">[ date ]</a>
+              <a href="thread.html#19">[ thread ]</a>
+              <a href="subject.html#19">[ subject ]</a>
+              <a href="author.html#19">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

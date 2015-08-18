@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r609 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r609%20-%20trunk/purgatory&In-Reply-To=%3C200803010011.m210Bapp027245%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000373.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r609 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r609%20-%20trunk/purgatory&In-Reply-To=%3C200803010011.m210Bapp027245%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r609 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Mar  1 01:11:36 CET 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000373.html">[Al4nin-commits] r610 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#372">[ date ]</a>
+              <a href="thread.html#372">[ thread ]</a>
+              <a href="subject.html#372">[ subject ]</a>
+              <a href="author.html#372">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-03-01 01:11:35 +0100 (Sat, 01 Mar 2008)
+New Revision: 609
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+a bit more streamlining, possible road towards using fixIO
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-02-29 22:42:51 UTC (rev 608)
++++ trunk/purgatory/Thrist.lout	2008-03-01 00:11:35 UTC (rev 609)
+@@ -1471,23 +1471,35 @@
+ peelIO :: IO a -&gt; a
+ peelIO _ = undefined
+ 
+--- the fak program
++{-- the fak program
+ fak :: Thrist Cat (Int, opaque) (Int, opaque)
+ fak = [Dup, Push 0, equals,
+               Block [Pop, Push 1]l,
+               Block [Dup, Push 1, minus, Fun (peelIO fakFunc), Apply, times]l,
+             If]l
++-}
+ 
+---canonicalize :: (forall opaque . Thrist Sound (Cat opaque opaque) (Cat a b)) -&gt; Thrist Sound (Cat () ()) (Cat a b)
+---canonicalize thr = [(Nop :: Sound (Cat () ()) (Cat () ())); thr]l
++fakFunc :: IO (Function (Int, op) (Int, op))
++fakFunc = let monad ioM in do
++    a &lt;- freshAtom
++    let fak = [Dup, Push 0, equals,
++                Block [Pop, Push 1]l,
++                Block [Dup, Push 1, minus, Fun (peelIO fakFunc), Apply, times]l,
++              If]l
++        result = Function &quot;fak&quot; [Nop a, In IntT, Out IntT]l fak
++    return result
+ 
++{-
+ fakFunc :: IO (Function (Int, op) (Int, op))
+ fakFunc = let monad ioM in do
+     a &lt;- freshAtom
+-    return (Function &quot;fak&quot; [Nop a, In IntT, Out IntT]l {-canonicalize-} fak)
++    let fak = [Pop, Push 0, Fun result, Apply]l
++        result = Function &quot;fak&quot; [Nop a, In IntT, Out IntT]l fak
++    return result
++-}
++usecase = [Push 42, Fun (peelIO fakFunc), Apply, Print]l
++--usecase = [Push 42, Block fak, Apply, Print]l
+ 
+-usecase = [Push 42, Block fak, Apply, Print]l
+-
+ sameRep :: Tractable a -&gt; Tractable b -&gt; Maybe (Equal a b)
+ sameRep IntT IntT = Just Eq
+ sameRep BoolT BoolT = Just Eq
+@@ -1532,9 +1544,6 @@
+ --compile [Label n t; rest]l =
+ --    let ((compiled, t', r) :: (Code (IO (f, opaque) -&gt; IO b), Tractable (f -&gt; t), Thrist Cat (f, opaque) b)) = (lazy (check (compile $ subst n t compiled rest)), t, rest) in compiled
+ --    let ((compiled, t') :: (Code (IO (f, opaque) -&gt; IO (t, opaque)), Tractable (f -&gt; t))) = (lazy (compile $ (check (subst' n t compiled rest))), t) in compiled
+-
+-subst' :: String -&gt; Tractable f -&gt; Code (IO (f, opaque) -&gt; IO opaque') -&gt; Thrist Cat (f, opaque) opaque' -&gt; Thrist Cat (f, opaque) opaque'
+-subst' n t c thr = subst n t c thr
+ -}
+ 
+ subst :: Function f t -&gt; Code (IO f -&gt; IO t) -&gt; Thrist Cat a b -&gt; Thrist Cat a b
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000373.html">[Al4nin-commits] r610 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#372">[ date ]</a>
+              <a href="thread.html#372">[ thread ]</a>
+              <a href="subject.html#372">[ subject ]</a>
+              <a href="author.html#372">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

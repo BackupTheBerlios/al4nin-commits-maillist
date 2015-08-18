@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r491 - trunk/purgatory/db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r491%20-%20trunk/purgatory/db&In-Reply-To=%3C200710291107.l9TB7MQW013233%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000252.html">
+   <LINK REL="Next"  HREF="000254.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r491 - trunk/purgatory/db</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r491%20-%20trunk/purgatory/db&In-Reply-To=%3C200710291107.l9TB7MQW013233%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r491 - trunk/purgatory/db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Oct 29 12:07:22 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000252.html">[Al4nin-commits] r490 - trunk/purgatory/db
+</A></li>
+        <LI>Next message: <A HREF="000254.html">[Al4nin-commits] r492 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-29 12:07:22 +0100 (Mon, 29 Oct 2007)
+New Revision: 491
+
+Modified:
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+remove duplicate booktitle
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2007-10-29 11:04:00 UTC (rev 490)
++++ trunk/purgatory/db/BibTexDB	2007-10-29 11:07:22 UTC (rev 491)
+@@ -46,7 +46,7 @@
+ @inproceedings{conf/cefp/UustaluV05,
+  title = {The Essence of Dataflow Programming},
+  author = {Tarmo Uustalu and Varmo Vene},
+- booktitle = {CEFP},
++ edition = {CEFP},
+  editor = {Zolta'n Horva'th},
+  pages = {135-167},
+  publisher = {Springer},
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2007-10-29 11:04:00 UTC (rev 490)
++++ trunk/purgatory/db/acmrefs.ld	2007-10-29 11:07:22 UTC (rev 491)
+@@ -50,7 +50,7 @@
+    @Type { InProceedings }
+    @Title { The Essence of Dataflow Programming }
+    @Author { Tarmo Uustalu and Varmo Vene }
+-   @InTitle { CEFP }
++   @Edition { CEFP }
+    @InAuthor { Zolta'n Horva'th }
+    @Pages { 135-167 }
+    @Publisher { Springer }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000252.html">[Al4nin-commits] r490 - trunk/purgatory/db
+</A></li>
+	<LI>Next message: <A HREF="000254.html">[Al4nin-commits] r492 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#253">[ date ]</a>
+              <a href="thread.html#253">[ thread ]</a>
+              <a href="subject.html#253">[ subject ]</a>
+              <a href="author.html#253">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

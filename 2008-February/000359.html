@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r596 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-February/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r596%20-%20trunk/purgatory&In-Reply-To=%3C200802150751.m1F7plf5001567%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000358.html">
+   <LINK REL="Next"  HREF="000360.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r596 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r596%20-%20trunk/purgatory&In-Reply-To=%3C200802150751.m1F7plf5001567%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r596 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Feb 15 08:51:47 CET 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000358.html">[Al4nin-commits] r595 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000360.html">[Al4nin-commits] r597 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#359">[ date ]</a>
+              <a href="thread.html#359">[ thread ]</a>
+              <a href="subject.html#359">[ subject ]</a>
+              <a href="author.html#359">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-02-15 08:51:46 +0100 (Fri, 15 Feb 2008)
+New Revision: 596
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+implement Push and Dup, prepare for Apply
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-02-14 16:09:20 UTC (rev 595)
++++ trunk/purgatory/Thrist.lout	2008-02-15 07:51:46 UTC (rev 596)
+@@ -1425,6 +1425,7 @@
+   Apply :: Cat (Cat b c, b) c
+   If :: Cat (Cat s t, Cat s t, Bool, s) t
+   Print :: Cat (a, opaque) opaque
++  Label :: String -&gt; Cat opaque opaque
+ 
+ -- some abbreviations
+ intint = ArrT IntT IntT
+@@ -1436,24 +1437,39 @@
+ 
+ -- the fak program
+ fak :: Thrist Cat (Int, opaque) (Int, opaque)
+-fak = [Dup, Push 0, equals,
++fak = [Label &quot;fak&quot;, Dup, Push 0, equals,
+               Block [Pop, Push 1]l,
+               Block [Dup, Dup, Push 1, minus, Block fak, Apply, times]l,
+             If]l
+ 
+ usecase = [Push 42, Block fak, Apply, Print]l
+ 
+-compile' :: Thrist Cat a b -&gt; Code (IO a -&gt; IO b)
+-compile' [Print; rest]l =
++compile :: Thrist Cat a b -&gt; Code (IO a -&gt; IO b)
++compile [Print; rest]l =
+    [| \st -&gt; let monad ioM in do
+         (a, st') &lt;- st
+         putStr $ show a
+-        $(compile' rest) $ return st' |]
++        $(compile rest) $ return st' |]
+ 
+-compile' [Pop; rest]l =
++compile [Pop; rest]l =
+    [| \st -&gt; let monad ioM in do
+         (_, st') &lt;- st
+-        $(compile' rest) $ return st' |]
++        $(compile rest) $ return st' |]
+ 
++compile [Dup; rest]l =
++   [| \st -&gt; let monad ioM in do
++        (st'@(a, _)) &lt;- st
++        $(compile rest) $ return (a, st') |]
++
++compile [Push a; rest]l =
++   [| \st -&gt; let monad ioM in do
++        st' &lt;- st
++        $(compile rest) $ return (a, st') |]
++
++{-compile [Apply; rest]l =
++   [| \act -&gt; let monad ioM in do
++	(Quote thr) st &lt;- act
++	$(compile r) (interpretCat' thr (return st)) |]
++-}
+ @End @Haskell
+ @End @Appendix
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000358.html">[Al4nin-commits] r595 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000360.html">[Al4nin-commits] r597 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#359">[ date ]</a>
+              <a href="thread.html#359">[ thread ]</a>
+              <a href="subject.html#359">[ subject ]</a>
+              <a href="author.html#359">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

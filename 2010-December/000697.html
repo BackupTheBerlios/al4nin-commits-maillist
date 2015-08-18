@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r935 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r935%20-%20trunk/purgatory&In-Reply-To=%3C20101215132912.A619A480CA2%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000696.html">
+   <LINK REL="Next"  HREF="000698.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r935 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r935%20-%20trunk/purgatory&In-Reply-To=%3C20101215132912.A619A480CA2%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r935 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 15 14:29:12 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000696.html">[Al4nin-commits] r934 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000698.html">[Al4nin-commits] r936 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-15 14:29:12 +0100 (Wed, 15 Dec 2010)
+New Revision: 935
+
+Modified:
+   trunk/purgatory/Kinding2.omg
+Log:
+clean up
+
+Modified: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-15 13:20:20 UTC (rev 934)
++++ trunk/purgatory/Kinding2.omg	2010-12-15 13:29:12 UTC (rev 935)
+@@ -37,7 +37,7 @@
+ --  * rename: Qual -&gt; Quant, (...)ty -&gt; (...)q
+ --  * contexts as categorizers (partly done)
+ --        * Payload adjustment ({}p -&gt; []p)
+---        * model oversaturable Part, tau, lemmata -- needed?
++--        * tau Appl' still missing
+ --  * named (and/or numbered, i.e. de Bruijn) variables
+ --  * variable capture, tracking free vars
+ --  * outer context (LeftList?)
+@@ -125,7 +125,6 @@
+ data Context :: Fixture ~&gt; Walks n ~&gt; * where
+   Empty :: Context Floating []ws
+   Heart :: Qual n (1+n)w -&gt; Context Anchored [n]ws
+-  --Part :: Qual (v`1)w {up (v`1)w} -&gt; Context Anchored [(v`1)w]ws
+   Qualify :: Qual (v`1)w {up (v`1)w} -&gt; Context f ws -&gt; Context f [(v`1)w; ws]ws
+   Appl :: Equal {charge f} [b]ws
+           =&gt; Qual a b
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000696.html">[Al4nin-commits] r934 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000698.html">[Al4nin-commits] r936 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#697">[ date ]</a>
+              <a href="thread.html#697">[ thread ]</a>
+              <a href="subject.html#697">[ subject ]</a>
+              <a href="author.html#697">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

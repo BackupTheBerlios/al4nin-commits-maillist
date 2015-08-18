@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r526 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r526%20-%20trunk/purgatory&In-Reply-To=%3C200711131530.lADFUpWN012901%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000288.html">
+   <LINK REL="Next"  HREF="000290.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r526 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r526%20-%20trunk/purgatory&In-Reply-To=%3C200711131530.lADFUpWN012901%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r526 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 13 16:30:51 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000288.html">[Al4nin-commits] r525 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000290.html">[Al4nin-commits] r527 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-13 16:30:51 +0100 (Tue, 13 Nov 2007)
+New Revision: 526
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+use parseOperand from parseBinaryOperand, checking for unary operators
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-13 15:14:52 UTC (rev 525)
++++ trunk/purgatory/ThristParser.omg	2007-11-13 15:30:51 UTC (rev 526)
+@@ -506,7 +506,7 @@
+              | PHbinary_operator -- only for DExpr
+ 
+ data DExpr :: Dphrase ~&gt; Dphrase ~&gt; * where
+-  BinaryOperandSymbol :: Token -&gt; DExpr PHbinary_operand PHbinary_operator
++  --BinaryOperandSymbol :: Token -&gt; DExpr PHbinary_operand PHbinary_operator
+   BinaryOperandUnary :: Maybe Token -&gt;  Phrase PHoperand -&gt; DExpr PHbinary_operand PHbinary_operator
+   BinaryOperandOperator :: Token -&gt; DExpr PHbinary_operator PHbinary_operand
+ 
+@@ -542,7 +542,6 @@
+           one _ = Nothing
+ 
+ parseOperand :: Parse [Token] (Phrase PHoperand, [Token])
+---parseOperand = undefined -- for now
+ parseOperand = or [ Wrap [Try isLit, sureFirst (OperandLeaf . LeafLit)]l
+ 		  , Wrap [Seq parseOperand
+ 			  (or [
+@@ -563,24 +562,12 @@
+ 	  isName _ = Nothing
+ 
+ parseBinaryOperand :: Parse [Token] (DExpr PHbinary_operand PHbinary_operator, [Token])
+-parseBinaryOperand = or [ Wrap [Try isLit, sureFirst (BinaryOperandUnary Nothing . OperandLeaf . LeafLit)]l
+-			{-, Wrap [Seq parseOperand
+-				(or [
+-				     Wrap [Try isDot, Sure snd, Try isName
+-					   , sureFirst (\n o -&gt; OperandAccess o n)]l
+-				    ])
+-			       , sureFirst (\ (o, builder) -&gt; builder o)
+-			       , sureFirst (BinaryOperandUnary Nothing)]l-}
++parseBinaryOperand = or [ Wrap [ Seq (Sure detectUnary) parseOperand
++			       , sureFirst (\ (unary, operand) -&gt; BinaryOperandUnary unary operand)
++			       ]l
+ 			]
+-    where isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Num</A> _):t) = Just (LitNum h, t)
+-	  isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Str</A> _):t) = Just (LitString [h], t)
+-	  isLit (H Ht:t) = Just (LitTrue, t)
+-	  isLit (H Hf:t) = Just (LitFalse, t)
+-	  isLit _ = Nothing
+-	  isDot (P Pdot:t) = Just ()
+-	  isDot _ = Nothing
+-	  isName ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Resv</A> _):t) = Just (h, t)
+-	  isName _ = Nothing
++    where detectUnary ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at U</A> _):t) = (Just h, t)
++	  detectUnary t = (Nothing, t)
+ 
+ {-
+ parseBinaryOperand = Try look2
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000288.html">[Al4nin-commits] r525 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000290.html">[Al4nin-commits] r527 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#289">[ date ]</a>
+              <a href="thread.html#289">[ thread ]</a>
+              <a href="subject.html#289">[ subject ]</a>
+              <a href="author.html#289">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

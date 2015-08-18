@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1076 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1076%20-%20trunk/purgatory&In-Reply-To=%3C20110827002250.6EE9D481144%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000837.html">
+   <LINK REL="Next"  HREF="000839.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1076 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1076%20-%20trunk/purgatory&In-Reply-To=%3C20110827002250.6EE9D481144%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1076 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Aug 27 02:22:50 CEST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000837.html">[Al4nin-commits] r1075 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000839.html">[Al4nin-commits] r1077 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-08-27 02:22:50 +0200 (Sat, 27 Aug 2011)
+New Revision: 1076
+
+Modified:
+   trunk/purgatory/Scoped.omg
+Log:
+simplify
+
+Modified: trunk/purgatory/Scoped.omg
+===================================================================
+--- trunk/purgatory/Scoped.omg	2011-08-27 00:18:49 UTC (rev 1075)
++++ trunk/purgatory/Scoped.omg	2011-08-27 00:22:50 UTC (rev 1076)
+@@ -29,12 +29,12 @@
+ unnest _ = Nothing
+ 
+ unnest' :: Exp k' (1+s)s -&gt; Maybe (exists k . Exp k s) 
+-unnest' a = do { a' &lt;- unnest a; return (Ex a') } where monad maybeM
++unnest' a = do { a' &lt;- unnest a; yep a' } where monad maybeM
+ 
+ unnest'' :: Exp k'' s -&gt; Exp k' (1+s)s -&gt; Maybe (exists k . Exp k s) 
+ unnest'' _ (1+v)e = yep v 
+ unnest'' _  In = unreachable
+-unnest'' d (f,a)e = do { Ex f' &lt;- unnest'' d f; Ex a' &lt;- unnest'' d a; return (Ex (f',a')e) } where monad maybeM 
++unnest'' d (f,a)e = do { Ex f' &lt;- unnest'' d f; Ex a' &lt;- unnest'' d a; yep (f',a')e } where monad maybeM 
+ unnest'' d (e)e = do { Ex e' &lt;- unnest'' (nest d) e; yep (e')e } where monad maybeM 
+ unnest'' d {n=e;r}e = do { Ex e' &lt;- unnest'' d e; Ex r' &lt;- unnest'' (nest d) r; yep {n=e';r'}e } where monad maybeM
+ unnest'' d 0e = yep d
+@@ -69,7 +69,7 @@
+ -- eta conversion
+ --
+ eta :: Exp k' s -&gt; Maybe (exists k . Exp k s)
+-eta ((f, 0e)e)e = do { f' &lt;- unnest f; return (Ex f') } where monad maybeM
++eta ((f, 0e)e)e = do { f' &lt;- unnest f; yep f' } where monad maybeM
+ eta _ = Nothing
+ 
+ -- evaluation
+@@ -79,7 +79,7 @@
+                     f'@(Just _) -&gt; f'
+                     _ -&gt; do
+                          Ex e' &lt;- evalStep e
+-                         return (Ex (e')e)
++                         yep (e')e
+                            where monad maybeM
+ evalStep (f, e)e = case evalStep f of
+                    Just (Ex f') -&gt; yep (f', e)e
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000837.html">[Al4nin-commits] r1075 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000839.html">[Al4nin-commits] r1077 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1101 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1101%20-%20trunk/purgatory&In-Reply-To=%3C20110910094621.2CED6481270%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000862.html">
+   <LINK REL="Next"  HREF="000864.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1101 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1101%20-%20trunk/purgatory&In-Reply-To=%3C20110910094621.2CED6481270%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1101 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Sep 10 11:46:20 CEST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000862.html">[Al4nin-commits] r1100 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000864.html">[Al4nin-commits] r1102 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-09-10 11:46:20 +0200 (Sat, 10 Sep 2011)
+New Revision: 1101
+
+Modified:
+   trunk/purgatory/GrammarLike.lhs
+Log:
+backed out a lot, building on r1099 again
+
+Modified: trunk/purgatory/GrammarLike.lhs
+===================================================================
+--- trunk/purgatory/GrammarLike.lhs	2011-09-10 09:17:05 UTC (rev 1100)
++++ trunk/purgatory/GrammarLike.lhs	2011-09-10 09:46:20 UTC (rev 1101)
+@@ -1,4 +1,4 @@
+-&gt; {-# LANGUAGE TypeFamilies, FlexibleInstances #-}
++&gt; {-# LANGUAGE TypeFamilies, ScopedTypeVariables #-}
+ 
+ 
+ &gt; import Data.Char
+@@ -13,6 +13,7 @@
+ It is the identity monad (for now)
+ 
+ &gt; type Parser = Identity
++&gt; runParser = runIdentity
+ 
+ &gt; --instance Monad Parser where
+ &gt; --  return v = P v
+@@ -26,19 +27,23 @@
+ 
+ 
+ &gt; class GrammarLike a where
+-&gt;   type Initial a
+ &gt;   type Final a
+-&gt;   produce :: a -&gt; Initial a -&gt; Final a
++&gt;   produce :: a -&gt; Final a
+ 
+ &gt; instance GrammarLike Int where
+-&gt;   --type Initial Int = a
+ &gt;   type Final Int = Parser Int
+-&gt;   produce _ _ = return 42
++&gt;   produce _ = return 42
+ 
+-&gt; instance GrammarLike r =&gt; GrammarLike (d -&gt; r) where
+-&gt;   type Initial (d -&gt; r) = Parser d
++&gt; instance GrammarLike Char where
++&gt;   type Final Char = Parser Char
++&gt;   produce _ = anyChar
++
++&gt; instance (GrammarLike d, GrammarLike r) =&gt; GrammarLike (d -&gt; r) where
+ &gt;   type Final (d -&gt; r) = Final r
+-&gt;   produce f pd = pd &gt;&gt;= (\d -&gt; produce (f undefined)
++&gt;   produce f = do { d &lt;- pd; produce (f d) }
++&gt;     where converse :: (d -&gt; r) -&gt; (r -&gt; d)
++&gt;           converse = undefined
++&gt;           pd = produce $ converse f undefined
+ 
+ &gt; theAnswer = produce ord
+ 
+@@ -53,9 +58,8 @@
+ 
+ &gt; data Foo = F Int
+ 
+-&gt; data Prod a f = Produce (a -&gt; f)
+ 
+-&gt; instance GrammarLike a =&gt; GrammarLike (Prod a Foo) where
+-&gt;   type Initial (Prod a Foo) = Parser a
+-&gt;   type Final (Prod a Foo) = Parser Foo
+-&gt;   produce (Produce f) ma = undefined --fmap f
++
++&gt; instance GrammarLike Foo where
++&gt;   type Final Foo = Parser Foo
++&gt;   produce f = return f
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000862.html">[Al4nin-commits] r1100 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000864.html">[Al4nin-commits] r1102 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#863">[ date ]</a>
+              <a href="thread.html#863">[ thread ]</a>
+              <a href="subject.html#863">[ subject ]</a>
+              <a href="author.html#863">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

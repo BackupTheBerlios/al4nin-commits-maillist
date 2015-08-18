@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1119 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1119%20-%20trunk/purgatory&In-Reply-To=%3C20111120181616.7168B481531%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000882.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1119 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1119%20-%20trunk/purgatory&In-Reply-To=%3C20111120181616.7168B481531%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1119 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Nov 20 19:16:15 CET 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000882.html">[Al4nin-commits] r1120 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#881">[ date ]</a>
+              <a href="thread.html#881">[ thread ]</a>
+              <a href="subject.html#881">[ subject ]</a>
+              <a href="author.html#881">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-11-20 19:16:15 +0100 (Sun, 20 Nov 2011)
+New Revision: 1119
+
+Modified:
+   trunk/purgatory/prg2lout.c
+Log:
+rebase to 3.39
+
+Modified: trunk/purgatory/prg2lout.c
+===================================================================
+--- trunk/purgatory/prg2lout.c	2011-09-13 12:43:36 UTC (rev 1118)
++++ trunk/purgatory/prg2lout.c	2011-11-20 18:16:15 UTC (rev 1119)
+@@ -2,9 +2,9 @@
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  PRG2LOUT: A PROGRAM TO CONVERT PROGRAM SOURCES INTO LOUT                 */
+-/*  COPYRIGHT (C) 2000, 2006 Jeffrey H. Kingston                             */
++/*  COPYRIGHT (C) 2000, 2008 Jeffrey H. Kingston                             */
+ /*                                                                           */
+-/*  Part of Lout Version 3.36, July 2007                                     */
++/*  Part of Lout Version 3.39                                                */
+ /*                                                                           */
+ /*  Jeffrey H. Kingston (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">jeff at cs.su.oz.au</A>)                                   */
+ /*  Basser Department of Computer Science                                    */
+@@ -784,8 +784,6 @@
+ };
+ 
+ 
+-
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Identifiers, in the form common to most programming languages.           */
+@@ -1082,9 +1080,8 @@
+   FALSE,		/* end delimiter does not have to be at line start  */
+   FALSE,		/* don't need to see end delimiter twice to stop    */
+ };
+-
+-
+ 
++
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Tokens defining escape comments in various languages.                    */
+@@ -1205,25 +1202,25 @@
+ };
+ 
+ TOKEN HaskellCommentEscapeToken = {
+-	U &quot;Lout escape&quot;,
+-	PRINT_NODELIMS_UNQUOTED,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	FALSE,
+-	{ U &quot;{-@&quot; },
+-	{ NULL },
+-	{ NULL },
+-	{ NULL },
+-	AllPrintablePlusTab,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	U &quot;&quot;,
+-	U &quot;-}&quot;,
+-	FALSE,
+-	FALSE,
++  U &quot;Lout escape&quot;,
++  PRINT_NODELIMS_UNQUOTED,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  FALSE,
++  { U &quot;{-@&quot; },
++  { NULL },
++  { NULL },
++  { NULL },
++  AllPrintablePlusTab,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  U &quot;&quot;,
++  U &quot;-}&quot;,
++  FALSE,
++  FALSE,
+ };
+ 
+ TOKEN HaskellLineCommentEscapeToken = {
+@@ -1247,10 +1244,8 @@
+   FALSE,		/* end delimiter does not have to be at line start  */
+   FALSE,		/* don't need to see end delimiter twice to stop    */
+ };
+-
+ 
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Tokens which are fixed strings, hence simpler than the above.            */
+@@ -1319,8 +1314,8 @@
+ TOKEN LeftArrowToken		= FixedToken(&quot;&lt;-&quot;, &quot;@A sym {arrowleft} @PO&quot;);
+ TOKEN HaskellLambdaToken	= FixedToken(&quot;\\&quot;, &quot;@PLAMBDA&quot;);
+ TOKEN HaskellAtPatternToken	= FixedToken(&quot;@&quot;, &quot;@PO&quot;);
+-TOKEN HaskellBracketBarToken= FixedToken(&quot;[|&quot;, &quot;@PBRACKETBAR&quot;);
+-TOKEN HaskellBarBracketToken= FixedToken(&quot;|]&quot;, &quot;@PBARBRACKET&quot;);
++TOKEN HaskellBracketBarToken    = FixedToken(&quot;[|&quot;, &quot;@PBRACKETBAR&quot;);
++TOKEN HaskellBarBracketToken    = FixedToken(&quot;|]&quot;, &quot;@PBARBRACKET&quot;);
+ TOKEN DoubleColonToken		= FixedToken(&quot;::&quot;,  &quot;@PDOUBLECOLON&quot;);
+ TOKEN FunctionCompositionToken	= FixedToken(&quot; . &quot;,  &quot;@PCIRC&quot;);
+ TOKEN HaskellEquivalenceToken	= FixedToken(&quot;==&quot;,  &quot;@A sym {equivalence} @PO&quot;);
+@@ -1328,8 +1323,9 @@
+ TOKEN EqvToken			= FixedToken(&quot;&lt;=&gt;&quot;,&quot;@A sym {arrowdblboth} @PO&quot;);
+ TOKEN HaskellOrToken		= FixedToken(&quot;||&quot;, &quot;@PO&quot;);
+ TOKEN HaskellAndToken		= FixedToken(&quot;&amp;&amp;&quot;, &quot;@PO&quot;);
+-TOKEN HaskellArrowBindToken	= FixedToken(&quot;&gt;&gt;&gt;&quot;, &quot;@PARROWBIND&quot;);
+-TOKEN KindArrowToken	= FixedToken(&quot;~&gt;&quot;, &quot;@PKINDARROW&quot;);
++TOKEN HaskellArrowBindToken     = FixedToken(&quot;&gt;&gt;&gt;&quot;, &quot;@PARROWBIND&quot;);
++/* TOKEN KindArrowToken         = FixedToken(&quot;~&gt;&quot;, &quot;@PKINDARROW&quot;); */
++/* TOKEN HaskellBacktickToken	= FixedToken(&quot;`&quot;, &quot;@PO&quot;); unused */
+ TOKEN PythonPowerToken          = FixedToken( &quot;**&quot;,  &quot;@PO&quot; );
+ TOKEN PythonBitLeftShiftToken   = FixedToken( &quot;&lt;&lt;&quot;,  &quot;@PO&quot; );
+ TOKEN PythonBitRightShiftToken  = FixedToken( &quot;&gt;&gt;&quot;,  &quot;@PO&quot; );
+@@ -2950,6 +2946,7 @@
+        or part of the language per-se. */
+   }
+ };
++
+ 
+ /*****************************************************************************/
+ /*                                                                           */
+@@ -2991,7 +2988,6 @@
+ };
+ 
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Eiffel and Blue                                                          */
+@@ -3047,7 +3043,6 @@
+ };
+ 
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Java                                                                     */
+@@ -3080,6 +3075,7 @@
+     &quot;volatile&quot;, &quot;while&quot;,
+   }
+ };
++
+ 
+ /*****************************************************************************/
+ /*                                                                           */
+@@ -3113,20 +3109,19 @@
+     &amp;NonpareilOperatorToken,
+   },
+   {
+-    &quot;abstract&quot;, &quot;as&quot;, &quot;builtin&quot;, &quot;case&quot;, &quot;class&quot;, &quot;coerce&quot;,
+-    &quot;else&quot;, &quot;elsif&quot;, &quot;end&quot;, &quot;enum&quot;, &quot;extend&quot;, &quot;extension&quot;, &quot;filter&quot;,
+-    &quot;function&quot;, &quot;genesis&quot;, &quot;if&quot;, &quot;in&quot;, &quot;infix&quot;, &quot;inherit&quot;, &quot;introduce&quot;,
+-    &quot;invariant&quot;, &quot;is&quot;, &quot;let&quot;, &quot;local&quot;, &quot;meet&quot;, &quot;module&quot;, &quot;noncoercive&quot;,
+-    &quot;noncreation&quot;, &quot;norename&quot;, &quot;predefined&quot;, &quot;prefix&quot;, &quot;prefun&quot;, &quot;private&quot;,
+-    &quot;postfix&quot;, &quot;rename&quot;, &quot;require&quot;, &quot;system&quot;, &quot;then&quot;, &quot;typeobj&quot;, &quot;upto&quot;,
+-    &quot;use&quot;, &quot;when&quot;, &quot;yield&quot;,
++    &quot;abstract&quot;, &quot;as&quot;, &quot;builtin&quot;, &quot;case&quot;, &quot;class&quot;, &quot;coerce&quot;, &quot;else&quot;,
++    &quot;elsif&quot;, &quot;end&quot;, &quot;enum&quot;, &quot;extend&quot;, &quot;extension&quot;, &quot;filter&quot;, &quot;fun&quot;,
++    &quot;if&quot;, &quot;import&quot;, &quot;infix&quot;, &quot;inherit&quot;, &quot;introduce&quot;, &quot;invariant&quot;,
++    &quot;is&quot;, &quot;meet&quot;, &quot;module&quot;, &quot;noncreation&quot;, &quot;operators&quot;, &quot;predefined&quot;,
++    &quot;prefix&quot;, &quot;prefun&quot;, &quot;private&quot;, &quot;postfix&quot;, &quot;rename&quot;, &quot;require&quot;,
++    &quot;system&quot;, &quot;then&quot;, &quot;typeobj&quot;, &quot;upto&quot;, &quot;when&quot;, &quot;yield&quot;,
+ 
+     /* not keywords, but conventionally set like them */
+-    &quot;false&quot;, &quot;true&quot;, &quot;self&quot;, &quot;and&quot;, &quot;or&quot;, &quot;not&quot;
++    &quot;false&quot;, &quot;true&quot;, &quot;self&quot;, &quot;and&quot;, &quot;or&quot;, &quot;not&quot;, &quot;div&quot;, &quot;mod&quot;
+   }
+ };
++
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Haskell                                                                  */
+@@ -3154,12 +3149,12 @@
+     &amp;ImpliesToken, &amp;GreaterEqualToken, &amp;HaskellConcatenationToken,
+     &amp;HaskellOperatorToken, &amp;HaskellOrToken, &amp;HaskellAndToken,
+     &amp;HaskellAtPatternToken, &amp;HaskellBracketBarToken, &amp;HaskellBarBracketToken,
+-    &amp;HaskellArrowBindToken, &amp;KindArrowToken
++    &amp;HaskellArrowBindToken/*, &amp;KindArrowToken*/
+   },
+   {
+-    &quot;case&quot;, &quot;class&quot;, &quot;data&quot;, &quot;default&quot;, &quot;deriving&quot;, &quot;do&quot;, &quot;mdo&quot;,
++    &quot;case&quot;, &quot;class&quot;, &quot;data&quot;, &quot;default&quot;, &quot;deriving&quot;, &quot;do&quot;,
+     &quot;else&quot;, &quot;if&quot;, &quot;import&quot;, &quot;in&quot;, &quot;infix&quot;, &quot;infixl&quot;, &quot;infixr&quot;, &quot;instance&quot;,
+-    &quot;let&quot;, &quot;module&quot;, &quot;newtype&quot;, &quot;of&quot;, &quot;then&quot;, &quot;type&quot;, &quot;where&quot;,
++    &quot;let&quot;, &quot;mdo&quot;, &quot;module&quot;, &quot;newtype&quot;, &quot;of&quot;, &quot;then&quot;, &quot;type&quot;, &quot;where&quot;,
+ 
+     /*&quot;as&quot;,*/ &quot;hiding&quot;, &quot;qualified&quot;,
+     /* OMEGA */ &quot;monad&quot;,
+@@ -3167,8 +3162,8 @@
+     &quot;True&quot;, &quot;False&quot;
+   }
+ };
++
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  RSL                                                                      */
+@@ -3212,8 +3207,8 @@
+     &quot;write&quot;, &quot;is&quot;, &quot;exists&quot;, &quot;all&quot;
+   }
+ };
++
+ 
+-
+ /*****************************************************************************/
+ /*                                                                           */
+ /*  Perl and Pod                                                             */
+@@ -3574,7 +3569,8 @@
+   else if( curr_line[line_pos+1] != '\0' )
+   {
+     /* we've already read in the next line; it's at &amp;curr_line[line_pos+1] */
+-    strcpy((char *) &amp;curr_line[1], (char *) &amp;curr_line[line_pos+1]);
++    int len = strlen((char *) &amp;curr_line[line_pos+1]);
++    memmove(&amp;curr_line[1], &amp;curr_line[line_pos+1], len + 1);
+     line_num++;
+     line_pos = 1;
+   }
+@@ -4688,6 +4684,7 @@
+ 	else
+ 	{
+ 	  fprintf(err_fp, &quot;%s internal error: lang-&gt;no_match\n&quot;, ErrorHeader());
++	  exit(1);
+ 	}
+ 	break;
+ 
+@@ -5040,7 +5037,7 @@
+   /* read command line */
+   in_fp = out_fp = (FILE *) NULL;
+   err_fp = stderr;
+-  line_num = 0;
++  line_num = line_pos = 0;
+   stdin_seen = raw_seen = FALSE;
+   tab_by_spacing = TRUE;
+   tab_in = 8;
+@@ -5050,8 +5047,8 @@
+   blanknumbered = BLANKNUMBERED_YES;
+   numbered_option = NULL;
+   headers_option = TRUE;
+-  font_option = size_option = line_option = bls_option = tabin_option =
+-    tabout_option = setup_option = language_option = (char *) NULL;
++  style_option = font_option = size_option = line_option = bls_option =
++    tabin_option = tabout_option = setup_option = language_option =(char *)NULL;
+   if( argc == 1 )
+   { PrintUsage();
+     exit(1);
+@@ -5078,7 +5075,7 @@
+      
+ 	/* read name of input file */
+ 	if( !raw_seen )
+-	{ fprintf(err_fp, &quot;%s: -i illegal with -r\n&quot;, ErrorHeader());
++	{ fprintf(err_fp, &quot;%s: -i illegal without -r\n&quot;, ErrorHeader());
+ 	  exit(1);
+ 	}
+ 	if( in_fp != NULL )
+@@ -5318,8 +5315,7 @@
+ 	{
+ 	  if( languages[i]-&gt;names[j] == (char *) NULL )
+ 	    i++, j = 0;
+-	  else if( strcmp( (char *) languages[i]-&gt;names[j],
+-		(char *) language_option) == 0 )
++	  else if( strcmp(languages[i]-&gt;names[j], language_option) == 0 )
+ 	    lang = languages[i];
+ 	  else
+ 	    j++;
+@@ -5377,6 +5373,7 @@
+     SetupLanguage(lang);
+     line_pos = 1;
+     curr_line[line_pos] = '\n';  /* forces line read */
++    curr_line[line_pos + 1] = '\0';
+     line_num = 0;
+     NextChar();
+     Process(lang, (TOKEN *) NULL, U &quot;&quot;);
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000882.html">[Al4nin-commits] r1120 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#881">[ date ]</a>
+              <a href="thread.html#881">[ thread ]</a>
+              <a href="subject.html#881">[ subject ]</a>
+              <a href="author.html#881">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

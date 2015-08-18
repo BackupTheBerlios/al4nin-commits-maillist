@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r886 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r886%20-%20trunk/purgatory&In-Reply-To=%3C20101208094335.97E01480D83%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000647.html">
+   <LINK REL="Next"  HREF="000649.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r886 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r886%20-%20trunk/purgatory&In-Reply-To=%3C20101208094335.97E01480D83%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r886 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec  8 10:43:35 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000647.html">[Al4nin-commits] r885 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000649.html">[Al4nin-commits] r887 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-08 10:43:35 +0100 (Wed, 08 Dec 2010)
+New Revision: 886
+
+Added:
+   trunk/purgatory/ThristHistorical.omg
+Log:
+archive for reference (archeology:-)
+
+Copied: trunk/purgatory/ThristHistorical.omg (from rev 870, trunk/purgatory/Thrist.omg)
+===================================================================
+--- trunk/purgatory/ThristHistorical.omg	                        (rev 0)
++++ trunk/purgatory/ThristHistorical.omg	2010-12-08 09:43:35 UTC (rev 886)
+@@ -0,0 +1,277 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007-2008 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega Thrist.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,RCons,RNil,Eq,Equal,
++  listM, (!=), (==))
++
++kind Doe = Wi | So
++
++data DooBiDoo :: Doe ~&gt; Doe ~&gt; *0 where
++  ToWi :: DooBiDoo a Wi
++  SoToWi :: DooBiDoo So Wi
++  WiToWi :: DooBiDoo Wi Wi
++  WiToSo :: DooBiDoo Wi So
++  SoTo :: DooBiDoo So b
++  ToSo :: DooBiDoo a So
++
++data ShuBiDoo :: Doe ~&gt; Doe ~&gt; *0 where
++  WiTo :: ShuBiDoo Wi a
++
++--$   @Definition { A @I thrist is a list-like datastructure
++--$ with three type indices. It enforces the invariants that
++--$ @List { @Item { it can only contain members of the same type with two type indices
++--$ and } @Item { that the type indices of consequtive members must match
++--$ up in the specific manner that the second type index of the
++--$ left member must equal the first type index of the right one. } } }
++
++--{
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k a b -&gt; Thrist k b c -&gt; Thrist k a c
++ deriving List(l)
++--}
++
++--$   @Note { The name thrist is a portmanteau of thread and list
++--$ conveying the essence of a list where the members' types are
++--$ threaded up. }
++
++{--@
++By means of the @Code { deriving List(l) } declaration
++we specified that thrists can be entered in @Omega using
++special syntax, making it amenable to reading from the
++listener, pattern matching and outputting.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at P</A> The following example session demonstrates this:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+-- at -</A>}
++
++{- Example session:
++
++prompt&gt; []l
++ []l : forall (a:*1) (b:a ~&gt; a ~&gt; *0) (c:a:*1).Thrist b c c
++prompt&gt; [ToWi]l
++ [ToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
++prompt&gt; [ToWi,WiToWi]l
++ [ToWi,WiToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
++prompt&gt; [ToWi,WiToWi,ToSo]l
++ [ToWi,WiToWi,ToSo]l : forall (a:Doe).Thrist DooBiDoo a So
++prompt&gt; [ToWi,WiToWi,ToSo,SoTo]l
++ [ToWi,WiToWi,ToSo,SoTo]l : forall (a:Doe) (b:Doe).Thrist DooBiDoo a b
++prompt&gt; [ToWi, WiTo]l
++ In the expression: Cons WiTo Nil
++ the result type: Thrist ShuBiDoo Wi b
++ was not what was expected: Thrist DooBiDoo Wi a
++
++-}
++
++##test &quot;different constants: ShubiDoo   !=   DooBiDoo&quot;
++ fail0 = [ToWi, WiTo]l
++
++cat :: Thrist DooBiDoo a b -&gt; String
++cat Nil = &quot;&quot;
++cat (Cons ToWi r) = &quot;ToWi &quot; ++ cat r
++cat (Cons WiToWi r) = &quot;WiToWi &quot; ++ cat r
++cat (Cons WiToSo r) = &quot;WiToSo &quot; ++ cat r
++cat (Cons SoTo r) = &quot;SoTo &quot; ++ cat r
++cat (Cons ToSo r) = &quot;ToSo &quot; ++ cat r
++
++runThrist :: forall (a :: *0~&gt;*0~&gt;*0) . (forall (b :: *0).a b b)
++	     -&gt; (forall (b :: *0) (c :: *0) (d :: *0).a b c -&gt; a c d -&gt; a b d)
++	     -&gt; Thrist a b c
++	     -&gt; a b c
++runThrist n _ []l = n
++runThrist n c [h; t]l = c h (runThrist n c t)
++
++
++
++------------------------------------
++-- representing polynomial datatypes
++------------------------------------
++{- does not work yet
++how :: *0 ~&gt; Prod *0
++{how (t -&gt; u)} = PCons t {how u}
++{how Int} = PCons Int PNil
++{how Bool} = PCons Bool PNil
++
++last :: *0 ~&gt; Prod *0
++{last (t -&gt; u)} = {last u}
++{last Int} = Int
++{last Bool} = Bool
++
++
++
++data Sum :: *0 ~&gt; Prod *0 ~&gt; *0 where
++  Fin :: Sum a PNil
++  Case :: t -&gt; Sum a b -&gt; Sum a {how t}
++ deriving List(s)
++
++--tp1 :: Sum Bool (Prod a)
++tp0 = [False, True]s
++tp1 = [Nothing, Just]s
++-}
++
++##test &quot;Mixup in Decs (not reported yet)&quot;
++ Weee :: Prod *0
++ type Weee = PNil
++
++
++
++--$ @Section { Crazy uses of Thrists }
++--$ For example we can put functions of type
++--$ a-&gt;b, b-&gt;c into a thrist:
++
++--{
++funThrist = [ord, (+) 2, chr]l
++
++runArrThrist :: Thrist (-&gt;) a b -&gt; a -&gt; b
++runArrThrist Nil b = b
++runArrThrist (Cons f r) a = runArrThrist r (f a)
++--}
++
++{-
++-- Example session:
++
++prompt&gt; funThrist
++ [&lt;primfun to1&gt;,&lt;fn&gt;,&lt;primfun to1&gt;]l : Thrist (-&gt;) Char Char
++prompt&gt; runArrThrist funThrist
++ &lt;fn&gt; : Char -&gt; Char
++prompt&gt; runArrThrist funThrist 'x'
++ 'z' : Char
++
++-}
++
++
++-- Thrist (,)
++
++{-
++-- Example session:
++prompt&gt; [(1, 'h'), ('u', &quot;ss&quot;)]l
++ [(1,'h'),('u',&quot;ss&quot;)]l : Thrist (,) Int [Char]
++-}
++
++-- Thrist (+)
++
++-- Thrist Bind
++{-
++-- Example session:
++prompt&gt; [fuse 2 &quot;&quot;]l
++TODO###
++-}
++
++-- Thrist ContM
++
++-- Thrist EqTag
++
++-- Thrist (!=)
++
++-- Thrist (==) -- NOT COMPATIBLE
++
++--$ @Item { An interesting use are @Code { Equal } thrists
++--$ as they can express transitivity relationships of
++--$ type equality: @Code { Equal a b /\ Equal b c ==&gt; Equal c a }
++
++plus:: Nat ~&gt; Nat ~&gt; Nat
++{plus Z m} = m
++{plus (S n) m} = S {plus n m}
++
++plusZ :: Nat' n -&gt; Equal {plus n Z} n
++plusZ Z = Eq
++plusZ (S n) = Eq -- :: Equal {plus (S n) Z} (S n) -- reduces to Equal (S {plus n Z}) (S n)
++  where theorem because = plusZ n -- :: Equal {plus n Z} n
++
++
++plusS :: Nat' n -&gt; Equal {plus n (S m)} (S {plus n m})
++plusS Z = Eq :: Equal {plus Z (S m)} (S {plus Z m}) --&gt; Equal (S m) (S {plus Z m}) --&gt; Equal m {plus Z m} --&gt; Equal m m
++plusS (S n) = Eq --::  Equal {plus (S n) (S m)} (S {plus (S n) m})
++                   --&gt; Equal (S {plus n (S m)}) (S (S {plus n m}))
++                   --% Equal    {plus n (S m)}     (S {plus n m})
++    where theorem because = plusS n
++
++
++plusCommutes :: Nat' n -&gt; Nat' m -&gt; Equal {plus n m} {plus m n}
++plusCommutes Z m = Eq --:: Equal {plus Z m} {plus m Z}
++                      --&gt;  Equal m {plus m Z}
++    where theorem because = plusZ m
++
++plusCommutes (S n) m = Eq --:: Equal {plus (S n) m} {plus m (S n)}
++                          --&gt;  Equal (S {plus n m}) {plus m (S n)}
++                          --%  Equal (S {plus n m}) (S {plus m n})
++                          --%  Equal    {plus n m}     {plus m n}
++    where theorem because1 = plusS m, because2 = plusCommutes n m
++
++impliesZero :: Nat' n -&gt; Nat' m -&gt; Equal {plus n m} m -&gt; Equal m Z
++
++{-
++##test &quot;current refinement fails because _a != {plus 0t _a}&quot;
++ impliesZero Z m Eq = Eq --? Equal {plus Z m} m -&gt; Equal m Z
++                        --&gt; Equal m m -&gt; Equal m Z
++-}
++{-
++##test &quot;Annotation not polymorphic enough&quot;
++ impliesZero Z (m :: Nat' m')  (Eq :: Equal m' m') = Eq --? Equal {plus Z m} m -&gt; Equal m Z
++                        --&gt; Equal m m -&gt; Equal m Z
++-}
++impliesZero (S n) m Eq = unreachable --? Equal {plus (S n) m} m -&gt; Equal m Z
++                                     --&gt; Equal (S {plus n m}) m -&gt; Equal m Z
++
++{-
++impliesZero (S n) Z Eq = unreachable --? Equal {plus (S n) Z} Z -&gt; Equal Z Z
++                                     --&gt; Equal (S {plus n Z}) Z -&gt; Equal Z Z
++                                     --% Equal (S n) Z -&gt; Equal Z Z
++--    where theorem plusZ
++
++
++impliesZero (S n) (S m) Eq = unreachable --? Equal {plus (S n) (S m)} (S m) -&gt; Equal (S m) Z
++                                      --&gt; Equal (S {plus n m}) m -&gt; Equal m Z
++-}
++
++
++
++
++--$ I am writing this as an equivalent thrist now
++
++
++{-
++hyp1 :: Nat' a -&gt; Nat' (S b) -&gt; Equal a (S b)
++hyp1 #1 #1 = Eq
++hyp1 (S a) (S b) = Eq
++  where theorem because = hyp1 a b
++-}
++
++##test &quot;Does not work yet&quot;
++ eqThrist = [Eq :: Equal a (S b)
++            , Eq :: Equal (S b) (S c)
++            , Eq :: (S c) a
++            ]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000647.html">[Al4nin-commits] r885 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000649.html">[Al4nin-commits] r887 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#648">[ date ]</a>
+              <a href="thread.html#648">[ thread ]</a>
+              <a href="subject.html#648">[ subject ]</a>
+              <a href="author.html#648">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

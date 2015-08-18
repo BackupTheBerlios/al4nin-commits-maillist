@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r502 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r502%20-%20trunk/found-bugs&In-Reply-To=%3C200711091616.lA9GGPSW027930%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000263.html">
+   <LINK REL="Next"  HREF="000265.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r502 - trunk/found-bugs</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r502%20-%20trunk/found-bugs&In-Reply-To=%3C200711091616.lA9GGPSW027930%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r502 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Nov  9 17:16:25 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000263.html">[Al4nin-commits] r501 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000265.html">[Al4nin-commits] r503 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#264">[ date ]</a>
+              <a href="thread.html#264">[ thread ]</a>
+              <a href="subject.html#264">[ subject ]</a>
+              <a href="author.html#264">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-09 17:16:20 +0100 (Fri, 09 Nov 2007)
+New Revision: 502
+
+Modified:
+   trunk/found-bugs/issue28-HenkTest.omg
+Log:
+reduce cruft
+
+Modified: trunk/found-bugs/issue28-HenkTest.omg
+===================================================================
+--- trunk/found-bugs/issue28-HenkTest.omg	2007-11-09 14:25:10 UTC (rev 501)
++++ trunk/found-bugs/issue28-HenkTest.omg	2007-11-09 16:16:20 UTC (rev 502)
+@@ -74,48 +74,3 @@
+ 
+ tau_constfive = Bind (LV $ Spine' 2v) int int
+ 
+-climb :: Climber ~&gt; Climber
+-{climb (Spine n)} = Spine (S n)
+-{climb (Binder (S Z) st)} = Spine (S st)
+-{climb (Binder (S (S b)) st)} = Binder (S b) (S st)
+-
+-up :: Climber' (Spine st) -&gt; Climber' (Spine (S st))
+-up (Spine' n) = Spine' (S n)
+-
+-
+-climbNonPI :: Climber' e -&gt; Climber' {climb e} -&gt; Equal {discipline 1t {climb e}} {climb {discipline 1t e}}
+-climbNonPI (Spine' m) (Spine' n) = Eq
+-
+-tau :: Henk c -&gt; Henk {climb c}
+-tau (Lit cl) = Lit (up cl)
+-tau Value = Lit (Spine' 1v)
+---tau (Bind cl (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) b) = Bind (NW cl) a (tau b)
+---tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">cl at Binder</A>' 2v 0v) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) b) = Bind (NW cl) a (tau b)
+---tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">cl at Binder</A>' 2v 0v) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) b) = Bind (NW cl) a (tau b)
+-tau (Bind (LV cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = Lit cl
+-
+---Equal {discipline (Spine 1t) {climb (Binder 1t 0t)}} (Spine 1t)
+--- = Equal {discipline (Spine 1t) (Spine 1t)} (Spine 1t)
+-tau (Bind (SE cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) b) = check (Bind cl a (tau b))
+-
+---tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) (Lit b)) = Bind a (Lit (UP b))
+---- tau (Bind Type Type) = Star
+---needs lemma: 
+---tau (Bind Type b) = Bind Type (tau b)
+-{- zu zeigen:
+-Henk {discipline (Spine 1t) a} -&gt; Henk {climb {discipline (Spine 1t) a}}
+-
+-Idee:
+-Equal {climb {discipline (Spine 1t) a}} {discipline (Spine 1t) {climb a}}
+--}
+-
+-diffRule :: Nat' b -&gt; Equal {diff 1t b} (S {diff 0t b})
+-diffRule Z = Eq
+---diffRule (S n) = Eq
+---    where theorem hyp = diffRule n
+-
+-pushClimbIn :: Climber' a -&gt; Equal {climb {discipline (Spine 1t) a}} {discipline (Spine 1t) {climb a}}
+---pushClimbIn (Spine' b) = check Eq
+-
+--- need lemma: tau (Bind a b) = Bind a (tau b)
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000263.html">[Al4nin-commits] r501 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000265.html">[Al4nin-commits] r503 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#264">[ date ]</a>
+              <a href="thread.html#264">[ thread ]</a>
+              <a href="subject.html#264">[ subject ]</a>
+              <a href="author.html#264">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

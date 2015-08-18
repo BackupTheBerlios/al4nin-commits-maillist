@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r405 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r405%20-%20trunk/purgatory&In-Reply-To=%3C200707071121.l67BLW3w032236%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000166.html">
+   <LINK REL="Next"  HREF="000168.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r405 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r405%20-%20trunk/purgatory&In-Reply-To=%3C200707071121.l67BLW3w032236%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r405 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Jul  7 13:21:32 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000166.html">[Al4nin-commits] r404 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000168.html">[Al4nin-commits] r406 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#167">[ date ]</a>
+              <a href="thread.html#167">[ thread ]</a>
+              <a href="subject.html#167">[ subject ]</a>
+              <a href="author.html#167">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-07 13:21:31 +0200 (Sat, 07 Jul 2007)
+New Revision: 405
+
+Modified:
+   trunk/purgatory/Cat.omg
+Log:
+implement the other If form (If2) and recognize it for optimization; also do some beautification
+
+Modified: trunk/purgatory/Cat.omg
+===================================================================
+--- trunk/purgatory/Cat.omg	2007-07-04 16:25:25 UTC (rev 404)
++++ trunk/purgatory/Cat.omg	2007-07-07 11:21:31 UTC (rev 405)
+@@ -55,10 +55,10 @@
+ 
+ blow :: Nat ~&gt; Prod *0 ~&gt; Prod *0
+ {blow Z s} = s
+-{blow (S n) s} = PCons t {blow n s}
++{blow (S n) s} = [t; {blow n s}]sh
+ 
+ blowLike :: Nat ~&gt; *0 ~&gt; Prod *0 ~&gt; Prod *0
+-{blowLike (S arty) (c -&gt; d) s} = PCons c {blowLike arty d s}
++{blowLike (S arty) (c -&gt; d) s} = [c; {blowLike arty d s}]sh
+ {blowLike Z a s} = s
+ 
+ range :: Nat ~&gt; *0 ~&gt; *0
+@@ -101,25 +101,26 @@
+ 
+ 
+ data Cat :: (Prod *0) ~&gt; (Prod *0) ~&gt; *0 where
+-  Push :: Tractable a -&gt; a -&gt; Cat s (PCons a s)
+-  Prim :: Tractable c -&gt; Primitive -&gt; (a -&gt; c) -&gt; Cat (PCons a {blowLike {countArr c} c s}) (PCons {range {countArr c} c} s)
+-  Dup :: Cat (PCons t s) (PCons t (PCons t s))
++  Push :: Tractable a -&gt; a -&gt; Cat s [a; s]sh
++  Prim :: Tractable c -&gt; Primitive -&gt; (a -&gt; c) -&gt; Cat [a; {blowLike {countArr c} c s}]sh [{range {countArr c} c}; s]sh
++  Dup :: Cat [t; s]sh [t, t; s]sh
+ --  Dig :: Pick Prod Nat -&gt; Cat (PCons t s) (PCons t (PCons t s))
+-  Print :: Cat (PCons t s) s
++  Print :: Cat [t; s]sh s
+   PopN :: Nat' (S n) -&gt; Cat {blow (S n) s} s
+-  Swap :: Cat (PCons a (PCons b s)) (PCons b (PCons a s))
++  Swap :: Cat [a, b; s]sh [b, a; s]sh
+ -- Perm :: Pick Prod Nat -- TODO
+-  Block :: Thrist Cat b c -&gt; Cat a (PCons (Cat b c) a)
++  Block :: Thrist Cat b c -&gt; Cat a [Cat b c; a]sh
+   Quote :: Thrist Cat a b -&gt; Cat a b
+-  Apply :: Cat (PCons (Cat a b) a) b
++  Apply :: Cat [Cat a b; a]sh b
+   If :: Thrist Cat s t -&gt;
+         Thrist Cat s t -&gt;
+-        Cat (PCons Bool s) t
++        Cat [Bool; s]sh t
++  If2 :: Cat [Thrist Cat s t, Thrist Cat s t, Bool; s]sh t
+ 
+ 
+ data ShapeTractable :: (Prod *0) ~&gt; * where
+   Opaque :: ShapeTractable a
+-  Ontop :: Tractable b -&gt; ShapeTractable a -&gt; ShapeTractable (PCons b a)
++  Ontop :: Tractable b -&gt; ShapeTractable a -&gt; ShapeTractable [b; a]sh
+  deriving List(st)
+   
+ tc0 = (let a = Opaque in (CatTractable a (Ontop IntTractable a))) :: Tractable (Cat a (PCons Int a))
+@@ -161,7 +162,7 @@
+ 
+ data Stack :: Prod *0 ~&gt; *0 where
+   Empty :: Stack PNil
+-  Pu :: a -&gt; Stack s -&gt; Stack (PCons a s)
++  Pu :: a -&gt; Stack s -&gt; Stack [a; s]sh
+  deriving List(s)
+ 
+ {-
+@@ -259,6 +260,7 @@
+ 
+ optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
+ optimizeCat (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">i at Cons</A> (If yes no) r) = optimizeIf i yes no r
++optimizeCat [Push rep1 yes, Push rep2 no, If2; r]l = optimizeIf [If yes no; r]l yes no r
+ optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Push</A> rep a; r]l = [p; optimizeCat r]l
+ optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Swap</A>; r]l = [p; optimizeCat r]l
+ optimizeCat []l = []l
+@@ -276,7 +278,7 @@
+ 
+ 
+ 
+-optimizeIf :: Thrist Cat (PCons Bool a) b -&gt; Thrist Cat a c -&gt; Thrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat (PCons Bool a) b
++optimizeIf :: Thrist Cat [Bool; a]sh b -&gt; Thrist Cat a c -&gt; Thrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat [Bool; a]sh b
+ 
+ optimizeIf all (Cons (Push rep1 a1) t1) (Cons (Push rep2 a2) t2) rest = case sameTractable rep1 rep2 of
+                                                                           Just Eq -&gt; if sameValue rep1 a1 a2 then optimizeCat $ Cons (Push rep1 a1) (Cons Swap (Cons (If t1 t2) rest)) else all
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000166.html">[Al4nin-commits] r404 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000168.html">[Al4nin-commits] r406 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#167">[ date ]</a>
+              <a href="thread.html#167">[ thread ]</a>
+              <a href="subject.html#167">[ subject ]</a>
+              <a href="author.html#167">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r954 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r954%20-%20trunk/purgatory&In-Reply-To=%3C20101217134549.02EF2480F38%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000715.html">
+   <LINK REL="Next"  HREF="000717.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r954 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r954%20-%20trunk/purgatory&In-Reply-To=%3C20101217134549.02EF2480F38%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r954 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 17 14:45:48 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000715.html">[Al4nin-commits] r953 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000717.html">[Al4nin-commits] r955 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-17 14:45:48 +0100 (Fri, 17 Dec 2010)
+New Revision: 954
+
+Modified:
+   trunk/purgatory/Evidence.omg
+Log:
+generalize a bit and allow kinds as VC parameters
+
+Modified: trunk/purgatory/Evidence.omg
+===================================================================
+--- trunk/purgatory/Evidence.omg	2010-12-17 13:27:20 UTC (rev 953)
++++ trunk/purgatory/Evidence.omg	2010-12-17 13:45:48 UTC (rev 954)
+@@ -16,8 +16,8 @@
+ 
+ -- well-formedness: check that names are always defined at the point of reference
+ 
+-data WellFormed :: * ~&gt; * ~&gt; * where
+-  DefFormed :: Raw Value Value -&gt; NamesSofar [r; n]sf -&gt; WellFormed (NamesSofar r) (NamesSofar [r; n]sf)
++data WellFormed :: Sofar Tag ~&gt; Sofar Tag ~&gt; * where
++  DefFormed :: Raw Value Value -&gt; NamesSofar [r; n]sf -&gt; WellFormed r [r; n]sf
+ 
+ data Sofar :: *1 ~&gt; *1 where
+   No :: Sofar t
+@@ -31,7 +31,7 @@
+  deriving LeftList(nsf)
+ 
+ {-
+-checkWellformedness :: NamesSofar bf -&gt; VerboseContext Raw Value Value -&gt; exists sf . VerboseContext WellFormed (NamesSofar bf) (NamesSofar sf)
++checkWellformedness :: NamesSofar bf -&gt; VerboseContext Raw Value Value -&gt; exists sf . VerboseContext WellFormed bf sf
+ checkWellformedness bf {}ve = Ex {}ve
+ --checkWellformedness bf {l=(d@(Def v)); r}ve = Ex {l=DefFormed d [bf; l]nsf; checkWellformedness r}ve
+ checkWellformedness bf {l=(_, v)ra; r}ve = Ex {l=DefFormed (Def v) new; follows}ve
+@@ -39,11 +39,11 @@
+                                                    f (Ex follows) = checkWellformedness new r
+ -}
+ 
+-checkWellformedness :: NamesSofar bf -&gt; VerboseContext Raw Value Value -&gt; exists sf . (NamesSofar bf, VerboseContext WellFormed (NamesSofar bf) (NamesSofar sf), NamesSofar sf)
++checkWellformedness :: NamesSofar bf -&gt; VerboseContext Raw Value Value -&gt; exists sf . (NamesSofar bf, VerboseContext WellFormed bf sf, NamesSofar sf)
+ checkWellformedness bf {}ve = Ex (bf, {}ve, bf)
+ checkWellformedness bf {l=(_, v)ra; r}ve = Ex (bf, {l=DefFormed (Def v) new; follows}ve, newest)
+                                              where new = [bf; l]nsf
+-                                                   more :: exists sg . (NamesSofar [bb;bg]sf, VerboseContext WellFormed (NamesSofar [bb;bg]sf) (NamesSofar sg), NamesSofar sg)
++                                                   more :: exists sg . (NamesSofar [bb;bg]sf, VerboseContext WellFormed [bb;bg]sf sg, NamesSofar sg)
+                                                    more = checkWellformedness new r
+                                                    (_, follows, newest) = more
+ 
+@@ -52,7 +52,7 @@
+   At :: Nat' l -&gt; WellLevelled l
+ 
+ -- representation of contexts with names
+-data VerboseContext :: (* ~&gt; * ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
++data VerboseContext :: (a ~&gt; a ~&gt; *) ~&gt; a ~&gt; a ~&gt; * where
+   E :: VerboseContext k a a
+   Q :: Label n -&gt; k a b -&gt; VerboseContext k b c -&gt; VerboseContext k a c
+  deriving syntax(ve) Record(E, Q)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000715.html">[Al4nin-commits] r953 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000717.html">[Al4nin-commits] r955 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#716">[ date ]</a>
+              <a href="thread.html#716">[ thread ]</a>
+              <a href="subject.html#716">[ subject ]</a>
+              <a href="author.html#716">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r278 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r278%20-%20trunk/purgatory&In-Reply-To=%3C200703221736.l2MHao7Q006047%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000039.html">
+   <LINK REL="Next"  HREF="000041.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r278 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r278%20-%20trunk/purgatory&In-Reply-To=%3C200703221736.l2MHao7Q006047%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r278 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Mar 22 18:36:50 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000039.html">[Al4nin-commits] r277 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000041.html">[Al4nin-commits] r279 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#40">[ date ]</a>
+              <a href="thread.html#40">[ thread ]</a>
+              <a href="subject.html#40">[ subject ]</a>
+              <a href="author.html#40">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-22 18:36:49 +0100 (Thu, 22 Mar 2007)
+New Revision: 278
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+dabbling with theorems
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-22 14:35:31 UTC (rev 277)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-22 17:36:49 UTC (rev 278)
+@@ -65,11 +65,14 @@
+ --  Push :: Stratum Regular ~&gt; Stratum x ~&gt; Stratum Admin
+ -- deriving Nat(s)
+ 
+-collapsePi :: Stratum ~&gt; Stratum ~&gt; Stratum
+-{ collapsePi (Push (Up x) y) (Up x) } = Ground
+-{ collapsePi (Up x) z } = (Up x)
+-{ collapsePi Ground z } = Ground
++collapsePi :: Nat ~&gt; Stratum ~&gt; Stratum
++--{ collapsePi x y } = x
++{ collapsePi Z (Push (Up x) y) } = Ground
++{ collapsePi Z (Up x) } = (Up x)
++{ collapsePi Z Ground } = Ground
++{ collapsePi (S n) x } = x
+ 
++
+ arr2stratum :: * ~&gt; Stratum
+ { arr2stratum (a -&gt; b) } = Push (Up Ground) { arr2stratum b }
+ { arr2stratum Int } = Ground
+@@ -88,13 +91,19 @@
+ { tract2stratum (Tractable Int) } = Ground
+ { tract2stratum (Tractable (a, b)) } = Ground
+ 
++stratDiff :: Stratum ~&gt; Stratum ~&gt; Nat
++{ stratDiff Ground Ground } = #0
++{ stratDiff (Up x) (Up y)} = { stratDiff x y }
++{ stratDiff (Up x) Ground } = S { stratDiff x Ground }
++
+ -- --------- From       To
+ data Henk :: Stratum ~&gt; Stratum ~&gt; *0 where
+   Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) } Ground
+-  Bind :: Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk { collapsePi (Push (Up strat) from) to } to
++  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk { collapsePi { stratDiff (Up strat) to } (Push (Up strat) from) } to
+ --  Func :: (a-&gt;b) -&gt; Henk (Up Ground) Ground -- use Lit and {arr2stratum + cleaner}
+ --  Ref :: Label l -&gt; Henk Ground strat
+-  Type :: Tractable a -&gt; Henk { tract2stratum (Tractable a) } (Up Ground)
++--  Type :: Tractable a -&gt; Henk { tract2stratum (Tractable a) } (Up Ground)
++  Type :: Tractable a -&gt; Henk Ground (Up Ground)
+   Star :: Henk Ground (Up (Up g))
+   -- Application
+   App :: Henk (Push (Up s) from) u -&gt; Henk Ground s -&gt; Henk from u
+@@ -109,20 +118,50 @@
+ guess :: Tractable a -&gt; a
+ guess IntTractable = 42
+ 
+-tau :: Henk strat to -&gt; Henk { collapsePi strat (Up to) } (Up to)
++tau :: Henk strat to -&gt; Henk { collapsePi { stratDiff strat to } strat } (Up to)
+ --tau (Bind l q r) = Bind l q (lazy tau r)
+ --tau (Bind l (q@(Lit _)) (r@(Lit _))) = tau r
+ --tau (Bind l (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">q at Type</A>) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Type</A>)) = Type
+-tau (Bind l q r) = Bind l q (tau r)
++--tau (Bind l q r) = Bind l q (tau r)
+ --tau (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A>) = tau (Bind `ignore a a)
+ --tau (Lit (ArrTractable a (b@(ArrTractable c d)) f) = Bind `woot (tau (Lit b (f (guess a))))
+ --tau (Lit (ArrTractable IntTractable IntTractable) f) = Bind `woot (Lit IntTractable 3) (tau (Lit IntTractable (f 42)))
+ --tau (Lit (ArrTractable IntTractable IntTractable) f) = Bind `woot (Lit IntTractable 3) (tau (Lit IntTractable (f 42)))
+ --tau (Lit (ArrTractable a b) f) = Bind `woot (tau (Lit b (f (guess a))))
+-tau (Lit t _) = Type t
+-tau (Type _) = Star
+-tau Star = Star
++--tau (Lit t _) = Type t
+ 
++prop Stratum' :: Stratum ~&gt; *0 where
++  Ground :: Stratum' Ground
++  Up :: forall (a :: Stratum) . Stratum' a -&gt; Stratum' (Up a)
++  Push :: forall (a :: Stratum) (b :: Stratum) . Stratum' a -&gt; Stratum' b -&gt; Stratum' (Push a b)
++
++
++
++
++--sameStrat1 :: forall (a :: Stratum) (b :: Stratum) . Stratum' a -&gt; Stratum' b -&gt; Equal { stratDiff (Up a) (Up b) } #0 -&gt; Equal a b
++
++
++sameStrat1 :: forall (a :: Stratum) (b :: Stratum) . Stratum' a -&gt; Stratum' b -&gt; Equal { stratDiff a b } #0 -&gt; Equal a b
++sameStrat1 Ground Ground Eq = Eq
++--sameStrat1 (Up x) (Up y) Eq = check (sameStrat1 x y Eq)
++-- where theorem hyp = sameStrat1 x y
++
++--sameStrat :: forall (a :: Stratum) (b :: Stratum) . Equal a b -&gt; Equal { stratDiff a b } #0
++--sameStrat Eq = check Eq
++
++sameStrat0 :: Stratum' a -&gt; Equal { stratDiff a Ground } #0 -&gt; Equal a Ground
++sameStrat0 Ground Eq = Eq
++sameStrat0 (Up g) Eq = unreachable
++
++--sameStratUp :: Stratum' a -&gt; Equal { stratDiff a  } #0 -&gt; Equal a a
++
++
++tau (Bind Z l q r) = check Star
++ where theorem sameStrat0, sameStrat1
++
++-----###tau (Type _) = Star
++-----###tau Star = Star
++
+ kind HasHenk :: *1 where {}
+ 
+ {-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000039.html">[Al4nin-commits] r277 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000041.html">[Al4nin-commits] r279 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#40">[ date ]</a>
+              <a href="thread.html#40">[ thread ]</a>
+              <a href="subject.html#40">[ subject ]</a>
+              <a href="author.html#40">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

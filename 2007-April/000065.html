@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r303 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r303%20-%20trunk/purgatory&In-Reply-To=%3C200704162323.l3GNNL9n020813%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000064.html">
+   <LINK REL="Next"  HREF="000066.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r303 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r303%20-%20trunk/purgatory&In-Reply-To=%3C200704162323.l3GNNL9n020813%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r303 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Apr 17 01:23:21 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000064.html">[Al4nin-commits] r302 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000066.html">[Al4nin-commits] r304 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#65">[ date ]</a>
+              <a href="thread.html#65">[ thread ]</a>
+              <a href="subject.html#65">[ subject ]</a>
+              <a href="author.html#65">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-17 01:23:07 +0200 (Tue, 17 Apr 2007)
+New Revision: 303
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+renamed Lisead-&gt;Thrist, implemented Cat property transformer as a thrist
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-16 12:00:58 UTC (rev 302)
++++ trunk/purgatory/Thrist.omg	2007-04-16 23:23:07 UTC (rev 303)
+@@ -40,18 +40,18 @@
+ 
+ kind Doe = Wi | So
+ 
+-data Thrist :: Doe ~&gt; Doe ~&gt; * where
+-  ToWi :: Thrist a Wi
+-  SoToWi :: Thrist So Wi
+-  WiToWi :: Thrist Wi Wi
+-  WiToSo :: Thrist Wi So
+-  SoTo :: Thrist So b
+-  ToSo :: Thrist a So
++data DooBiDoo :: Doe ~&gt; Doe ~&gt; * where
++  ToWi :: DooBiDoo a Wi
++  SoToWi :: DooBiDoo So Wi
++  WiToWi :: DooBiDoo Wi Wi
++  WiToSo :: DooBiDoo Wi So
++  SoTo :: DooBiDoo So b
++  ToSo :: DooBiDoo a So
+ 
+ 
+-data Lisead :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
+-  Nil :: Lisead k a a
+-  Cons :: k c b -&gt; Lisead k b a -&gt; Lisead k c a
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
+  deriving List(l)
+ 
+ 
+@@ -70,12 +70,12 @@
+ 
+ -}
+ 
+-cat :: Lisead Thrist a b -&gt; String
++cat :: Thrist DooBiDoo a b -&gt; String
+ cat Nil = &quot;&quot;
+ cat (Cons ToWi r) = &quot;ToWi &quot; ++ cat r
+ cat (Cons WiToWi r) = &quot;WiToWi &quot; ++ cat r
+ cat (Cons WiToSo r) = &quot;WiToSo &quot; ++ cat r
+--- cat (Cons SoTo r) = &quot;SoTo &quot; ++ cat r
++cat (Cons SoTo r) = &quot;SoTo &quot; ++ cat r
+ cat (Cons ToSo r) = &quot;ToSo &quot; ++ cat r
+ 
+ 
+@@ -87,3 +87,21 @@
+     where monad maybeM
+ 
+ --- liseadM = Monad (\t -&gt; #[t]l) (\t -&gt; #[t]l) (\t -&gt; #[t]l)
++
++kind Type = T *0
++
++kind CatShape = Shape (Row Type)
++
++data Cat :: CatShape ~&gt; CatShape ~&gt; *0 where
++  Push :: a -&gt; Cat (Shape s) (Shape (RCons (T a) s))
++  Dup :: Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
++  Print :: Cat (Shape (RCons t s)) (Shape s)
++
++cat' :: Thrist Cat a b -&gt; String
++cat' Nil = &quot;&quot;
++cat' (Cons (Push a) r) = &quot;Push &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
++cat' (Cons Dup r) = &quot;Dup&quot; ++ &quot;\n&quot; ++ cat' r
++cat' (Cons Print r) = &quot;Print&quot; ++ &quot;\n&quot; ++ cat' r
++
++interpretCat :: Thrist Cat (forall a . a) b -&gt; IO Int
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000064.html">[Al4nin-commits] r302 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000066.html">[Al4nin-commits] r304 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#65">[ date ]</a>
+              <a href="thread.html#65">[ thread ]</a>
+              <a href="subject.html#65">[ subject ]</a>
+              <a href="author.html#65">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r329 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r329%20-%20trunk/purgatory&In-Reply-To=%3C200704201554.l3KFs6RU014567%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000090.html">
+   <LINK REL="Next"  HREF="000092.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r329 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r329%20-%20trunk/purgatory&In-Reply-To=%3C200704201554.l3KFs6RU014567%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r329 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Apr 20 17:54:06 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000090.html">[Al4nin-commits] r328 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000092.html">[Al4nin-commits] r330 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-20 17:53:50 +0200 (Fri, 20 Apr 2007)
+New Revision: 329
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+can parse several numeric tokens now (separated by space)
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-20 14:35:07 UTC (rev 328)
++++ trunk/purgatory/ThristParser.omg	2007-04-20 15:53:50 UTC (rev 329)
+@@ -54,7 +54,7 @@
+   Rep :: Parse a b -&gt; Parse [a] ([b], [a])     -- consume as many as matches, return rest
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a]) -- all must match, return rest
+   CataStar :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c) -- collapse one or more elements
+-  CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse zero or more elements
++  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c) -- collapse zero or more elements
+   Wrap :: Thrist Parse a b -&gt; Parse a b -- treat a chain of parses as one
+   Or :: Parse a b -&gt; Parse a b -&gt; Parse a b    -- match first or if it doesn't the second
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
+@@ -81,12 +81,11 @@
+ 
+ base n = foldl (\acc x -&gt; (acc * n) + x) 0
+ 
+-num' = #[Rep digit, CataStar (base 10)]l
++num' = #[Rep digit, CataPlus (base 10)]l
+ 
+-num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
++---num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
+ ---num = 
+ 
+-chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), second, CataPlus (base 16)]l
+ 
+ unwrap (Wrap x) = x
+ 
+@@ -125,10 +124,9 @@
+ 
+ parse (Cons (CataStar f) r) (a, over) = parse r ((f a), over)
+ 
+-parse (Cons (CataPlus _) _) [] = Nothing
++parse (Cons (CataPlus _) _) ([], _) = Nothing
++parse (Cons (CataPlus f) r) (a, over) = parse r ((f a), over)
+ 
+-parse (Cons (CataPlus f) r) a = parse r (f a)
+-
+ parse (Cons (Wrap thr) r) a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
+ 
+ parse (Cons (Seq2 p1 p2) r) (a1:a2:rest) = do { b1 &lt;- parse #[p1]l a1; b2 &lt;- parse #[p2]l a2; parse r ((b1, b2), rest) } where monad maybeM
+@@ -168,7 +166,12 @@
+ 
+ t1 = parse #[Seq (Wrap #[Rep $ letter 'a', proper]l) (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
+ t1a = parse #[Seq (proper' $ Rep $ letter 'a') (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
+-t2 = parse (unwrap chexnum) &quot;0xFF&quot;
++
++
++--chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), CataPlus (base 16)]l
++--t2 = parse (unwrap chexnum) &quot;0xFF&quot;
++
++
+ t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
+ t3a = word &quot;abcd&quot;
+ 
+@@ -216,8 +219,8 @@
+ or (p:ps) = foldl Or p ps
+ 
+ 
+-alts :: (a -&gt; Parse a b) -&gt; [a] -&gt; Thrist Parse a b
+-alts f as = #[or (map f as)]l
++alts :: (a -&gt; Parse a b) -&gt; [a] -&gt; Parse a b
++alts f as = or (map f as)
+ 
+ lexer' :: Thrist Parse [Char] ([Token'], [Char])
+ 
+@@ -254,18 +257,22 @@
+ appendThrist (Cons b r) a = Cons b (appendThrist r a)
+ -}
+ 
+-lexer' = #[Wrap token, Try munch]l
++lexer' = #[Wrap token', Try munch]l
+ 
++
+ munch :: (Token', [Char]) -&gt; Maybe ([Token'], [Char])
+-munch (t, rest) = Just ([t], rest)-- do { (ts, undigestable) &lt;- parse lexer' rest; return (t:ts, undigestable) } where monad maybeM
++munch (t, []) = Just ([t], &quot;&quot;)
++munch (t, rest) = do
++		  (spaces, rest) &lt;- parse #[Rep whitespace]l rest
++		  case rest of
++			   [] -&gt; munch (t, [])
++			   _ -&gt; do
++				(ts, []) &lt;- parse lexer' (trace &quot;rest is: &quot; rest)
++				return (t:ts, [])
++		      where monad maybeM
+ 
+-token = extendThrist num' (Sure (\ (i, r) -&gt; (Token $ Num i, r)))
++token' = extendThrist num' (Sure (\ (i, r) -&gt; (Token $ Num i, (trace &quot;r is: &quot; r))))
+ 
+ 
+-{-
+-kk = extendThrist
+-     (extendThrist
+-      num'
+-      (Sure (\ (i, r) -&gt; (Token $ Num i, r))))
+-     (Try munch)
+--}
++tokenwhite = token'
++--tokenwhite = Seq (Wrap token') (Rep whitespace)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000090.html">[Al4nin-commits] r328 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000092.html">[Al4nin-commits] r330 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#91">[ date ]</a>
+              <a href="thread.html#91">[ thread ]</a>
+              <a href="subject.html#91">[ subject ]</a>
+              <a href="author.html#91">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

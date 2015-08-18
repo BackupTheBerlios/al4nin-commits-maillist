@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r509 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r509%20-%20trunk/purgatory&In-Reply-To=%3C200711111113.lABBDm4b028221%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000270.html">
+   <LINK REL="Next"  HREF="000273.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r509 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r509%20-%20trunk/purgatory&In-Reply-To=%3C200711111113.lABBDm4b028221%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r509 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Nov 11 12:13:48 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000270.html">[Al4nin-commits] r508 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000273.html">[Al4nin-commits] r510 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#272">[ date ]</a>
+              <a href="thread.html#272">[ thread ]</a>
+              <a href="subject.html#272">[ subject ]</a>
+              <a href="author.html#272">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-11 12:13:46 +0100 (Sun, 11 Nov 2007)
+New Revision: 509
+
+Modified:
+   trunk/purgatory/HenkTest.omg
+Log:
+snapshot this revision
+
+Modified: trunk/purgatory/HenkTest.omg
+===================================================================
+--- trunk/purgatory/HenkTest.omg	2007-11-09 23:10:10 UTC (rev 508)
++++ trunk/purgatory/HenkTest.omg	2007-11-11 11:13:46 UTC (rev 509)
+@@ -50,8 +50,6 @@
+ 
+ -- determine the binding discipline
+ discipline :: Nat ~&gt; Climber ~&gt; Climber
+---{discipline a (Spine b)} = Binder (S {diff a b}) b
+---{discipline a (Binder (S Z) Z)} = Binder (S a) Z
+ {discipline a b} = Binder (S {diff a {strat b}}) {strat b}
+ 
+ -- strat: get the stratum
+@@ -84,22 +82,10 @@
+ up (Spine' n) = Spine' (S n)
+ 
+ 
+---climbNonPI :: Climber' e -&gt; Climber' {climb e} -&gt; Equal {discipline 1t {climb e}} {climb {discipline 1t e}}
+---climbNonPI (Spine' m) (Spine' n) = Eq
+-
+-restoreLV :: Climber' (Binder 1t {strat b})
+-	  -&gt; Climber' {discipline a b}
+-	  -&gt; Equal (Binder 1t {strat b}) {discipline a b}
++restoreLV :: Equal (Binder 1t {strat b}) {discipline a b}
+ 	  -&gt; Equal (Spine (S {strat b})) {climb {discipline a b}}
+-restoreLV _ _ Eq = Eq
++restoreLV Eq = Eq
+ 
+-{-
+-restoreSE :: Climber' {discipline a {climb b}}
+-	  -&gt; Climber' (Binder (S c) (S {strat b}))
+-	  -&gt; Equal {discipline a {climb b}} (Binder (S c) (S {strat b}))
+-restoreSE _ _ = Eq
+--}
+-
+ climbLemma :: Climber' a
+ 	   -&gt; Equal {strat {climb a}} (S {strat a})
+ climbLemma (Spine' _) = Eq
+@@ -117,8 +103,8 @@
+     where theorem hyp = plusLemma n
+ 
+ 
+-restoreSE :: Climber' (Binder (S (S c)) {strat b})
+-	  -&gt; Climber' {discipline {plus {strat b} (S c)} b}
++restoreSE :: Climber' (Binder (S (S c)) {strat b}) -- not needed
++	  -&gt; Climber' {discipline {plus {strat b} (S c)} b} -- not needed
+ 	  -&gt; Equal (Binder (S (S c)) {strat b}) {discipline {plus {strat b} (S c)} b}
+ 	  -&gt; Equal (Binder (S c) (S {strat b})) {discipline {plus {strat b} (S c)} {climb b}}
+ restoreSE (SE a) (SE b)  (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">c at Eq</A>) = Eq
+@@ -127,15 +113,34 @@
+ 		  hypPlus = plusLemma undefined
+ 
+ 
++
++diffPlusLemma :: Nat' n -&gt; Equal {diff {plus n m} n} m -- see diffLemma
++diffPlusLemma Z = Eq
++diffPlusLemma (S n) = Eq
++    where theorem ind = diffPlusLemma n
++
++theorem obv = diffPlusLemma undefined
++
++
++incDiffLemma :: LE m n -&gt; Nat' m -&gt; Equal {diff (S n) m} (S {diff n m})
++incDiffLemma _ Z = Eq
++incDiffLemma Base (S m) = unreachable
++incDiffLemma (Step pred) (S m) = Eq
++    where theorem ind = incDiffLemma pred m
++
++
++climbRule :: Equal {climb (Binder (S {diff (S n) st}) st)} (Binder (S {diff n st}) (S st))
++climbRule = Eq
++   where theorem help = incDiffLemma undefined -- fishy!
++
+ tau :: Henk c -&gt; Henk {climb c}
+ tau (Lit cl) = Lit (up cl)
+ tau Value = Lit (Spine' 1v)
+ --DONE--tau (Bind (LV cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = Lit cl
+ 
+ 
+-
+ tau (Bind (LV cl) _ _) = Lit cl
+-    where theorem hyp = restoreLV (LV cl) (LV cl) Eq
++    where theorem hyp = restoreLV Eq
+ 
+ 
+ --Equal {discipline (Spine 1t) {climb (Binder 1t 0t)}} (Spine 1t)
+@@ -143,37 +148,20 @@
+ --TODO-tau (Bind (SE cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) b) = check (Bind cl a (tau b))
+ --TODO-    where theorem hyp = restoreSE (SE cl) (SE cl) Eq
+ 
++{-
++tau (Bind (SE (SE cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) b) = check (Bind (SE cl) a (tau b))
++    where theorem hypClimb = climbLemma (undefined :: Climber' a),
++                  cli = climbRule,
++                  help = incDiffLemma, --undefined, -- fishy!
++                  hyp = restoreSE (SE (SE cl)) (SE (SE cl)) Eq --,
++                  --obv = diffPlusLemma 3v
++-}
+ 
+-
+-
+-
+ --TODO-tau (Bind (SE (LV cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) b) = check (Bind (LV cl) a (tau b))
+---TODO-    where theorem hyp = restoreLV (LV cl) (LV cl) Eq
++--TODO-    where theorem hyp = restoreLV Eq
+ --    where theorem hyp = restoreSE (SE cl) (SE cl) Eq
+ 
+-tau (Bind (SE (LV cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = check (Bind (LV cl) a (tau b))
+-    where theorem hyp = restoreLV (LV cl) (LV cl) Eq
++-- issue35:
++--TODO-tau (Bind (SE (LV cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = check (Bind (LV cl) a (tau b))
++--TODO-    where theorem hyp = restoreLV Eq
+ 
+-
+-
+---tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) (Lit b)) = Bind a (Lit (UP b))
+---- tau (Bind Type Type) = Star
+---needs lemma: 
+---tau (Bind Type b) = Bind Type (tau b)
+-{- zu zeigen:
+-Henk {discipline (Spine 1t) a} -&gt; Henk {climb {discipline (Spine 1t) a}}
+-
+-Idee:
+-Equal {climb {discipline (Spine 1t) a}} {discipline (Spine 1t) {climb a}}
+--}
+-
+-diffRule :: Nat' b -&gt; Equal {diff 1t b} (S {diff 0t b})
+-diffRule Z = Eq
+---diffRule (S n) = Eq
+---    where theorem hyp = diffRule n
+-
+-pushClimbIn :: Climber' a -&gt; Equal {climb {discipline (Spine 1t) a}} {discipline (Spine 1t) {climb a}}
+---pushClimbIn (Spine' b) = check Eq
+-
+--- need lemma: tau (Bind a b) = Bind a (tau b)
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000270.html">[Al4nin-commits] r508 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000273.html">[Al4nin-commits] r510 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#272">[ date ]</a>
+              <a href="thread.html#272">[ thread ]</a>
+              <a href="subject.html#272">[ subject ]</a>
+              <a href="author.html#272">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

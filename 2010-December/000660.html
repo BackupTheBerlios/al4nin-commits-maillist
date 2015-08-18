@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r898 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r898%20-%20trunk/purgatory&In-Reply-To=%3C20101210150252.8453C480D2E%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000659.html">
+   <LINK REL="Next"  HREF="000661.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r898 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r898%20-%20trunk/purgatory&In-Reply-To=%3C20101210150252.8453C480D2E%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r898 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 10 16:02:52 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000659.html">[Al4nin-commits] r897 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000661.html">[Al4nin-commits] r899 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#660">[ date ]</a>
+              <a href="thread.html#660">[ thread ]</a>
+              <a href="subject.html#660">[ subject ]</a>
+              <a href="author.html#660">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-10 16:02:52 +0100 (Fri, 10 Dec 2010)
+New Revision: 898
+
+Modified:
+   trunk/purgatory/Kinding2.omg
+Log:
+cleanups, more natural now, but problems persist
+
+Modified: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-10 14:40:27 UTC (rev 897)
++++ trunk/purgatory/Kinding2.omg	2010-12-10 15:02:52 UTC (rev 898)
+@@ -123,8 +123,8 @@
+ 
+ data Expr :: Walks n ~&gt; * where
+   Lit :: Qual a b -&gt; Expr [a]ws  -- e.g. 42::Int
+-  Lambda :: Context Anchored ws -&gt; Expr [{heart ws}]ws -&gt; Expr ws -- e.g. \a:Int.42
+-  Appl :: Expr [f; r]ws -&gt; Expr [{south f}]ws -&gt; Expr r
++  Lambda :: Context Anchored ws -&gt; Expr ws -- e.g. \a:Int.42
++  Appl :: Expr [{south f}]ws -&gt; Expr [f; r]ws -&gt; Expr r
+ 
+ 
+ -- Tests
+@@ -134,15 +134,15 @@
+ 
+ -- regular lambda2 : \x:Int.42
+ lambda2Int = ((Type, Star)ty`2)ty
+-kt1 = Appl (Lambda [lambda2Int; Heart Term]c (Lit Term)) (Lit Term)
++kt1 = Appl (Lit Term) (Lambda [lambda2Int; Heart Term]c)
+ 
+ -- regular PI1 : pi (x:Int).Int
+ pi1Int = ((Type, Star)ty`1)ty
+-kt2 = Appl (Lambda [pi1Int; Heart Type]c (Lit Type)) (Lit Term)
++kt2 = Appl (Lit Term) (Lambda [pi1Int; Heart Type]c)
+ 
+ -- type-level lambda2 : /\x:*:Int
+ lambda2star = ((0ty, 1ty)ty`2)ty
+-kt3 = Appl (Lambda [lambda2star; Heart Type]c (Lit Type)) (Lit Type)
++kt3 = Appl (Lit Type) (Lambda [lambda2star; Heart Type]c)
+ 
+ -- mixed form: \f:Int-&gt;Int.f 42
+ lambda2Int_Int = ((pi1Int, 0ty)ty`2)ty
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000659.html">[Al4nin-commits] r897 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000661.html">[Al4nin-commits] r899 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#660">[ date ]</a>
+              <a href="thread.html#660">[ thread ]</a>
+              <a href="subject.html#660">[ subject ]</a>
+              <a href="author.html#660">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

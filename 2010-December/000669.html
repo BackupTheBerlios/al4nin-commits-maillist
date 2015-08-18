@@ -1,0 +1,406 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r907 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r907%20-%20trunk/purgatory&In-Reply-To=%3C20101210185656.A7BA4480EA1%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000668.html">
+   <LINK REL="Next"  HREF="000670.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r907 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r907%20-%20trunk/purgatory&In-Reply-To=%3C20101210185656.A7BA4480EA1%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r907 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 10 19:56:56 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000668.html">[Al4nin-commits] r906 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000670.html">[Al4nin-commits] r908 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#669">[ date ]</a>
+              <a href="thread.html#669">[ thread ]</a>
+              <a href="subject.html#669">[ subject ]</a>
+              <a href="author.html#669">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-10 19:56:56 +0100 (Fri, 10 Dec 2010)
+New Revision: 907
+
+Removed:
+   trunk/purgatory/Kinding2.omg
+Modified:
+   trunk/purgatory/Kinding.omg
+Log:
+merge back the qualifier application subproject
+
+Modified: trunk/purgatory/Kinding.omg
+===================================================================
+--- trunk/purgatory/Kinding.omg	2010-12-10 18:53:47 UTC (rev 906)
++++ trunk/purgatory/Kinding.omg	2010-12-10 18:56:56 UTC (rev 907)
+@@ -28,9 +28,7 @@
+ -- (esp. p. 4, item 4. &quot;Higher degrees&quot;).
+ --
+ -- There are still many limitations, but I think
+--- the major obstacles are solved, contexts are
+--- easy to add, moreover categorizers must admit
+--- dependent types.
++-- the major obstacles are solved.
+ 
+ import &quot;LangPrelude.prg&quot;
+ 
+@@ -38,35 +36,41 @@
+ 
+ data Payload :: *1 where
+   None :: Payload
+-  Charge :: Nat ~&gt; Nat ~&gt; Payload
++  Charge :: Nat ~&gt; Nat ~&gt; Payload ~&gt; Payload
++ deriving Record(p)
+ 
+ --                  v-- dimensionality
+ --           v-- stratum
+ data Walk :: Nat ~&gt; Nat ~&gt; Payload ~&gt; *1 where
+   Origin :: Walk 0t 0t None
+   North :: Walk n 0t None ~&gt; Walk (1+n)t 0t None
+-  Pair :: Walk k l None ~&gt; Walk n m None ~&gt; Walk n m (Charge k l)
+-  SE :: Walk (1+n)t m (Charge k l) ~&gt; Walk n (1+m)t (Charge k l)
++  Pair :: Walk k l p ~&gt; Walk n m None ~&gt; Walk n m {k=l;p}p
++  SE :: Walk (1+n)t m {k=l;p}p ~&gt; Walk n (1+m)t {k=l;p}p
+  deriving syntax (w) Nat(Origin, North) Tick(SE) Pair(Pair)
+ 
+--- Types are
++-- list of walks ending in the same stratum
++data Walks :: Nat ~&gt; *1 where
++  Heart :: Walks n
++  Wrap :: Walk n m p ~&gt; Walks n ~&gt; Walks n
++ deriving syntax (ws) List(Heart, Wrap)
++
++-- Qualifiers are
+ --   * 0-dimensional: 42, Int, *, ...
+ --   * 1-dimensional: PI a:Int.Int
+ --   * 2-dimensional: \, dependent product: {a:A, b:B(a)}
+ --   * etc.
+ --
+--- types are parametrized by walks
++-- they are parametrized by walks
+ -- TODO:
+---   * Type applications
+---   * Sigma types
++--   * Sigma types (dependent sums)
+ 
+-data Type :: Walk n m p ~&gt; Walk (1+n)t m' p' ~&gt; *  where
+-  Star :: Type 2w 3w
+-  Up :: Type (2+n)w (3+n)w -&gt; Type (3+n)w (4+n)w
+-  Type :: Type 1w 2w
+-  Term :: Type 0w 1w
+-  Ext :: Type (1+n)w (2+n)w -&gt; Type r s -&gt; Type ((1+n)w, r)w s
+-  Lam :: Type p {up p} -&gt; Type (p`1)w {up (p`1)w}
++data Qual :: Walk n m p ~&gt; Walk (1+n)t m' p' ~&gt; *  where
++  Star :: Qual 2w 3w
++  Up :: Qual (2+n)w (3+n)w -&gt; Qual (3+n)w (4+n)w
++  Type :: Qual 1w 2w
++  Term :: Qual 0w 1w
++  Ext :: Qual p {up p} -&gt; Qual r s -&gt; Qual (p, r)w s
++  Lam :: Qual p {up p} -&gt; Qual (p`1)w {up (p`1)w}
+  deriving syntax (ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
+ 
+ -- tau: calculate classifier
+@@ -77,7 +81,7 @@
+ {up (1+n)w} = (2+n)w
+ {up 0w} = 1w
+ 
+-tau :: Type a ta -&gt; Type ta {up ta}
++tau :: Qual a ta -&gt; Qual ta {up ta}
+ tau (c, h)ty = tau h
+ tau ((c, h)ty`1)ty = h
+ tau (p`2)ty = (p`1)ty
+@@ -87,44 +91,66 @@
+ tau Term = Type
+ 
+ -- extract payload from lambda
+-charge :: Walk n m (Charge k l) ~&gt; Walk k l None
++charge :: Walk n m {k=l;p}p ~&gt; Walk k l p
+ {charge (c, t)w} = c
+ {charge (p`1)w} = {charge p}
+ 
+-uncharge :: Type p q -&gt; Type {charge p} {up {charge p}}
++uncharge :: Qual p q -&gt; Qual {charge p} {up {charge p}}
+ uncharge (c, _)ty = c
+ uncharge (p`1)ty = uncharge p
+ 
+ -- calculate heart
+-south :: Walk (1+n)t 0t None ~&gt; Walk n 0t None
+-{south (1+n)w} = n
++heart :: Walks n ~&gt; Walk n 0t None
++{heart [h]ws} = h
++{heart [a, b; r]ws} = {heart [b; r]ws}
+ 
+-heart :: Walk n m (Charge k l) ~&gt; Walk n 0t None
+-{heart (p`1)w} = {south {heart p}}
+-{heart (c, h)w} = h
++-- contexts accumulate qualifiers (possibly around a heart)
+ 
++kind Fixture = Floating | Anchored
++
++data Context :: Fixture ~&gt; Walks n ~&gt; * where
++  Empty :: Context Floating []ws
++  Heart :: Qual n (1+n)w -&gt; Context Anchored [n]ws
++  Qualify :: Qual (v`1)w {up (v`1)w} -&gt; Context f ws -&gt; Context f [(v`1)w; ws]ws
++  Appl' :: Equal {charge f} b
++           =&gt; Qual a b
++           -&gt; Context Anchored [f; r]ws
++           -&gt; Context Anchored r
++ deriving syntax (c) List(Empty, Qualify) Pair(Appl')
++
+ -- runtime values are represented by expressions
+ 
+-data Expr :: Walk n m p ~&gt; * where
+-  Lit :: Type a b -&gt; Expr a  -- e.g. 42::Int
+-  Lambda :: Type (p`1)w {up (p`1)w} -&gt; Expr {heart (p`1)w} -&gt; Expr (p`1)w -- e.g. \a:Int.42
+-  Appl :: Expr f -&gt; Expr {south {charge f}} -&gt; Expr {heart f}
++{-
++data Expr :: Walks n ~&gt; * where
++  Lit :: Qual a b -&gt; Expr [a]ws  -- e.g. 42::Int
++  Lambda :: Context Anchored [a, b; r]ws -&gt; Expr [a, b; r]ws -- e.g. \a:Int.42
++  Appl :: Equal {charge f} {up a} =&gt; Expr [a]ws -&gt; Expr [f; r]ws -&gt; Expr r
++-}
+ 
+-
+ -- Tests
+ 
+-##test &quot;exclude Term categorizer&quot;
+-  t0 = (Term, Star)ty
++-- we allow Term categorizer (pi x:42.25) in contexts
++kt0 = [((Term, Type)ty`1)ty; Heart Term]c
+ 
++##test &quot;exclude Term categorizer's (pi x:42.25) application&quot;
++ kt0' = (undefined, kt0)c
++
+ -- regular lambda2 : \x:Int.42
+ lambda2Int = ((Type, Star)ty`2)ty
+-t1 = Appl (Lambda lambda2Int (Lit Term)) (Lit Term)
++kt1 = (Term, [lambda2Int; Heart Term]c)c
+ 
+ -- regular PI1 : pi (x:Int).Int
+ pi1Int = ((Type, Star)ty`1)ty
+-t2 = Appl (Lambda pi1Int (Lit Type)) (Lit Term)
++kt2 = (Term, [pi1Int; Heart Type]c)c
+ 
+ -- type-level lambda2 : /\x:*:Int
+ lambda2star = ((0ty, 1ty)ty`2)ty
+-t3 = Appl (Lambda lambda2star (Lit Type)) (Lit Type)
++kt3 = (Type, [lambda2star; Heart Type]c)c
+ 
++-- mixed form: \f:Int-&gt;Int.f 42
++lambda2Int_Int = ((pi1Int, 0ty)ty`2)ty
++kt4 = (lambda2Int, [lambda2Int_Int; Heart Term]c)c
++
++-- 2 args: \f i.f i
++kt5 = (Term, lambda2Int, [lambda2Int_Int, lambda2Int; Heart Term]c)c
++
+
+
+Property changes on: trunk/purgatory/Kinding.omg
+___________________________________________________________________
+Modified: svn:mergeinfo
+   - /trunk/purgatory/Kinding2.omg:871-879
+   + /trunk/purgatory/Kinding2.omg:871-879,881-906
+
+Deleted: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-10 18:53:47 UTC (rev 906)
++++ trunk/purgatory/Kinding2.omg	2010-12-10 18:56:56 UTC (rev 907)
+@@ -1,156 +0,0 @@
+-{-
+- * Copyright (c) 2010 Gabor Greif
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining a copy
+- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+- * in the Software without restriction, including without limitation the rights
+- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+- * of the Software, and to permit persons to whom the Software is furnished to do
+- * so, subject to the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+- * OR OTHER DEALINGS IN THE SOFTWARE.
+- -}
+-
+--- Implement the PTS-like plane
+--- of PIs and lambdas (\ and /\), etc.
+--- Please refer to
+---  <A HREF="http://www.cedar-forest.org/forest/papers/journals-publications/jfp6-2.ps">http://www.cedar-forest.org/forest/papers/journals-publications/jfp6-2.ps</A>
+--- (esp. p. 4, item 4. &quot;Higher degrees&quot;).
+---
+--- There are still many limitations, but I think
+--- the major obstacles are solved.
+-
+-import &quot;LangPrelude.prg&quot;
+-
+--- walks in the lambda plane
+-
+-data Payload :: *1 where
+-  None :: Payload
+-  Charge :: Nat ~&gt; Nat ~&gt; Payload ~&gt; Payload
+- deriving Record(p)
+-
+---                  v-- dimensionality
+---           v-- stratum
+-data Walk :: Nat ~&gt; Nat ~&gt; Payload ~&gt; *1 where
+-  Origin :: Walk 0t 0t None
+-  North :: Walk n 0t None ~&gt; Walk (1+n)t 0t None
+-  Pair :: Walk k l p ~&gt; Walk n m None ~&gt; Walk n m {k=l;p}p
+-  SE :: Walk (1+n)t m {k=l;p}p ~&gt; Walk n (1+m)t {k=l;p}p
+- deriving syntax (w) Nat(Origin, North) Tick(SE) Pair(Pair)
+-
+--- list of walks ending in the same stratum
+-data Walks :: Nat ~&gt; *1 where
+-  Heart :: Walks n
+-  Wrap :: Walk n m p ~&gt; Walks n ~&gt; Walks n
+- deriving syntax (ws) List(Heart, Wrap)
+-
+--- Qualifiers are
+---   * 0-dimensional: 42, Int, *, ...
+---   * 1-dimensional: PI a:Int.Int
+---   * 2-dimensional: \, dependent product: {a:A, b:B(a)}
+---   * etc.
+---
+--- they are parametrized by walks
+--- TODO:
+---   * Sigma types (dependent sums)
+-
+-data Qual :: Walk n m p ~&gt; Walk (1+n)t m' p' ~&gt; *  where
+-  Star :: Qual 2w 3w
+-  Up :: Qual (2+n)w (3+n)w -&gt; Qual (3+n)w (4+n)w
+-  Type :: Qual 1w 2w
+-  Term :: Qual 0w 1w
+-  Ext :: Qual p {up p} -&gt; Qual r s -&gt; Qual (p, r)w s
+-  Lam :: Qual p {up p} -&gt; Qual (p`1)w {up (p`1)w}
+- deriving syntax (ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
+-
+--- tau: calculate classifier
+-up :: Walk n m p ~&gt; Walk (1+n)t m' p'
+-{up (c, h)w} = {up h}
+-{up ((c, h)w`1)w} = h
+-{up (p`2)w} = (p`1)w
+-{up (1+n)w} = (2+n)w
+-{up 0w} = 1w
+-
+-tau :: Qual a ta -&gt; Qual ta {up ta}
+-tau (c, h)ty = tau h
+-tau ((c, h)ty`1)ty = h
+-tau (p`2)ty = (p`1)ty
+-tau (1+n)ty = (2+n)ty
+-tau 0ty = 1ty
+-tau Type = Star
+-tau Term = Type
+-
+--- extract payload from lambda
+-charge :: Walk n m {k=l;p}p ~&gt; Walk k l p
+-{charge (c, t)w} = c
+-{charge (p`1)w} = {charge p}
+-
+-uncharge :: Qual p q -&gt; Qual {charge p} {up {charge p}}
+-uncharge (c, _)ty = c
+-uncharge (p`1)ty = uncharge p
+-
+--- calculate heart
+-heart :: Walks n ~&gt; Walk n 0t None
+-{heart [h]ws} = h
+-{heart [a, b; r]ws} = {heart [b; r]ws}
+-
+--- contexts accumulate qualifiers (possibly around a heart)
+-
+-kind Fixture = Floating | Anchored
+-
+-data Context :: Fixture ~&gt; Walks n ~&gt; * where
+-  Empty :: Context Floating []ws
+-  Heart :: Qual n (1+n)w -&gt; Context Anchored [n]ws
+-  Qualify :: Qual (v`1)w {up (v`1)w} -&gt; Context f ws -&gt; Context f [(v`1)w; ws]ws
+-  Appl' :: Equal {charge f} b
+-           =&gt; Qual a b
+-           -&gt; Context Anchored [f; r]ws
+-           -&gt; Context Anchored r
+- deriving syntax (c) List(Empty, Qualify) Pair(Appl')
+-
+--- runtime values are represented by expressions
+-
+-{-
+-data Expr :: Walks n ~&gt; * where
+-  Lit :: Qual a b -&gt; Expr [a]ws  -- e.g. 42::Int
+-  Lambda :: Context Anchored [a, b; r]ws -&gt; Expr [a, b; r]ws -- e.g. \a:Int.42
+-  Appl :: Equal {charge f} {up a} =&gt; Expr [a]ws -&gt; Expr [f; r]ws -&gt; Expr r
+--}
+-
+--- Tests
+-
+--- we allow Term categorizer (pi x:42.25) in contexts
+-kt0 = [((Term, Type)ty`1)ty; Heart Term]c
+-
+-##test &quot;exclude Term categorizer's (pi x:42.25) application&quot;
+- kt0' = (undefined, kt0)c
+-
+--- regular lambda2 : \x:Int.42
+-lambda2Int = ((Type, Star)ty`2)ty
+-kt1 = (Term, [lambda2Int; Heart Term]c)c
+-
+--- regular PI1 : pi (x:Int).Int
+-pi1Int = ((Type, Star)ty`1)ty
+-kt2 = (Term, [pi1Int; Heart Type]c)c
+-
+--- type-level lambda2 : /\x:*:Int
+-lambda2star = ((0ty, 1ty)ty`2)ty
+-kt3 = (Type, [lambda2star; Heart Type]c)c
+-
+--- mixed form: \f:Int-&gt;Int.f 42
+-lambda2Int_Int = ((pi1Int, 0ty)ty`2)ty
+-kt4 = (lambda2Int, [lambda2Int_Int; Heart Term]c)c
+-
+--- 2 args: \f i.f i
+-kt5 = (Term, lambda2Int, [lambda2Int_Int, lambda2Int; Heart Term]c)c
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000668.html">[Al4nin-commits] r906 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000670.html">[Al4nin-commits] r908 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#669">[ date ]</a>
+              <a href="thread.html#669">[ thread ]</a>
+              <a href="subject.html#669">[ subject ]</a>
+              <a href="author.html#669">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

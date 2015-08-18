@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r554 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r554%20-%20trunk/purgatory&In-Reply-To=%3C200712070000.lB700fLL019481%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000316.html">
+   <LINK REL="Next"  HREF="000318.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r554 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r554%20-%20trunk/purgatory&In-Reply-To=%3C200712070000.lB700fLL019481%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r554 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec  7 01:00:41 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000316.html">[Al4nin-commits] r553 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000318.html">[Al4nin-commits] r555 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-07 01:00:38 +0100 (Fri, 07 Dec 2007)
+New Revision: 554
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+some blurb on free categories
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-12-06 22:56:39 UTC (rev 553)
++++ trunk/purgatory/Thrist.lout	2007-12-07 00:00:38 UTC (rev 554)
+@@ -56,9 +56,9 @@
+ @Begin
+ @PP
+ We are well acquainted with data structures that are parameterized over
+-data types, they are the bread-and-butter tool of functional programmers.
+-For example the List datatype could be introduced in Haskell with the following
+-definition:
++data types, as they are a bread-and-butter tool for functional programmers.
++For example the @Haskell {List} datatype could be introduced in Haskell
++with the following definition:
+ @PP
+ @ID @Haskell {
+ data List :: * ~&gt; * where
+@@ -1153,6 +1153,11 @@
+   @Title { Connection to Categories }
+ @Begin
+ @PP
++The type-threaded nature of the Thrist datatype is the distinguishing feature of @I { free categories } too. In the Appendix
++we supply an @Haskell { appendThrist } function that can be regarded as the inner multiplication (concatenation)
++operation in the free category. {@Omega}'s user-defined kind definition allows for defining categories (with countable
++object set) as non-inhabited types.
++
+ encoding free categories as Thrists
+ @LP every Thrist gives rise to a category?
+ @LP RevThrist is the opposite category?
+@@ -1176,8 +1181,14 @@
+ his work only as the datatypes modelling the @I { effect basis } of monads, while they are not needed
+ for the general case.
+ @PP
+-Chris Heunen and Bart Jacobs' work @Cite { $heunenjacobs.monoid } on the connection of Arrows and Monads and their category theoretical
+-formalisation is of relevance because it reveals the mathematical structure behind these constructs.
++Another example of the rekindled interest in modelling side-effecting computations in a purely functional
++manner is given by the Haskell Workshop paper of Swierstra et al. @Cite { $swierstra07.beast }, which demonstrates
++another use of the @I { free monad }, a data structure built up as an ADT. The result can be examined intensionally
++by pattern matching, in a similar fashion like our thrists can be taken apart by the semantics functions.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Chris Heunen and Bart Jacobs' work @Cite { $heunenjacobs.monoid } on the connection of Arrows and Monads
++and their category theoretical formalisation is of relevance because it reveals the mathematical
++structure behind these constructs.
+ Arrows appeared in the general mindset as a pragmatic approach to deal with a certain class of parsers
+ @Cite { $hughes00.arrows } that did not fit into the monadic framework.
+ Nilsson provides a method for optimizing limited cases of arrow combinator libraries using GADTs. He
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000316.html">[Al4nin-commits] r553 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000318.html">[Al4nin-commits] r555 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

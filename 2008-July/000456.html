@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r693 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r693%20-%20trunk/purgatory&In-Reply-To=%3C200807092204.m69M4gZc000097%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000455.html">
+   <LINK REL="Next"  HREF="000457.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r693 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r693%20-%20trunk/purgatory&In-Reply-To=%3C200807092204.m69M4gZc000097%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r693 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jul 10 00:04:42 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000455.html">[Al4nin-commits] r692 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000457.html">[Al4nin-commits] r694 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#456">[ date ]</a>
+              <a href="thread.html#456">[ thread ]</a>
+              <a href="subject.html#456">[ subject ]</a>
+              <a href="author.html#456">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-10 00:04:40 +0200 (Thu, 10 Jul 2008)
+New Revision: 693
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+majority of parser typechecks now
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-09 21:45:39 UTC (rev 692)
++++ trunk/purgatory/Thrist.lout	2008-07-09 22:04:40 UTC (rev 693)
+@@ -789,7 +789,7 @@
+   Rep1 :: Parse a b -&gt; Parse [a] ([b], [a])
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])
+-  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++--  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
+   Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
+   Wrap :: Thrist Parse a b -&gt; Parse a b
+ @End @Haskell
+@@ -853,7 +853,7 @@
+ 
+ @ListItem { Since we cannot discard either component, we have to proceed in parallel with
+ @LD @Haskell {
+-Par (CataPlus foldHex)
++Par (Wrap [Try nonEmpty, Sure foldHex]l)
+     (Wrap [Rep1 $ Atom 'U',
+           Par (Sure id)
+               (Rep1 $ Atom 'L')]l)
+@@ -870,8 +870,9 @@
+ }
+ @EndList
+ 
+-We have not yet given the defininitions of the @Haskell {hexdigit}, @Haskell {foldHex} and @Haskell {numberToken}
+-functions. These follow next and should be rather obvious.
++We have not yet given the defininitions of the @Haskell {hexdigit}, @Haskell {foldHex},
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {nonEmpty} and @Haskell {numberToken} functions. These follow next and should
++be rather obvious.
+ 
+ @ID @Haskell @Begin
+ hexdigit = \c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9'
+@@ -883,6 +884,9 @@
+ 
+ foldHex = foldl (\acc x -&gt; (acc * 16) + x) 0
+ 
++nonEmpty (all@(_:_)) = Just all
++nonEmpty _ = Nothing
++
+ numberToken :: (Int, (String, (String, String))) -&gt; Maybe (Token, String)
+ numberToken (i, (&quot;&quot;, (&quot;&quot;, rest))) = Just (Number i False False, rest)
+ -- #### TODO others
+@@ -896,7 +900,7 @@
+   [ Group [Atom '0', Atom 'X']
+   , Sure snd
+   , Rep1 (Try hexdigit)
+-  , Par (CataPlus foldHex) signedSized
++  , Par (Wrap [Try nonEmpty, Sure foldHex]l) signedSized
+   , Try numberToken ]l
+ 
+ tokens = Rep (Wrap hexToken)
+@@ -912,7 +916,7 @@
+ As the execution of the thrist proceeds, incrementally more of the token are analysed, condensed and converted.
+ 
+ ######################## THIS FIGURE SHOULD SHOW UP IN A DIFFERENT PLACE #############################
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TargetForExtract</A> &quot;check/Machine&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Machine2&quot;
+ @Figure
+     @Tag { machine }
+     @Caption { State machine fragment }
+@@ -1003,7 +1007,7 @@
+       parseRep p as = case parse p as of
+                       Nothing -&gt; ([], as)
+                       Just (b, as') -&gt; (b:bs, rest)
+-          where (bs, rest) = parseRep p as'
++                        where (bs, rest) = parseRep p as'
+ @End @Haskell
+ This code is rather unsurprising: to obtain a list of @Haskell {p}s
+ we have to consume as many parsed constituents from the input as possible
+@@ -1107,7 +1111,8 @@
+ of facets each.
+ To formally introduce the facets, we employ another @Omega feature,
+ namely @I { user-defined kinds }, whose alternatives can be used to
+-parameterise the @Haskell { State } datatype:
++parameterize the @Haskell { State } datatype:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Machine1&quot;
+ @LD @Haskell @Begin
+ kind Gate = GateClosed | GateOpen
+ kind Secondary = SecondaryEnabled | SecondaryBlocked
+@@ -1857,7 +1862,7 @@
+   Rep1 :: Parse a b -&gt; Parse [a] ([b], [a])
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])
+-  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++--  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
+   Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
+   Wrap :: Thrist Parse a b -&gt; Parse a b
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000455.html">[Al4nin-commits] r692 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000457.html">[Al4nin-commits] r694 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#456">[ date ]</a>
+              <a href="thread.html#456">[ thread ]</a>
+              <a href="subject.html#456">[ subject ]</a>
+              <a href="author.html#456">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

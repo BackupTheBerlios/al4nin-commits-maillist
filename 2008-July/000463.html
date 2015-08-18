@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r700 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r700%20-%20trunk/purgatory&In-Reply-To=%3C200807111610.m6BGAX4u018907%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000462.html">
+   <LINK REL="Next"  HREF="000464.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r700 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r700%20-%20trunk/purgatory&In-Reply-To=%3C200807111610.m6BGAX4u018907%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r700 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 11 18:10:33 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000462.html">[Al4nin-commits] r699 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000464.html">[Al4nin-commits] r701 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#463">[ date ]</a>
+              <a href="thread.html#463">[ thread ]</a>
+              <a href="subject.html#463">[ subject ]</a>
+              <a href="author.html#463">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-11 18:10:31 +0200 (Fri, 11 Jul 2008)
+New Revision: 700
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+tweaks, we are basically done :-)
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-11 15:39:28 UTC (rev 699)
++++ trunk/purgatory/Thrist.lout	2008-07-11 16:10:31 UTC (rev 700)
+@@ -1202,14 +1202,13 @@
+ south = State [From west TriggerAck [BlockSecondary]l]
+ @End @Haskell
+ 
+-We have succeeded in providing a very compact representation of state machines.
++At last we have succeeded in providing a very compact representation of state machines.
+ From the above expression we can see that only one transition arrow arrives at @Haskell { south }, how
+ it is triggered and which action follows. The fact that the type checker allows
+ this expression is an additional assurance of correctness.
+ 
+ @PP
+-What do we gain with such a declarative description of the state machine at
+-hand?
++So what do we gain with such a declarative description of the state machine at hand?
+ @DashList
+    @ListItem { First, given a fine-grained encoding of the protocol's and business logic's
+ encoding in the state facets, the type system will take care of checking that
+@@ -1299,7 +1298,7 @@
+ 
+ @Figure
+     @Tag { binary }
+-    @Caption { Mathematical structures with binary inner operation }
++    @Caption { Mathematical structures with binary inner operation that is associative }
+ @Tbl
+     ruleabove { yes }
+     ruleabovecolour { darkgrey }
+@@ -1518,14 +1517,19 @@
+ another use of the @I { free monad }, a data structure built up as an ADT. The result can be examined intensionally
+ by pattern matching, in a similar fashion like our thrists can be taken apart by the semantics functions.
+ @PP
+-Chris Heunen and Bart Jacobs' work @Cite { $heunenjacobs.monoid } on the connection of arrows and monads
+-and their category theoretical formalisation is of relevance because it reveals the mathematical
+-structure behind these constructs, giving a common generalization to them as {@I monoids}.
++Chris Heunen and Bart Jacobs' work @Cite { $heunenjacobs.monoid } examines the connection of arrows and monads
++and their category theoretical formalisation. They reveal the mathematical structure behind these constructs,
++giving a common generalization to them as {@I monoids}. This is a different result from ours, while separating
++structure from behaviour we arrive at thrists that are augmented with a semantics.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ Arrows @Cite { $hughes00.arrows } appeared in the general mindset as a pragmatic approach to deal with
+ a certain class of parsers that did not fit into the monadic framework @Cite { $duponcheel96.parser }.
++While the analysis aspect (of the combined grammar) was one of the objectives, it happened at runtime
++on data propagated through the arrow. Our approach enables the analysis of the arrow itself.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ Nilsson @Cite { $nilsson05.frp } provides a method for optimizing limited cases of arrow combinator libraries using GADTs.
+-In the scope of framework for functional reactive programming he is still bound to the limitations of the amesiac nature of
+-function composition inside the arrow, but seem to gain some noticeable gains in performance especially with microbenchmarks
++In the scope of his framework for functional reactive programming he is still bound to the limitations of the amesiac nature of
++function composition inside of the arrow, but seem to gain some noticeable gains in performance especially with microbenchmarks
+ modelling the arrow laws.
+ @End @Section
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000462.html">[Al4nin-commits] r699 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000464.html">[Al4nin-commits] r701 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#463">[ date ]</a>
+              <a href="thread.html#463">[ thread ]</a>
+              <a href="subject.html#463">[ subject ]</a>
+              <a href="author.html#463">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

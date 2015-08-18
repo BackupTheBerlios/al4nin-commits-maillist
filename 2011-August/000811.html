@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1049 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1049%20-%20trunk/purgatory&In-Reply-To=%3C20110825020032.1BA31480E2C%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000810.html">
+   <LINK REL="Next"  HREF="000812.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1049 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1049%20-%20trunk/purgatory&In-Reply-To=%3C20110825020032.1BA31480E2C%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1049 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Aug 25 04:00:31 CEST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000810.html">[Al4nin-commits] r1048 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000812.html">[Al4nin-commits] r1050 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-08-25 04:00:31 +0200 (Thu, 25 Aug 2011)
+New Revision: 1049
+
+Modified:
+   trunk/purgatory/PatTermExp.lhs
+Log:
+consider byorgey's comment: <A HREF="http://code.google.com/p/replib/source/browse/trunk/Unbound/examples/TaggedTerm.hs?spec=svn269&amp;r=269#32">http://code.google.com/p/replib/source/browse/trunk/Unbound/examples/TaggedTerm.hs?spec=svn269&amp;r=269#32</A>
+
+Modified: trunk/purgatory/PatTermExp.lhs
+===================================================================
+--- trunk/purgatory/PatTermExp.lhs	2011-08-25 01:55:07 UTC (rev 1048)
++++ trunk/purgatory/PatTermExp.lhs	2011-08-25 02:00:31 UTC (rev 1049)
+@@ -25,7 +25,7 @@
+ 'Term' in <A HREF="http://byorgey.wordpress.com/2011/03/28/binders-unbound/">http://byorgey.wordpress.com/2011/03/28/binders-unbound/</A>
+ 
+ &gt; data Expr :: * -&gt; * where
+-&gt;   Var :: Name (Expr a) -&gt; Expr a
++&gt;   Var :: Name (Expr Term) -&gt; Expr a
+ &gt;   App :: Expr a -&gt;  Expr a -&gt; Expr a
+ &gt;   Lam :: Bind (Name (Expr Pattern)) (Expr Term) -&gt; Expr Term
+ &gt;   Con :: String -&gt; [Expr a] -&gt; Expr a -- data constructors
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000810.html">[Al4nin-commits] r1048 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000812.html">[Al4nin-commits] r1050 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

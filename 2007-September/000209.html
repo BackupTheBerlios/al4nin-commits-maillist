@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r447 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r447%20-%20trunk/purgatory&In-Reply-To=%3C200709141410.l8EEARdo027224%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000208.html">
+   <LINK REL="Next"  HREF="000210.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r447 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r447%20-%20trunk/purgatory&In-Reply-To=%3C200709141410.l8EEARdo027224%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r447 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 14 16:10:27 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000208.html">[Al4nin-commits] r446 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000210.html">[Al4nin-commits] r448 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#209">[ date ]</a>
+              <a href="thread.html#209">[ thread ]</a>
+              <a href="subject.html#209">[ subject ]</a>
+              <a href="author.html#209">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-09-14 16:10:26 +0200 (Fri, 14 Sep 2007)
+New Revision: 447
+
+Modified:
+   trunk/purgatory/BibTeX2lout.awk
+Log:
+this almost does the job
+
+Modified: trunk/purgatory/BibTeX2lout.awk
+===================================================================
+--- trunk/purgatory/BibTeX2lout.awk	2007-09-14 08:18:56 UTC (rev 446)
++++ trunk/purgatory/BibTeX2lout.awk	2007-09-14 14:10:26 UTC (rev 447)
+@@ -1,51 +1,54 @@
+-  {	&quot;Book&quot;,		&quot;Book&quot;,		&quot;B&quot;,		},
+-  {	&quot;Book&quot;,		&quot;Booklet&quot;,	&quot;B&quot;,		},
+-  {	&quot;Proceedings&quot;,	&quot;Proceedings&quot;,	&quot;&quot;,		},
+-  {	&quot;Proceedings&quot;,	&quot;Conference&quot;,	&quot;&quot;,		},
+-  {	&quot;PhDThesis&quot;,	&quot;PhdThesis&quot;,	&quot;D&quot;,		},
+-  {	&quot;TechReport&quot;,	&quot;TechReport&quot;,	&quot;R&quot;,		},
+-  {	&quot;TechReport&quot;,	&quot;Manual&quot;,	&quot;R&quot;,		},
+-  {	&quot;MastersThesis&quot;,&quot;MastersThesis&quot;,&quot;D&quot;,		},
+-  {	&quot;Misc&quot;,		&quot;Misc&quot;, 	&quot;O&quot;,		},
+-  {	&quot;Misc&quot;,		&quot;Unpublished&quot;, 	&quot;&quot;,		},
+-  {	&quot;Article&quot;,	&quot;Article&quot;,	&quot;J&quot;,		},
+-  {	&quot;InBook&quot;,	&quot;InBook&quot;,	&quot;P&quot;,		},
+-  {	&quot;InBook&quot;,	&quot;InCollection&quot;,	&quot;P&quot;,		},
+-  {	&quot;InProceedings&quot;,&quot;InProceedings&quot;,&quot;C&quot;,	
++# /Book.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
++# /Booklet.*=.*/ {print &quot;Book { &quot; $4 &quot; }&quot;; next}
++# /Proceedings.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
++# /Conference.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
++# /PhdThesis.*=.*/ {print &quot;PhDThesis { &quot; $4 &quot; }&quot;; next}
++# /TechReport.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
++# /Manual.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
++# /MastersThesis.*=.*/ {print &quot;MastersThesis { &quot; $4 &quot; }&quot;; next}
++# /Misc.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
++# /Unpublished.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
++# /Article.*=.*/ {print &quot;Article { &quot; $4 &quot; }&quot;; next}
++# /InBook.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
++# /InCollection.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
++/@inproceedings[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { InProceedings }&quot;; have = 1; next}
+ 
++{ split($0, arr, &quot;{&quot;); split(arr[2], brr, &quot;}&quot;); cont = brr[1] }
+ 
++/typ.*=.*/ {print &quot;   @Type { &quot; cont &quot; }&quot;; next}
++/tag.*=.*/ {print &quot;   @Tag { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Abstract { &quot; cont &quot; }&quot;; next}
++/address.*=.*/ {print &quot;   @Address { &quot; cont &quot; }&quot;; next}
++/annote.*=.*/ {print &quot;   @Annote { &quot; cont &quot; }&quot;; next}
++/author.*=.*/ {print &quot;   @Author { &quot; cont &quot; }&quot;; next}
++/chapter.*=.*/ {} # print &quot; { &quot; cont &quot; }&quot;
++# /.*=.*/ {print &quot;   @Day { &quot; cont &quot; }&quot;; next}
++/edition.*=.*/ {print &quot;   @Edition { &quot; cont &quot; }&quot;; next}
++/howpublished.*=.*/ {print &quot;   @HowPublished { &quot; cont &quot; }&quot;; next}
++/editor.*=.*/ {print &quot;   @InAuthor { &quot; cont &quot; }&quot;; next}
++/booktitle.*=.*/ {print &quot;   @InTitle { &quot; cont &quot; }&quot;; next}
++/institution.*=.*/ {print &quot;   @Institution { &quot; cont &quot; }&quot;; next}
++/journal.*=.*/ {print &quot;   @Journal { &quot; cont &quot; }&quot;; next}
++/key.*=.*/ {print &quot; { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Keywords { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Label { &quot; cont &quot; }&quot;; next}
++/month.*=.*/ {print &quot;   @Month { &quot; cont &quot; }&quot;; next}
++/note.*=.*/ {print &quot;   @Note { &quot; cont &quot; }&quot;; next}
++/number.*=.*/ {print &quot;   @Number { &quot; cont &quot; }&quot;; next}
++/organization.*=.*/ {print &quot;   @Organization { &quot; cont &quot; }&quot;; next}
++/pages.*=.*/ {print &quot;   @Pages { &quot; cont &quot; }&quot;; next}
++#/pages.*=.*/ {print &quot;   @Page { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @Pinpoint { &quot; cont &quot; }&quot;; next}
++/location.*=.*/ {print &quot;   # @Location { &quot; cont &quot; }&quot;; next}
++/doi.*=.*/ {print &quot;   # @Doi { &quot; cont &quot; }&quot;; next}
++/publisher.*=.*/ {print &quot;   @Publisher { &quot; cont &quot; }&quot;; next}
++/title.*=.*/ {print &quot;   @Title { &quot; cont &quot; }&quot;; next}
++# /.*=.*/ {print &quot;   @TitleNote { &quot; cont &quot; }&quot;; next}
++/type.*=.*/ {print &quot;   @TRType { &quot; cont &quot; }&quot;; next}
++/url.*=.*/ {print &quot;   @URL { &quot; cont &quot; }&quot;; next}
++/volume.*=.*/ {print &quot;   @Volume { &quot; cont &quot; }&quot;; next}
++/year.*=.*/ {print &quot;   @Year { &quot; cont &quot; }&quot;; next}
++/isbn.*=.*/ {print &quot;   @ISBN { &quot; cont &quot; }&quot;; next}
+ 
+-
+-
+-
+-  {	&quot;@Type&quot;,	&quot;typ&quot;,		&quot;TYPE&quot;,		},
+-  {	&quot;@Tag&quot;,		&quot;tag&quot;,		&quot;NUMBER&quot;,	},
+-  {	&quot;@Abstract&quot;,	&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@Address&quot;,	&quot;address&quot;,	&quot;&quot;,		},
+-  {	&quot;@Annote&quot;,	&quot;annote&quot;,	&quot;PROBLEM&quot;,	},
+-  {	&quot;@Author&quot;,	&quot;author&quot;,	&quot;AUTHOR&quot;,	},
+-  {	&quot;&quot;,		&quot;chapter&quot;,	&quot;&quot;,		},
+-  {	&quot;@Day&quot;,		&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@Edition&quot;,	&quot;edition&quot;,	&quot;&quot;,		},
+-  {	&quot;@HowPublished&quot;,&quot;howpublished&quot;,	&quot;&quot;,		},
+-  {	&quot;@InAuthor&quot;,	&quot;editor&quot;,	&quot;&quot;,		},
+-  {	&quot;@InTitle&quot;,	&quot;booktitle&quot;,	&quot;&quot;,		},
+-  {	&quot;@Institution&quot;,	&quot;institution&quot;,	&quot;INSTIT&quot;,	},
+-  {	&quot;@Journal&quot;,	&quot;journal&quot;,	&quot;SOURCE&quot;,	},
+-  {	&quot;&quot;,		&quot;key&quot;,		&quot;&quot;,		},
+-  {	&quot;@Keywords&quot;,	&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@Label&quot;,	&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@Month&quot;,	&quot;month&quot;,	&quot;&quot;,		},
+-  {	&quot;@Note&quot;,	&quot;note&quot;,		&quot;&quot;,		},
+-  {	&quot;@Number&quot;,	&quot;number&quot;,	&quot;ISSUE&quot;,	},
+-  {	&quot;@Organization&quot;,&quot;organization&quot;,	&quot;&quot;,		},
+-  {	&quot;@Pages&quot;,	&quot;pages&quot;,	&quot;FIRSTPAGE&quot;,	},
+-  {	&quot;@Page&quot;,	&quot;pages&quot;,	&quot;&quot;,		},
+-  {	&quot;@Pinpoint&quot;,	&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@Publisher&quot;,	&quot;publisher&quot;,	&quot;PUBLISHER&quot;,	},
+-  {	&quot;@Title&quot;,	&quot;title&quot;,	&quot;NAME&quot;,		},
+-  {	&quot;@TitleNote&quot;,	&quot;&quot;,		&quot;&quot;,		},
+-  {	&quot;@TRType&quot;,	&quot;type&quot;,		&quot;&quot;,		},
+-  {	&quot;@URL&quot;,		&quot;url&quot;,		&quot;&quot;,		},
+-  {	&quot;@Volume&quot;,	&quot;volume&quot;,	&quot;VOL&quot;,		},
+-  {	&quot;@Year&quot;,	&quot;year&quot;, 	&quot;YEAR&quot;,		},
++## close the record
++{if (have) print &quot;}\n\n&quot;; have = 0; next}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000208.html">[Al4nin-commits] r446 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000210.html">[Al4nin-commits] r448 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#209">[ date ]</a>
+              <a href="thread.html#209">[ thread ]</a>
+              <a href="subject.html#209">[ subject ]</a>
+              <a href="author.html#209">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

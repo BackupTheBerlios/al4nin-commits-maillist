@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r322 - in trunk: found-bugs purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r322%20-%20in%20trunk%3A%20found-bugs%20purgatory&In-Reply-To=%3C200704191351.l3JDp6EN030285%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000083.html">
+   <LINK REL="Next"  HREF="000085.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r322 - in trunk: found-bugs purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r322%20-%20in%20trunk%3A%20found-bugs%20purgatory&In-Reply-To=%3C200704191351.l3JDp6EN030285%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r322 - in trunk: found-bugs purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Apr 19 15:51:06 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000083.html">[Al4nin-commits] r321 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000085.html">[Al4nin-commits] r323 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#84">[ date ]</a>
+              <a href="thread.html#84">[ thread ]</a>
+              <a href="subject.html#84">[ subject ]</a>
+              <a href="author.html#84">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-19 15:51:05 +0200 (Thu, 19 Apr 2007)
+New Revision: 322
+
+Added:
+   trunk/found-bugs/bug7-ThristParser.omg
+   trunk/found-bugs/bug8-ThristParser.omg
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+started the staged interpreter, found 2 bugs on the way
+
+Copied: trunk/found-bugs/bug7-ThristParser.omg (from rev 321, trunk/purgatory/ThristParser.omg)
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-19 00:13:59 UTC (rev 321)
++++ trunk/found-bugs/bug7-ThristParser.omg	2007-04-19 13:51:05 UTC (rev 322)
+@@ -0,0 +1,163 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.1:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega ThristParser.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal,
++  listM, foldl, foldr)
++
++
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
++ deriving List(l)
++
++
++data Parse :: *0 ~&gt; *0 ~&gt; *0 where
++  Atom :: Char -&gt; Parse Char Char       -- exact match
++  Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
++  Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
++  Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
++  Rep :: Parse a b -&gt; Parse [a] ([b], [a])     -- consume as many as matches, return rest
++  Group :: [Parse a b] -&gt; Parse [a] ([b], [a]) -- all must match, return rest
++  CataStar :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse one or more elements
++  CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse zero or more elements
++  Wrap :: Thrist Parse a b -&gt; Parse a b -- treat a chain of parses as one
++  Or :: Parse a b -&gt; Parse a b -&gt; Parse a b    -- match first or if it doesn't the second
++  Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
++  Seq2 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
++
++
++letter = (Atom :: Char -&gt; Parse Char Char)
++char = Sure (id :: Char -&gt; Char)
++
++digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
++
++hexdigit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else
++                      if ord 'a' &lt;= ord c &amp;&amp; ord c &lt;= ord 'f' then Just (ord c - ord 'W') else
++                      if ord 'A' &lt;= ord c &amp;&amp; ord c &lt;= ord 'F' then Just (ord c - ord '7') else Nothing)
++
++crop = Try (\(good, rest) -&gt; Just good)
++snap = Try (\(good, rest) -&gt; case rest of { [] -&gt; Just good; _ -&gt; Nothing })
++
++proper = Try (\(it, rest) -&gt; case it of { [] -&gt; Nothing; _ -&gt; Just (it, rest) })
++propersnap = Try (\a -&gt; case a of { ([], _) -&gt; Nothing; (_, r:rest) -&gt; Nothing; _ -&gt; Just a })
++
++proper' p = Wrap #[p, proper]l
++propersnap' p = Wrap #[p, propersnap]l
++
++base n = foldl (\acc x -&gt; (acc * n) + x) 0
++num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
++chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), second, CataPlus (base 16)]l
++
++unwrap (Wrap x) = x
++
++second = Sure (\((_, x), _) -&gt; x)
++
++word cs = Group (map letter cs)
++
++-- ###############################
++-- ############ parse ############
++-- ###############################
++
++parse :: Thrist Parse a b -&gt; a -&gt; Maybe b
++
++parse Nil a = Just a
++
++parse (Cons (Atom c) r) b = if ord c == ord b then parse r b else Nothing
++
++parse (Cons (Sure f) r) a = parse r (f a)
++
++parse (Cons (Try f) r) a = do { b &lt;- f a; parse r b } where monad maybeM
++
++parse (Cons (Rep p) r) as = parse r (parseRep p as) where
++      parseRep :: Parse a b -&gt; [a] -&gt; ([b], [a])
++      parseRep _ [] = ([], [])
++      parseRep p (a:as) = case parse #[p]l a of { Nothing -&gt; ([], a:as); Just b -&gt; (b:bs, rest) where (bs, rest) = parseRep p as }
++
++parse (Cons (Group ps) r) as = do { bs &lt;- parseGroup ps as; parse r bs } where
++      monad maybeM
++      parseGroup :: [Parse a b] -&gt; [a] -&gt; Maybe ([b], [a])
++      parseGroup [] rest = Just ([], rest) -- overlength input
++      parseGroup _ [] = Nothing            -- input too short
++      parseGroup (p:ps) (a:as) = do { b &lt;- parse #[p]l a; (bs, rest) &lt;- parseGroup ps as; return (b:bs, rest) }
++
++parse (Cons (CataStar f) r) a = parse r (f a)
++
++parse (Cons (CataPlus _) _) [] = Nothing
++
++parse (Cons (CataPlus f) r) a = parse r (f a)
++
++parse (Cons (Wrap thr) r) a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
++
++parse (Cons (Seq2 p1 p2) r) (a1:a2:rest) = do { b1 &lt;- parse #[p1]l a1; b2 &lt;- parse #[p2]l a2; parse r ((b1, b2), rest) } where monad maybeM
++
++parse (Cons (Seq p1 p2) r) as = do { (b1, as') &lt;- parse #[p1]l as; (b2, rest) &lt;- parse #[p2]l as'; parse r ((b1, b2), rest) } where monad maybeM
++
++parse (Cons (Or p1 p2) r) a = case parse #[p1]l a of
++      (Just b1) -&gt; parse r b1
++      Nothing -&gt; do { b2 &lt;- parse #[p2]l a; parse r b2 } where monad maybeM
++
++-- ##########################################
++-- ############ pattern compiler ############
++-- ##########################################
++
++compileParse :: Thrist Parse a b -&gt; Code (a -&gt; Maybe b)
++compileParse Nil = [| Just |]
++compileParse (Cons (Atom c) r) = [| \b -&gt; if ord c == ord b then parse r b else Nothing |]
++
++compileParse (Cons (Or p1 p2) r) = [| \a -&gt;
++				    case parse #[p1]l a of
++				    (Just b1) -&gt; parse r b1
++				    Nothing -&gt; let monad maybeM in do { b2 &lt;- parse #[p2]l a; parse r b2 } |]
++
++tbug0 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 's'
++
++##test &quot;Unknown Var at level 0: bind&quot;
++ tbug1 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 'm'
++
++-- ###############################
++-- ############ tests ############
++-- ###############################
++
++t1 = parse #[Seq (Wrap #[Rep $ letter 'a', proper]l) (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
++t1a = parse #[Seq (proper' $ Rep $ letter 'a') (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
++t2 = parse (unwrap chexnum) &quot;0xFF&quot;
++t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
++t3a = word &quot;abcd&quot;
++
++
++
++
+
+Copied: trunk/found-bugs/bug8-ThristParser.omg (from rev 321, trunk/purgatory/ThristParser.omg)
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-19 00:13:59 UTC (rev 321)
++++ trunk/found-bugs/bug8-ThristParser.omg	2007-04-19 13:51:05 UTC (rev 322)
+@@ -0,0 +1,162 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.1:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega ThristParser.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal,
++  listM, foldl, foldr)
++
++
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
++ deriving List(l)
++
++
++data Parse :: *0 ~&gt; *0 ~&gt; *0 where
++  Atom :: Char -&gt; Parse Char Char       -- exact match
++  Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
++  Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
++  Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
++  Rep :: Parse a b -&gt; Parse [a] ([b], [a])     -- consume as many as matches, return rest
++  Group :: [Parse a b] -&gt; Parse [a] ([b], [a]) -- all must match, return rest
++  CataStar :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse one or more elements
++  CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse zero or more elements
++  Wrap :: Thrist Parse a b -&gt; Parse a b -- treat a chain of parses as one
++  Or :: Parse a b -&gt; Parse a b -&gt; Parse a b    -- match first or if it doesn't the second
++  Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
++  Seq2 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
++
++
++letter = (Atom :: Char -&gt; Parse Char Char)
++char = Sure (id :: Char -&gt; Char)
++
++digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
++
++hexdigit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else
++                      if ord 'a' &lt;= ord c &amp;&amp; ord c &lt;= ord 'f' then Just (ord c - ord 'W') else
++                      if ord 'A' &lt;= ord c &amp;&amp; ord c &lt;= ord 'F' then Just (ord c - ord '7') else Nothing)
++
++crop = Try (\(good, rest) -&gt; Just good)
++snap = Try (\(good, rest) -&gt; case rest of { [] -&gt; Just good; _ -&gt; Nothing })
++
++proper = Try (\(it, rest) -&gt; case it of { [] -&gt; Nothing; _ -&gt; Just (it, rest) })
++propersnap = Try (\a -&gt; case a of { ([], _) -&gt; Nothing; (_, r:rest) -&gt; Nothing; _ -&gt; Just a })
++
++proper' p = Wrap #[p, proper]l
++propersnap' p = Wrap #[p, propersnap]l
++
++base n = foldl (\acc x -&gt; (acc * n) + x) 0
++num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
++chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), second, CataPlus (base 16)]l
++
++unwrap (Wrap x) = x
++
++second = Sure (\((_, x), _) -&gt; x)
++
++word cs = Group (map letter cs)
++
++-- ###############################
++-- ############ parse ############
++-- ###############################
++
++parse :: Thrist Parse a b -&gt; a -&gt; Maybe b
++
++parse Nil a = Just a
++
++parse (Cons (Atom c) r) b = if ord c == ord b then parse r b else Nothing
++
++parse (Cons (Sure f) r) a = parse r (f a)
++
++parse (Cons (Try f) r) a = do { b &lt;- f a; parse r b } where monad maybeM
++
++parse (Cons (Rep p) r) as = parse r (parseRep p as) where
++      parseRep :: Parse a b -&gt; [a] -&gt; ([b], [a])
++      parseRep _ [] = ([], [])
++      parseRep p (a:as) = case parse #[p]l a of { Nothing -&gt; ([], a:as); Just b -&gt; (b:bs, rest) where (bs, rest) = parseRep p as }
++
++parse (Cons (Group ps) r) as = do { bs &lt;- parseGroup ps as; parse r bs } where
++      monad maybeM
++      parseGroup :: [Parse a b] -&gt; [a] -&gt; Maybe ([b], [a])
++      parseGroup [] rest = Just ([], rest) -- overlength input
++      parseGroup _ [] = Nothing            -- input too short
++      parseGroup (p:ps) (a:as) = do { b &lt;- parse #[p]l a; (bs, rest) &lt;- parseGroup ps as; return (b:bs, rest) }
++
++parse (Cons (CataStar f) r) a = parse r (f a)
++
++parse (Cons (CataPlus _) _) [] = Nothing
++
++parse (Cons (CataPlus f) r) a = parse r (f a)
++
++parse (Cons (Wrap thr) r) a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
++
++parse (Cons (Seq2 p1 p2) r) (a1:a2:rest) = do { b1 &lt;- parse #[p1]l a1; b2 &lt;- parse #[p2]l a2; parse r ((b1, b2), rest) } where monad maybeM
++
++parse (Cons (Seq p1 p2) r) as = do { (b1, as') &lt;- parse #[p1]l as; (b2, rest) &lt;- parse #[p2]l as'; parse r ((b1, b2), rest) } where monad maybeM
++
++parse (Cons (Or p1 p2) r) a = case parse #[p1]l a of
++      (Just b1) -&gt; parse r b1
++      Nothing -&gt; do { b2 &lt;- parse #[p2]l a; parse r b2 } where monad maybeM
++
++-- ##########################################
++-- ############ pattern compiler ############
++-- ##########################################
++
++compileParse :: Thrist Parse a b -&gt; Code (a -&gt; Maybe b)
++compileParse Nil = [| Just |]
++compileParse (Cons (Atom c) r) = [| \b -&gt; if ord c == ord b then parse r b else Nothing |]
++
++compileParse (Cons (Or p1 p2) r) = [| \a -&gt;
++				    case parse #[p1]l a of
++				    (Just b1) -&gt; parse r b1
++				    Nothing -&gt; let monad maybeM in do { b2 &lt;- parse #[p2]l a; parse r b2 } |]
++
++tbug0 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 's'
++
++tbug1 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 'm'
++
++-- ###############################
++-- ############ tests ############
++-- ###############################
++
++t1 = parse #[Seq (Wrap #[Rep $ letter 'a', proper]l) (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
++t1a = parse #[Seq (proper' $ Rep $ letter 'a') (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
++t2 = parse (unwrap chexnum) &quot;0xFF&quot;
++t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
++t3a = word &quot;abcd&quot;
++
++
++
++
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-19 00:13:59 UTC (rev 321)
++++ trunk/purgatory/ThristParser.omg	2007-04-19 13:51:05 UTC (rev 322)
+@@ -52,12 +52,12 @@
+   Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
+   Rep :: Parse a b -&gt; Parse [a] ([b], [a])     -- consume as many as matches, return rest
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a]) -- all must match, return rest
+-  CataStar :: ([a] -&gt; b) -&gt; Parse [a] b
+-  CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b
+-  Wrap :: Thrist Parse a b -&gt; Parse a b
+-  Or :: Parse a b -&gt; Parse a b -&gt; Parse a b
+-  Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a])
+-  Seq2 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a])
++  CataStar :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse one or more elements
++  CataPlus :: ([a] -&gt; b) -&gt; Parse [a] b -- collapse zero or more elements
++  Wrap :: Thrist Parse a b -&gt; Parse a b -- treat a chain of parses as one
++  Or :: Parse a b -&gt; Parse a b -&gt; Parse a b    -- match first or if it doesn't the second
++  Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
++  Seq2 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
+ 
+ 
+ letter = (Atom :: Char -&gt; Parse Char Char)
+@@ -75,6 +75,9 @@
+ proper = Try (\(it, rest) -&gt; case it of { [] -&gt; Nothing; _ -&gt; Just (it, rest) })
+ propersnap = Try (\a -&gt; case a of { ([], _) -&gt; Nothing; (_, r:rest) -&gt; Nothing; _ -&gt; Just a })
+ 
++proper' p = Wrap #[p, proper]l
++propersnap' p = Wrap #[p, propersnap]l
++
+ base n = foldl (\acc x -&gt; (acc * n) + x) 0
+ num = Wrap #[Rep digit, crop, CataPlus (base 10)]l
+ chexnum = Wrap #[Seq (Seq2 (letter '0') (Or (letter 'x') (letter 'X'))) (Wrap #[Rep hexdigit, propersnap]l), second, CataPlus (base 16)]l
+@@ -83,9 +86,8 @@
+ 
+ second = Sure (\((_, x), _) -&gt; x)
+ 
++word cs = Group (map letter cs)
+ 
+-abcd = Group [letter 'a', letter 'b', letter 'c', letter 'd']
+-
+ -- ###############################
+ -- ############ parse ############
+ -- ###############################
+@@ -94,7 +96,7 @@
+ 
+ parse Nil a = Just a
+ 
+-parse (Cons (Atom a) r) b = if ord a == ord b then parse r b else Nothing
++parse (Cons (Atom c) r) b = if ord c == ord b then parse r b else Nothing
+ 
+ parse (Cons (Sure f) r) a = parse r (f a)
+ 
+@@ -128,9 +130,33 @@
+       (Just b1) -&gt; parse r b1
+       Nothing -&gt; do { b2 &lt;- parse #[p2]l a; parse r b2 } where monad maybeM
+ 
++-- ##########################################
++-- ############ pattern compiler ############
++-- ##########################################
++
++compileParse :: Thrist Parse a b -&gt; Code (a -&gt; Maybe b)
++compileParse Nil = [| Just |]
++compileParse (Cons (Atom c) r) = [| \b -&gt; if ord c == ord b then parse r b else Nothing |]
++
++compileParse (Cons (Or p1 p2) r) = [| \a -&gt;
++				    case parse #[p1]l a of
++				    (Just b1) -&gt; parse r b1
++				    Nothing -&gt; let monad maybeM in do { b2 &lt;- parse #[p2]l a; parse r b2 } |]
++
++t0 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 's'
++
++-- bug8 = (run compileParse $ #[Or (letter 's') (letter 'm')]l) 'm'
++
+ -- ###############################
+ -- ############ tests ############
+ -- ###############################
+ 
+ t1 = parse #[Seq (Wrap #[Rep $ letter 'a', proper]l) (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
+-t2 = parse (unwrap chexnum) &quot;0xFF&quot;
+\ No newline at end of file
++t1a = parse #[Seq (proper' $ Rep $ letter 'a') (Seq (Rep $ letter 'b') (Rep (letter 'c')))]l &quot;abbc&quot;
++t2 = parse (unwrap chexnum) &quot;0xFF&quot;
++t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
++t3a = word &quot;abcd&quot;
++
++
++
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000083.html">[Al4nin-commits] r321 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000085.html">[Al4nin-commits] r323 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#84">[ date ]</a>
+              <a href="thread.html#84">[ thread ]</a>
+              <a href="subject.html#84">[ subject ]</a>
+              <a href="author.html#84">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

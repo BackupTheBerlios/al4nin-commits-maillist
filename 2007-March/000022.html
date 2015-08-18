@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r260 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r260%20-%20trunk/found-bugs&In-Reply-To=%3C200703172258.l2HMw8h6003831%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000021.html">
+   <LINK REL="Next"  HREF="000023.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r260 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r260%20-%20trunk/found-bugs&In-Reply-To=%3C200703172258.l2HMw8h6003831%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r260 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Mar 17 23:58:08 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000021.html">[Al4nin-commits] r259 - in trunk: . found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000023.html">[Al4nin-commits] r261 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#22">[ date ]</a>
+              <a href="thread.html#22">[ thread ]</a>
+              <a href="subject.html#22">[ subject ]</a>
+              <a href="author.html#22">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-17 23:58:08 +0100 (Sat, 17 Mar 2007)
+New Revision: 260
+
+Modified:
+   trunk/found-bugs/LLVM.omg
+Log:
+move two definitions further down in the file and observe the compile error
+
+Modified: trunk/found-bugs/LLVM.omg
+===================================================================
+--- trunk/found-bugs/LLVM.omg	2007-03-17 22:37:19 UTC (rev 259)
++++ trunk/found-bugs/LLVM.omg	2007-03-17 22:58:08 UTC (rev 260)
+@@ -44,14 +44,6 @@
+ 
+ kind BB = Entry | Normal
+ 
+-kind ComesFrom :: *1 where
+-  From :: Row HasLType ~&gt; ComesFrom
+-
+-data Departures :: Type ~&gt; Type ~&gt; Row ComesFrom ~&gt; * where
+-  Nowhere :: Departures prodV t RNil
+-  Comes :: (Value prod, BasicBlock t n' def) -&gt; Departures prod t alts -&gt; Departures prod t (RCons (From def) alts)
+- deriving List(d)
+-
+ data Instr :: Type ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+   -- Terminators
+   Unwind :: Instr t n RNil
+@@ -64,7 +56,14 @@
+   -- Phi :: Label l -&gt; [(Value a, BasicBlock t n' odefs)] -&gt; Instr t n defs -&gt; Instr t Normal (RCons (HasL l a) defs)
+   Phi :: Label l -&gt; Departures a t deps -&gt; Instr t n defs -&gt; Instr t Normal (RCons (HasL l a) defs)
+ 
++kind ComesFrom :: *1 where
++  From :: Row HasLType ~&gt; ComesFrom
+ 
++data Departures :: Type ~&gt; Type ~&gt; Row ComesFrom ~&gt; * where
++  Nowhere :: Departures prodV t RNil
++  Comes :: (Value prod, BasicBlock t n' def) -&gt; Departures prod t alts -&gt; Departures prod t (RCons (From def) alts)
++ deriving List(d)
++
+ data BasicBlock :: Type ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+   BB :: Label bl -&gt; Instr t n defs -&gt; BasicBlock t n defs
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000021.html">[Al4nin-commits] r259 - in trunk: . found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000023.html">[Al4nin-commits] r261 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#22">[ date ]</a>
+              <a href="thread.html#22">[ thread ]</a>
+              <a href="subject.html#22">[ subject ]</a>
+              <a href="author.html#22">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

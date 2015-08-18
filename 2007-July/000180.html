@@ -1,0 +1,901 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r418 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r418%20-%20trunk/found-bugs&In-Reply-To=%3C200707120044.l6C0it5l021705%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000179.html">
+   <LINK REL="Next"  HREF="000181.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r418 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r418%20-%20trunk/found-bugs&In-Reply-To=%3C200707120044.l6C0it5l021705%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r418 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jul 12 02:44:55 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000179.html">[Al4nin-commits] r417 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000181.html">[Al4nin-commits] r419 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#180">[ date ]</a>
+              <a href="thread.html#180">[ thread ]</a>
+              <a href="subject.html#180">[ subject ]</a>
+              <a href="author.html#180">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-12 02:44:52 +0200 (Thu, 12 Jul 2007)
+New Revision: 418
+
+Added:
+   trunk/found-bugs/issue17-Cat.omg
+   trunk/found-bugs/issue20-ThristParser.omg
+Removed:
+   trunk/found-bugs/issue16-Cat.omg
+Log:
+added issue20 and renamed 16 to 17 to be consistent with issuetracker
+
+Deleted: trunk/found-bugs/issue16-Cat.omg
+===================================================================
+--- trunk/found-bugs/issue16-Cat.omg	2007-07-11 17:14:46 UTC (rev 417)
++++ trunk/found-bugs/issue16-Cat.omg	2007-07-12 00:44:52 UTC (rev 418)
+@@ -1,360 +0,0 @@
+--- -*-Haskell-*-
+-
+-{-
+- * Copyright (c) 2007 Gabor Greif
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining a copy
+- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+- * in the Software without restriction, including without limitation the rights
+- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+- * of the Software, and to permit persons to whom the Software is furnished to do
+- * so, subject to the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+- * OR OTHER DEALINGS IN THE SOFTWARE.
+- -}
+-
+--- Usage:
+---
+---  Set up the environment
+---     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
+---     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
+---
+---  Start the omega interpreter by typing
+---     omega Cat.omg
+---  and run your commands on the prompt
+---
+-
+-import &quot;LangPrelude.prg&quot; 
+-  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Eq,Equal,
+-  listM, (!=), (==))
+-
+-
+---- import &quot;Thrist.omg&quot; 
+----  (Thrist, Nil, Cons, syntax List(l))
+-data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
+-  Nil :: Thrist k a a
+-  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
+- deriving List(l)
+-
+-
+-data Prod:: *1 ~&gt; *1 where
+-  PNil:: Prod a
+-  PCons:: k ~&gt; Prod k ~&gt; Prod k
+- deriving List(sh)
+-
+-
+-
+--- Cat thrist
+--- See: <A HREF="http://en.wikipedia.org/wiki/Cat_%28programming_language%29">http://en.wikipedia.org/wiki/Cat_%28programming_language%29</A>
+-
+-blow :: Nat ~&gt; Prod *0 ~&gt; Prod *0
+-{blow Z s} = s
+-{blow (S n) s} = [t; {blow n s}]sh
+-
+-blowLike :: Nat ~&gt; *0 ~&gt; Prod *0 ~&gt; Prod *0
+-{blowLike (S arty) (c -&gt; d) s} = [c; {blowLike arty d s}]sh
+-{blowLike Z a s} = s
+-
+-range :: Nat ~&gt; *0 ~&gt; *0
+-{range (S arty) (c -&gt; d)} = {range arty d}
+-{range Z a} = a
+-
+-countArr :: *0 ~&gt; Nat
+-{countArr Int} = 0t
+-{countArr Bool} = 0t
+-{countArr Char} = 0t
+-{countArr (a, b)} = 0t
+-{countArr [a]} = 0t
+-{countArr (a-&gt;b)} = S {countArr b}
+-
+-data Tractable :: * ~&gt; * where
+-  IntTractable :: Tractable Int
+-  BoolTractable :: Tractable Bool
+-  CharTractable :: Tractable Char
+-  PairTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a, b)
+-  ListTractable :: Tractable a -&gt; Tractable [a]
+-  ArrTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a -&gt; b)
+-  CatTractable :: ShapeTractable a -&gt; ShapeTractable b -&gt; Tractable (Cat a b)
+-
+-data Primitive
+-    = Padd
+-    | Psub
+-    | Pmul
+-    | Pdiv
+-    | Pgt
+-    | Plt
+-    | Pgteq
+-    | Plteq
+-    | Pneg
+-    | Peq
+-    | Pneq
+-    | Pmin
+-    | Pmax
+-    | Pmap -- made up
+-    | Pord
+-
+-
+-data Cat :: (Prod *0) ~&gt; (Prod *0) ~&gt; *0 where
+-  Push :: Tractable a -&gt; a -&gt; Cat s [a; s]sh
+-  Prim :: Tractable c -&gt; Primitive -&gt; (a -&gt; c) -&gt; Cat [a; {blowLike {countArr c} c s}]sh [{range {countArr c} c}; s]sh
+-  Dup :: Cat [t; s]sh [t, t; s]sh
+---  Dig :: Pick Prod Nat -&gt; Cat (PCons t s) (PCons t (PCons t s))
+-  Print :: Cat [t; s]sh s
+-  PopN :: Nat' (S n) -&gt; Cat {blow (S n) s} s
+-  Swap :: Cat [a, b; s]sh [b, a; s]sh
+--- Perm :: Pick Prod Nat -- TODO
+-  Block :: Thrist Cat b c -&gt; Cat a [Cat b c; a]sh
+-  Quote :: Thrist Cat a b -&gt; Cat a b
+-  Apply :: Cat [Cat a b; a]sh b
+-  If :: Thrist Cat s t -&gt;
+-        Thrist Cat s t -&gt;
+-        Cat [Bool; s]sh t
+-  If2 :: Cat [Thrist Cat s t, Thrist Cat s t, Bool; s]sh t
+-
+-
+-data ShapeTractable :: (Prod *0) ~&gt; * where
+-  Opaque :: ShapeTractable a
+-  Ontop :: Tractable b -&gt; ShapeTractable a -&gt; ShapeTractable [b; a]sh
+- deriving List(st)
+-  
+-tc0 = (let a = Opaque in (CatTractable a (Ontop IntTractable a))) :: Tractable (Cat a (PCons Int a))
+-tc1 = [Push tc0 (Push IntTractable 42)]l
+-tc2 = [Push tc0 (Push IntTractable 42), Apply]l
+-tc3 = [Push tc0 (Push IntTractable 42), Apply, Print]l
+-
+-strTract = ListTractable CharTractable
+-
+-intPrim = Prim (ArrTractable IntTractable IntTractable)
+-add = intPrim Padd (+)
+-sub = intPrim Psub (-)
+-
+-intPred = Prim (ArrTractable IntTractable BoolTractable)
+-gt = intPred Pgt (&gt;)
+-gteq = intPred Pgteq (&gt;=)
+-
+-pop = PopN #1
+-
+-te1 = [Push IntTractable 42, Dup, gt, If [pop, Push strTract &quot;hh&quot;]l [Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
+-
+-{- This needs more magic:
+-showThrist :: (t a b -&gt; String) -&gt; Thrist t a b -&gt; String
+-showThrist f Nil = &quot;&quot;
+-showThrist f (Cons t r) = f t ++ showThrist f r
+--}
+-
+-cat' :: Thrist Cat a b -&gt; String
+-cat' []l = &quot;&quot;
+-cat' [Push _ a; r]l = &quot;Push &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
+-cat' [Prim _ Padd _; r]l = &quot;add\n&quot; ++ cat' r
+-cat' [Prim _ Psub _; r]l = &quot;sub\n&quot; ++ cat' r
+-cat' [Prim _ Pgt  _; r]l = &quot;gt\n&quot; ++ cat' r
+-cat' [Dup; r]l = &quot;Dup\n&quot; ++ cat' r
+-cat' [Print; r]l = &quot;Print\n&quot; ++ cat' r
+-cat' [PopN n; r]l = &quot;PopN &quot; ++ show n ++ &quot;\n&quot; ++ cat' r
+-cat' [Swap; r]l = &quot;Swap\n&quot; ++ cat' r
+-cat' [If yes no; r]l = &quot;If &quot; ++ show yes ++ &quot; ELSE &quot; ++ show no ++ &quot;\n&quot; ++ cat' r
+-
+-data Stack :: Prod *0 ~&gt; *0 where
+-  Empty :: Stack PNil
+-  Pu :: a -&gt; Stack s -&gt; Stack [a; s]sh
+- deriving List(s)
+-
+-{-
+-proveRange :: Tractable d -&gt; Tractable e -&gt; Equal {range {countArr (e -&gt; d)} (e -&gt; d)} {range {countArr d} d}
+-proveRange IntTractable e = Eq
+-proveRange BoolTractable e = Eq
+-proveRange CharTractable e = Eq
+-proveRange (ListTractable _) e = Eq
+-proveRange (PairTractable _ _) e = Eq
+-proveRange (ArrTractable from to) e = Eq
+-                                      where theorem because = proveRange to
+--}
+-
+-interpretCat :: (forall a . Thrist Cat a a) -&gt; IO (Stack PNil)
+-interpretCat thr = interpretCat' thr (returnIO Empty)
+-
+-interpretCat' :: Thrist Cat a b -&gt; IO (Stack a) -&gt; IO (Stack b)
+-
+-interpretCat' []l act = act
+-
+-interpretCat' thr act =
+-    case thr of
+-	     [Push rep a; r]l -&gt; do
+-				 st &lt;- act
+-				 interpretCat' r (return (Pu a st))
+-	     [PopN (S n); r]l -&gt; do
+-				 Pu _ st &lt;- act
+-				 interpretCat' r (popMore n st)
+-	     [Print; r]l -&gt; do
+-			    Pu a st &lt;- act
+-			    new &lt;- putStr (show a)
+-			    interpretCat' r (return st)
+-	     [Dup; r]l -&gt; do
+-			  Pu a st &lt;- act
+-  			  interpretCat' r (return (Pu a (Pu a st)))
+-	     [Swap; r]l -&gt; do
+-			   Pu a st &lt;- act
+-			   let (Pu b st') = st
+-			   interpretCat' r (return (Pu b (Pu a st')))
+-	     [Prim (ArrTractable x y) p f; r]l -&gt; do
+-	                                          Pu a st &lt;- act
+-						  interpretCat' [Prim y p (f a); r]l (return st)
+-                                                         -- where theorem because = proveRange y x
+-	     [Prim IntTractable _ f; r]l -&gt; do
+-	                                    Pu a st &lt;- act
+-					    interpretCat' r (return (Pu (f a) st))
+-	     [Prim BoolTractable _ f; r]l -&gt; do
+-	                                     Pu a st &lt;- act
+-					     interpretCat' r (return (Pu (f a) st))
+-	     [Prim CharTractable _ f; r]l -&gt; do
+-	                                     Pu a st &lt;- act
+-					     interpretCat' r (return (Pu (f a) st))
+-	     [Prim (PairTractable _ _) _ f; r]l -&gt; do
+-	                                           Pu a st &lt;- act
+-						   interpretCat' r (return (Pu (f a) st))
+-	     [Prim (ListTractable _) _ f; r]l -&gt; do
+-	                                         Pu a st &lt;- act
+-						 interpretCat' r (return (Pu (f a) st))
+-	     [If yes no; r]l -&gt; do
+-				Pu cond st &lt;- act
+-				let act' = return st
+-				interpretCat' r (if cond then interpretCat' yes act' else interpretCat' no act')
+-	     [Block thr; r]l -&gt; do
+-				st &lt;- act
+-				interpretCat' r (return (Pu (Quote thr) st))
+-	     [Apply; r]l -&gt; do
+-			    Pu (Quote thr) st &lt;- act
+-			    let act' = return st
+-			    interpretCat' r (interpretCat' thr act')
+-    where monad ioM
+-
+-popMore :: Nat' n -&gt; Stack {blow n b} -&gt; IO (Stack b)
+-popMore Z st = return st
+-    where monad ioM
+-popMore (S n) st = do
+-		   let (Pu _ st') = st
+-		   popMore n st'
+-    where monad ioM
+-
+-##test &quot;was not what was expected&quot;
+-  te2 = interpretCat (Cons (pushI 11) te1)
+-
+-pushI = Push IntTractable
+-pushB = Push BoolTractable
+-pushC = Push CharTractable
+-pushStr = Push (ListTractable CharTractable)
+-
+-te3 = interpretCat [pushI 23, pop]l
+-te4 = interpretCat [pushI 42, pushI 11, gt, If [pushB True]l [pushB False]l, Print]l
+-te5 = interpretCat [pushI 42, pushI 32, pushI 1, add, Swap, Print, Print]l
+-te6 = interpretCat [pushI 42, pushI 32, pushI 1, add, Swap, Print, Dup, PopN #2]l
+-te7 = interpretCat [pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) Pmap map, Print]l
+-te8 = interpretCat [pushC 'Z', Prim IntTractable Pord ord, pushI 2, add, Print]l
+-te9 = interpretCat [pushI 42, Block [Print]l, Apply]l
+-
+-optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
+-optimizeCat (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">i at Cons</A> (If yes no) r) = optimizeIf i yes no r
+-optimizeCat [Push rep1 yes, Push rep2 no, If2; r]l = optimizeIf [If yes no; r]l yes no r
+-optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Push</A> rep a; r]l = [p; optimizeCat r]l
+-optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Swap</A>; r]l = [p; optimizeCat r]l
+-optimizeCat []l = []l
+-
+-sameTractable :: Tractable a -&gt; Tractable b -&gt; Maybe (Equal a b)
+-sameTractable IntTractable IntTractable = Just Eq
+-
+-sameValue :: Tractable a -&gt; a -&gt; a -&gt; Bool
+-sameValue IntTractable a b = a == b
+-
+-splitOff :: Thrist Cat a c -&gt; Thrist Cat a c -&gt; exists b . Maybe (Cat a b, Thrist Cat b c, Thrist Cat b c)
+-splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> rep1 a1) r1) (Cons (Push rep2 a2) r2) = case sameTractable rep1 rep2 of
+-								Just Eq -&gt; Ex (Just (p1, r1, r2))
+-splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">s at Swap</A>) r1) (Cons Swap r2) =  Ex (Just (s, r1, r2))
+-
+-
+-
+-optimizeIf :: Thrist Cat [Bool; a]sh b -&gt; Thrist Cat a c -&gt; Thrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat [Bool; a]sh b
+-
+-optimizeIf all (Cons (Push rep1 a1) t1) (Cons (Push rep2 a2) t2) rest = case sameTractable rep1 rep2 of
+-                                                                          Just Eq -&gt; if sameValue rep1 a1 a2 then optimizeCat $ Cons (Push rep1 a1) (Cons Swap (Cons (If t1 t2) rest)) else all
+-                                                                          _ -&gt; all
+-----optimizeIf all a b rest = case splitOff a b of
+-----                            Just (Ex (p, t1, t2)) -&gt; 
+-
+-
+---optimizeIf all (Cons (Push rep1 a1) t1) (Cons (Push rep2 a2) t2) rest = if eqStr (show a1) (show a2) then optimizeCat $ Cons (Push rep1 a1) (Cons Swap (Cons (If t1 t2) rest)) else all
+---           where theorem splitOff
+-
+-optimizeIf _ []l []l rest = [pop; rest]l
+-
+-
+-optimizeIf all _ _ _ = all
+-
+-data RevThrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
+-  RevNil :: RevThrist k a a
+-  RevCons :: RevThrist k c b -&gt; k b a -&gt; RevThrist k c a
+- deriving List(rl)
+-
+-revThrist :: RevThrist Cat a b -&gt; Thrist Cat b c -&gt; RevThrist Cat a c
+-revThrist acc []l = acc
+---revThrist acc [a]l = RevCons acc a
+-revThrist acc [a; b]l = revThrist (RevCons acc a) b
+-
+-
+-tailMerge :: Thrist Cat [Bool; a]sh b -&gt; (Thrist Cat a m, Thrist Cat m c)  -&gt; (Thrist Cat a m, Thrist Cat m c) -&gt; Thrist Cat c b -&gt; Thrist Cat [Bool; a]sh b
+-tailMerge all (_, []l) (_, [_]l) r = all
+-tailMerge all (_, [_]l) (_, []l) r = all
+-
+-tailMerge _ (yes, [Dup]l) (no, [Dup]l) r = [If yes no, Dup; r]l
+-
+-tm0 = tailMerge [If [Dup]l [Dup]l, Print]l ([]l, [Dup]l) ([]l, [Dup]l) [Print]l
+-
+-to0 = optimizeCat [If [pushI 42]l [pushI 42]l, Print]l
+-to1 = optimizeCat [If [pushI 42]l [pushI 43]l, Print]l
+-
+-
+-
+-compile :: Thrist Cat a b -&gt; Code (IO (Stack a) -&gt; IO (Stack b))
+-
+-compile []l = lift id
+-
+-compile [Push rep a; r]l = [| \act -&gt; let monad ioM in do
+-                                      st &lt;- act
+-				      $(compile r) (return (Pu a st)) |]
+-
+-compile [PopN (S Z); r]l = [| \act -&gt; let monad ioM in do
+-			              Pu _ st &lt;- act
+-				      $(compile r) (return st) |]
+-
+-compile [PopN (S (S n)); r]l = [| \act -&gt; let monad ioM in do
+-                                          Pu _ st &lt;- act
+-				          $(compile [PopN (S n); r]l) (return st) |]
+-
+-compile [Print; r]l = [| \act -&gt; let monad ioM in do
+-			         Pu a st &lt;- act
+-                                 new &lt;- putStr (show a)
+-			         $(compile r) (return st) |]
+-
+-compile [Dup; r]l = [| \act -&gt; let monad ioM in do
+-		               Pu a st &lt;- act
+-			       $(compile r) (return (Pu a (Pu a st))) |]
+-
+-compile [Block thr; r]l = [| \act -&gt; let monad ioM in do
+-			              st &lt;- act
+-				      $(compile r) (return (Pu $quoted st)) |]
+-			         where quoted = [| Quote thr |]
+-
+-compile [Apply; r]l = [| \act -&gt; let monad ioM in do
+-			         Pu (Quote thr) st &lt;- act
+-			         $(compile r) (interpretCat' thr (return st)) |]
+-
+-tco1 = (run (compile [Block [pushI 42]l, Apply, Print]l)) $ returnIO Empty
+
+Copied: trunk/found-bugs/issue17-Cat.omg (from rev 406, trunk/found-bugs/issue16-Cat.omg)
+
+Copied: trunk/found-bugs/issue20-ThristParser.omg (from rev 417, trunk/purgatory/ThristParser.omg)
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-07-11 17:14:46 UTC (rev 417)
++++ trunk/found-bugs/issue20-ThristParser.omg	2007-07-12 00:44:52 UTC (rev 418)
+@@ -0,0 +1,454 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega ThristParser.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Eq,Equal,
++  listM, foldl, foldr)
++
++
++---import &quot;Thrist.omg&quot; 
++---  (Thrist, Nil, Cons, syntax List(l))
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
++ deriving List(l)
++
++
++data Parse :: *0 ~&gt; *0 ~&gt; *0 where
++  Epsilon :: Parse [a] ([b], [a])       -- always match
++  Atom :: Char -&gt; Parse Char Char       -- exact match
++  Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
++  Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
++  Try :: (a -&gt; Maybe b) -&gt; Parse a b    -- pipeline stops if no match
++  Rep1 :: Parse a b -&gt; Parse [a] ([b], [a])          -- consume as many as matches, return rest
++  Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])  -- consume as many as matches, return rest
++  Group :: [Parse a b] -&gt; Parse [a] ([b], [a])       -- all must match, return rest
++  Wrap :: Thrist Parse a b -&gt; Parse a b              -- treat a chain of parses as one
++  Or :: Parse a b -&gt; Parse a b -&gt; Parse a b          -- match first or if it doesn't, the second
++  Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
++  Seq1 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
++  ButNot1 :: Parse a b -&gt; Parse a b -&gt; Parse a b     -- match first and expect second to fail
++  UpTo :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- scan for c then match b
++  Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
++
++
++--letter a = Pred (\(c :: Char) -&gt; ord c == ord a)
++letter a = Atom a
++---char = Sure (id :: Char -&gt; Char)
++
++digit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else Nothing)
++
++bindigit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '1' then Just (ord c - ord '0') else Nothing)
++
++hexdigit = Try (\c -&gt; if ord '0' &lt;= ord c &amp;&amp; ord c &lt;= ord '9' then Just (ord c - ord '0') else
++                      if ord 'a' &lt;= ord c &amp;&amp; ord c &lt;= ord 'f' then Just (ord c - ord 'W') else
++                      if ord 'A' &lt;= ord c &amp;&amp; ord c &lt;= ord 'F' then Just (ord c - ord '7') else Nothing)
++
++--crop = Try (\(good, rest) -&gt; Just good)
++--snap = Try (\(good, rest) -&gt; case rest of { [] -&gt; Just good; _ -&gt; Nothing })
++
++proper = Try (\(it, rest) -&gt; case it of { [] -&gt; Nothing; _ -&gt; Just (it, rest) })
++--propersnap = Try (\a -&gt; case a of { ([], _) -&gt; Nothing; (_, r:rest) -&gt; Nothing; _ -&gt; Just a })
++
++proper' p = Wrap [p, proper]l
++--propersnap' p = Wrap [p, propersnap]l
++
++base n = foldl (\acc x -&gt; (acc * n) + x) 0
++
++
++-- unwrap (Wrap x) = x
++
++--second = Sure (\((_, x), _) -&gt; x)
++
++word cs = Group (map letter cs)
++
++optional p = Or p Epsilon
++
++-- ###############################
++-- ############ parse ############
++-- ###############################
++
++parse :: Thrist Parse a b -&gt; a -&gt; Maybe b
++
++parse []l a = Just a
++
++parse [Epsilon; r]l as = parse r ([], as)
++
++parse [Atom c; r]l a = if ord c == ord a then parse r a else Nothing
++
++parse [Pred p; r]l a = if p a then parse r a else Nothing
++
++parse [Sure f; r]l a = parse r (f a)
++
++parse [Try f; r]l a = do { b &lt;- f a; parse r b } where monad maybeM
++
++parse [Rep1 p; r]l as = parse r (parseRep p as) where
++      parseRep :: Parse a b -&gt; [a] -&gt; ([b], [a])
++      parseRep _ [] = ([], [])
++      parseRep p (a:as) = case parse [p]l a of { Nothing -&gt; ([], a:as); Just b -&gt; (b:bs, rest) where (bs, rest) = parseRep p as }
++
++parse [Rep p; r]l as = parse r (parseRep [p]l as) where
++      parseRep :: Thrist Parse [a] (b, [a]) -&gt; [a] -&gt; ([b], [a])
++      parseRep _ [] = ([], [])
++      parseRep p as = case parse p as of
++                      Nothing -&gt; ([], as)
++                      Just (b, as') -&gt; (b:bs, rest)
++                          where (bs, rest) = parseRep p as'
++
++parse [Group ps; r]l as = do { bs &lt;- parseGroup ps as; parse r bs } where
++      monad maybeM
++      parseGroup :: [Parse a b] -&gt; [a] -&gt; Maybe ([b], [a])
++      parseGroup [] rest = Just ([], rest) -- overlength input
++      parseGroup _ [] = Nothing            -- input too short
++      parseGroup (p:ps) (a:as) = do { b &lt;- parse [p]l a; (bs, rest) &lt;- parseGroup ps as; return (b:bs, rest) }
++
++parse [Wrap thr; r]l a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
++
++parse [Seq1 p1 p2; r]l (a1:a2:rest) = do { b1 &lt;- parse [p1]l a1; b2 &lt;- parse [p2]l a2; parse r ((b1, b2), rest) } where monad maybeM
++parse [Seq1 _ _; _]l _ = Nothing
++
++parse [Seq p1 p2; r]l as = do { (b1, as') &lt;- parse [p1]l as; (b2, rest) &lt;- parse [p2]l as'; parse r ((b1, b2), rest) } where monad maybeM
++
++parse [Or p1 p2; r]l a = case parse [p1]l a of
++			 Just b1 -&gt; parse r b1
++			 Nothing -&gt; do { b2 &lt;- parse [p2]l a; parse r b2 } where monad maybeM
++
++-- probably redundant, use Pred instead
++parse [ButNot1 p1 p2; r]l a = case parse [p1]l a of
++			      Nothing -&gt; Nothing
++			      (Just b1) -&gt; case parse [p2]l a of
++					   Nothing -&gt; parse r b1
++					   _ -&gt; Nothing
++
++parse [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">u at UpTo</A> p1 p2; r]l a = case parse' a [] of
++			     Nothing -&gt; Nothing
++			     Just (fill, (b2, rest)) -&gt; case parse [p1]l (reverse fill []) of
++							Nothing -&gt; Nothing
++							Just (b1, []) -&gt; parse r ((b1, b2), rest)
++							_ -&gt; Nothing
++    where
++    --parse' :: [a] -&gt; [a] -&gt; Maybe ([a], c)
++    parse' [] acc = case parse [p2]l [] of
++		    Nothing -&gt; Nothing
++		    Just b2 -&gt; Just (acc, b2)
++    parse' (food@(head:tail)) acc = case parse [p2]l food of
++				    Nothing -&gt; parse' tail (head:acc)
++				    Just b2 -&gt; Just (acc, b2)
++    reverse [] acc = acc
++    reverse (a:as) acc = reverse as (a:acc)
++
++parse [Par fst snd; r]l (a, b) = do { a' &lt;- parse [fst]l a; b' &lt;- parse [snd]l b; parse r (a', b') } where monad maybeM
++
++cataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++cataPlus f = Try inner
++         where inner ([], _) = Nothing
++               inner (as, c) = Just (f as, c)
++
++cataPlus' :: ([a] -&gt; b) -&gt; Parse [a] b
++cataPlus' f = Try inner
++         where inner [] = Nothing
++               inner as = Just $ f as
++
++cataStar :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++cataStar f = Sure (\(as, c) -&gt; (f as, c))
++
++
++-- ##########################################
++-- ############ pattern compiler ############
++-- ##########################################
++
++compileParse :: Thrist Parse a b -&gt; Code (a -&gt; Maybe b)
++
++compileParse []l = [| Just |]
++
++compileParse [Epsilon; r]l = [| \as -&gt; $parseR ([], as)  |]
++    where parseR = compileParse r
++
++compileParse [Atom c; r]l = [| \a -&gt; if $ordC == ord a then $parseR a else Nothing |]
++    where parseR = compileParse r
++	  ordC = lift $ ord c
++
++compileParse [Pred p; r]l = [| \a -&gt; if p a then $(compileParse r) a else Nothing |]
++
++compileParse [Sure f; r]l = [| \a -&gt; $(compileParse r) (f a) |]
++
++compileParse [Try f; r]l = [| \a -&gt; let monad maybeM in do { b &lt;- f a; $(compileParse r) b } |]
++
++{- this should work, but fails: (not reported yet)
++
++Unknown Var at level 0: bind
++
++compileParse [Try f; r]l = [| \a -&gt; do { b &lt;- f a; $(compileParse r) b } |]
++    where monad maybeM
++-}
++
++
++compileParse [Or p1 p2; r]l = [| \a -&gt;
++			       case $parseP1 a of
++			       Just b1 -&gt; $parseR b1
++			       Nothing -&gt; let monad maybeM in do { b2 &lt;- $parseP2 a; $parseR b2 } |]
++    where parseR = compileParse r
++	  parseP1 = compileParse [p1]l
++	  parseP2 = compileParse [p2]l
++
++compileParse [Wrap thr; r]l = [| \a -&gt; do { a' &lt;- $(compileParse thr) a; $parseR a' } |]
++    where monad maybeM
++	  parseR = compileParse r
++
++--compileParse [Par fst snd; r]l = [| \(a, b) -&gt; $(compileParse r) (f a) |]
++--					       where monad maybeM
++
++
++-- ###############################
++-- ############ tests ############
++-- ###############################
++
++t0 =  (run compileParse $ [Or (letter 's') (letter 'm')]l) 's'
++t0a = (run compileParse $ [Or (letter 's') (letter 'm')]l) 'm'
++
++t1 = parse [Seq (Wrap [Rep1 $ letter 'a', proper]l) (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
++t1a = parse [Seq (proper' $ Rep1 $ letter 'a') (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
++
++num = [Rep1 digit, cataPlus (base 10)]l
++hexnum = [Rep1 hexdigit, cataPlus (base 16)]l
++binnum = [Rep1 bindigit, cataPlus (base 2)]l
++
++tpar0 = parse [Rep1 bindigit, Par (cataPlus' $ base 2) (Rep1 $ Atom 'a')]l &quot;101a&quot;
++
++chexnum = [Seq (Seq1 (letter '0') (alts letter &quot;xX&quot;)) (Wrap hexnum), Sure (snd . fst)]l
++t2 = parse chexnum &quot;0xFF&quot;
++
++
++t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
++t3a = word &quot;abcd&quot;
++
++t4 = Or (word &quot;;&quot;) Epsilon
++t4a = optional (word &quot;;&quot;)
++
++t5 = parse [Rep1 (ButNot1 (alts letter &quot;ab&quot;) (letter 'b'))]l &quot;abc&quot;
++
++-- ############ a simple lexer ############
++
++-- see: <A HREF="http://www.opendylan.org/books/drm/Lexical_Grammar">http://www.opendylan.org/books/drm/Lexical_Grammar</A>
++
++data Reserved = Rdefine
++	      | Rend
++	      | Rhandler
++	      | Rlet
++	      | Rlocal
++	      | Rmacro
++	      | Rotherwise
++
++data HashWord = Ht
++	      | Hf
++	      | Hnext
++	      | Hrest
++	      | Hkey
++	      | Hallkeys
++	      | Hinclude
++
++data Punctuation = PparenthesisOpen | PparenthesisClose -- ( )
++		 | Pcomma                               -- ,
++		 | Pdot                                 -- .
++		 | Psemicolon                           -- ;
++		 | PbracketOpen | PbracketClose         -- [ ]
++		 | PbraceOpen | PbraceClose             -- { }
++		 | Pcoloncolon                          -- ::
++		 | Pminus                               -- -
++		 | Pequal                               -- =
++		 | Pequalequal                          -- ==
++		 | Pequalgreater                        -- =&gt;
++		 | Phashparenthesis                     -- #(
++		 | Phashbracket                         -- #[
++		 | Phashhash                            -- ##
++		 | Pquestion                            -- ?
++		 | Pquestionquestion                    -- ??
++		 | Pquestionequal                       -- ?=
++		 | Pdotdotdot                           -- ...
++
++-- the below lists are maximum munch sorted
++punctSymbols = [ &quot;(&quot;, &quot;)&quot;, &quot;,&quot;, &quot;...&quot;, &quot;.&quot;, &quot;;&quot;, &quot;[&quot;, &quot;]&quot;, &quot;{&quot;, &quot;}&quot;, &quot;::&quot;, &quot;-&quot;
++               , &quot;==&quot;, &quot;=&gt;&quot;, &quot;=&quot;, &quot;#(&quot;, &quot;#[&quot;, &quot;##&quot;, &quot;??&quot;, &quot;?=&quot;, &quot;?&quot;]
++
++punct = [ PparenthesisOpen, PparenthesisClose, Pcomma, Pdotdotdot, Pdot, Psemicolon, PbracketOpen, PbracketClose
++        , PbraceOpen, PbraceClose, Pcoloncolon, Pminus, Pequalequal, Pequalgreater, Pequal
++        , Phashparenthesis, Phashbracket, Phashhash
++        , Pquestionquestion, Pquestionequal, Pquestion ]
++
++
++coreWords = [&quot;define&quot;, &quot;end&quot;, &quot;handler&quot;, &quot;let&quot;, &quot;local&quot;, &quot;macro&quot;, &quot;otherwise&quot;]
++core = [Rdefine, Rend, Rhandler, Rlet, Rlocal, Rmacro, Rotherwise]
++
++hashWords = [&quot;#t&quot;, &quot;#f&quot;, &quot;#next&quot;, &quot;#rest&quot;, &quot;#key&quot;, &quot;#all-keys&quot;, &quot;#include&quot;]
++hash = [Ht, Hf, Hnext, Hrest, Hkey, Hallkeys, Hinclude]
++
++bulkWords :: [String] -&gt; [a] -&gt; (a -&gt; Token') -&gt; Parse [Char] (Token', [Char])
++bulkWords syntax semantics conv = or $ drosel syntax semantics where
++				  drosel (sy:sys) (se:ses) = Wrap [word sy, Sure (\(_, rest) -&gt; (conv se, rest))]l : drosel sys ses
++				  drosel [] [] = []
++
++data Token = R Reserved | Str String | Num Int | P Punctuation | H HashWord
++
++data Token' = Token Token | Whitespace String | Test (exists (n :: Nat) . Nat' n)
++
++whitespace = alts letter &quot; \n\t\r&quot;
++
++lexer :: Thrist Parse [Char] ([Token], [Char])
++
++or :: [Parse a b] -&gt; Parse a b
++or (p:ps) = foldl Or p ps
++
++
++alts :: (a -&gt; Parse a b) -&gt; [a] -&gt; Parse a b
++alts f as = or (map f as)
++
++{- not ready yet :-(
++foldThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a) (f :: a) .
++	      (b c d -&gt; Thrist b d e -&gt; Thrist b c e) -&gt;
++	      Thrist b e f -&gt;
++	      Thrist b d e -&gt;
++	      Thrist b d f
++foldThrist c n Nil     = n
++foldThrist c n (Cons x xs) = c x (foldThrist c n xs)
++-}
++
++
++extendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a) .
++		Thrist b c d -&gt;
++		b d e -&gt;
++		Thrist b c e
++
++extendThrist []l a = [a]l
++extendThrist [b; r]l a = [b; extendThrist r a]l
++
++
++{- not ready yet :-(
++appendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a) .
++		Thrist b c d -&gt;
++		Thrist b d e -&gt;
++		Thrist b c e
++
++appendThrist Nil a = [a]l
++appendThrist (Cons b r) a = Cons b (appendThrist r a)
++-}
++
++lexer' :: Thrist Parse [Char] ([Token'], [Char])
++lexer' = [Rep token']l
++
++sureFirst f = Sure (\(a, b) -&gt; (f a, b))
++
++notEmpty ([], _) = False
++notEmpty (_, _) = True
++
++isAlpha caseinsensitive c = case (caseinsensitive, ord 'A' &lt;= o, o &lt;= ord 'Z') of
++                            (_, True, True) -&gt; True
++                            (True, _, False) -&gt; case (ord 'a' &lt;= o, o &lt;= ord 'z') of
++                                                (True, True) -&gt; True
++                                                _ -&gt; False
++                            _ -&gt; False
++    where o = ord c
++
++token' :: Parse [Char] (Token', [Char])
++token' = or [ Wrap $ extendThrist num (sureFirst (Token . Num))
++            , Wrap [Seq1 (letter '#') (alts letter &quot;xX&quot;)
++		   , Sure snd
++		   ; extendThrist hexnum (sureFirst (Token . Num))]l
++            , Wrap [Rep1 whitespace, Pred notEmpty, sureFirst Whitespace]l
++            , Wrap [Seq1 (letter '#') (alts letter &quot;bB&quot;)
++		   , Sure snd
++		   ; extendThrist binnum (sureFirst (Token . Num))]l
++	    , bulkWords punctSymbols punct (Token . P)
++	    , bulkWords coreWords core (Token . R)
++	    , bulkWords hashWords hash (Token . H)
++	    , Wrap [Seq (word &quot;//&quot;) (Rep1 $ ButNot1 (Sure id) (letter '\n')), sureFirst (\(boring, comment) -&gt; Whitespace (boring ++ comment))]l
++	    , Wrap [Seq (word &quot;/*&quot;) (UpTo (Rep1 $ Sure id) (word &quot;*/&quot;)), sureFirst (\(boring1, (comment, boring2)) -&gt; Whitespace (boring1 ++ comment ++ boring2))]l
++            , Wrap [word &quot;!&quot;
++		   , Sure snd
++		   ; extendThrist num (sureFirst mkTest)]l -- experiment
++            ]
++
++t6 = parse [Rep token']l &quot;33//dsd hh \n42&quot;
++t7 = parse [Rep token']l &quot;33/*dsd hh */42&quot;
++t7a = parse [Rep token']l &quot;33/**/42&quot;
++
++mkTest :: Int -&gt; Token'
++mkTest i = Test (walk i (Ex Z)) where
++	   walk :: Int -&gt; (exists (m :: Nat) . Nat' m) -&gt; (exists (n :: Nat) . Nat' n)
++	   walk 0 n = n
++	   walk i (Ex n) = walk (i - 1) (Ex (S n))
++
++
++-- evaluator for arithmetics on Nat'
++
++isTest :: Token' -&gt; Bool
++isTest (Test _) = True
++isTest _ = False
++
++isQuestion :: Token' -&gt; Bool
++isQuestion (Token (P Pquestion)) = True
++isQuestion _ = False
++
++isDot :: Token' -&gt; Bool
++isDot (Token (P Pdot)) = True
++isDot _ = False
++
++
++natuator :: Thrist Parse [Token'] (Maybe (exists (n :: Nat) . Nat' n), [Token'])
++natuator = [Or (Wrap [Group [Pred isTest, Pred isQuestion, Pred isTest], sureFirst (\ [Test a, _, Test b] -&gt; Just $ sum a b)]l)
++	    (Wrap [Group [Pred isTest, Pred isDot, Pred isTest], sureFirst (\ [Test a, _, Test b] -&gt; diff a b)]l)]l
++
++sum :: (exists (m :: Nat) . Nat' m) -&gt; (exists (n :: Nat) . Nat' n) -&gt; (exists (o :: Nat) . Nat' o)
++sum (Ex Z) rhs = rhs
++sum lhs (Ex Z) = lhs
++sum (Ex (S a)) (Ex b) = sum (Ex a) (Ex (S b))
++
++
++diff :: (exists (m :: Nat) . Nat' m) -&gt; (exists (n :: Nat) . Nat' n) -&gt; Maybe (exists (o :: Nat) . Nat' o)
++diff (Ex Z) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">z at Ex</A> Z) = Just z
++diff (Ex Z) _ = Nothing
++diff z (Ex Z) = Just z
++diff (Ex (S a)) (Ex (S b)) = diff (Ex a) (Ex b)
++
++(Just (natu0, [])) = parse lexer' &quot;!23?!42&quot;
++(Just (natu1, [])) = parse lexer' &quot;!23.!42&quot;
++(Just (natu2, [])) = parse lexer' &quot;!42.!23&quot;
++
++
++-- ############### Cat syntax ###############
++
++-- see: <A HREF="http://www.cat-language.com/manual.html#syntax">http://www.cat-language.com/manual.html#syntax</A>
++
++data Catoken = Cinteger Int | Ccomment String
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000179.html">[Al4nin-commits] r417 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000181.html">[Al4nin-commits] r419 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#180">[ date ]</a>
+              <a href="thread.html#180">[ thread ]</a>
+              <a href="subject.html#180">[ subject ]</a>
+              <a href="author.html#180">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

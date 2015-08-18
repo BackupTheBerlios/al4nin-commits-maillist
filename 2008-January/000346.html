@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r583 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-January/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r583%20-%20trunk/purgatory&In-Reply-To=%3C200801101203.m0AC3Fka006598%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000345.html">
+   <LINK REL="Next"  HREF="000347.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r583 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r583%20-%20trunk/purgatory&In-Reply-To=%3C200801101203.m0AC3Fka006598%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r583 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jan 10 13:03:15 CET 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000345.html">[Al4nin-commits] r582 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000347.html">[Al4nin-commits] r584 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#346">[ date ]</a>
+              <a href="thread.html#346">[ thread ]</a>
+              <a href="subject.html#346">[ subject ]</a>
+              <a href="author.html#346">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-01-10 13:03:08 +0100 (Thu, 10 Jan 2008)
+New Revision: 583
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+some more extractables
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-01-09 23:46:08 UTC (rev 582)
++++ trunk/purgatory/Thrist.lout	2008-01-10 12:03:08 UTC (rev 583)
+@@ -102,7 +102,7 @@
+   {&lt;primfun to1&gt; : Char -&gt; Int}
+ }
+ @LP
+-Now, functions are a bit more interesting than Lists above, they can be composed!
++Now, functions are a bit more interesting than @Haskell {List}s above, they can be composed!
+ Interestingly, composition (written as (.)) is again a function:
+ @LD {
+ {(.)} @Prompt
+@@ -111,7 +111,7 @@
+ This function signature has several interpretations, but the most common one tells us that
+ the composition function @Haskell {(.)} takes a function with type @Haskell {a -&gt; b} as its first argument, then
+ a function with type @Haskell {c -&gt; a} as its second argument, and returns a function of type @Haskell {c -&gt; b}.
+-Again, a, b and c can be arbitrarily specialized or be left universal.
++Again, @Haskell {a}, @Haskell {b} and @Haskell {c} can be arbitrarily specialized or be left universal.
+ We can play with our new toy in the following way:
+ 
+ @LD {
+@@ -168,11 +168,12 @@
+ 
+ Let's simulate these rules as a datatype:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Thrist1&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ data Thrist :: * ~&gt; * ~&gt; * where
+   Nil :: Thrist a a
+   Cons :: (a, b) -&gt; Thrist b c -&gt; Thrist a c
+-}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
+ 
+ The alert reader will have noticed that we have defined a proper GADT,
+ since the @Haskell {Nil} constructor is only inhabiting the @I diagonal
+@@ -207,11 +208,13 @@
+ @PP
+ We try all over again, this time abstracting away the pair into an additional parameter:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Thrist&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ data Thrist :: (* ~&gt; * ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
+   Nil :: Thrist p a a
+   Cons :: p a b -&gt; Thrist p b c -&gt; Thrist p a c
+-}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
++
+ All that remains of the pair is the bitter aftertaste
+ and the letter @Haskell {p} in the definition of @Haskell {Thrist}.
+ @PP
+@@ -234,12 +237,13 @@
+ piece in place to show that an arrow thrist is strictly more general
+ than function composition, the @Haskell {runArrowThrist} function:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ runArrowThrist :: Thrist (-&gt;) b c -&gt; c -&gt; b
+ runArrowThrist Nil b = b
+ runArrowThrist (Cons f r) a = runThrist r (f a)
+-}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
+ 
++
+ This function now confirms the vague intuition that @Haskell {Nil} plays the r{@Char ocircumflex}le of
+ the neutral element of the arrow thrist, just like the identity function
+ plays the r{@Char ocircumflex}le of the neutral element in the monoid of composed functions.
+@@ -812,6 +816,7 @@
+    @ListItem { As the execution of the trist proceeds the incrementally more of the token are analysed, condensed and converted. }
+ @EndList
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Machine&quot;
+ @Figure
+     @Tag { machine }
+     @Caption { State machine fragment }
+@@ -846,17 +851,29 @@
+     aformat { @Cell A }
+ {
+ @Rowa
+-    A { @Haskell { NorthWest :: State GateClosed SecondaryEnabled (H Idle Idle') } }
++    A { @Haskell @Begin
++NorthWest :: State GateClosed SecondaryEnabled (H Idle Idle')
++	@End @Haskell }
+ @Rowa
+-    A { @Haskell { North :: State GateClosed SecondaryEnabled (H Idle Idle') } }
++    A { @Haskell @Begin
++North :: State GateClosed SecondaryEnabled (H Idle Idle')
++	@End @Haskell }
+ @Rowa
+-    A { @Haskell { West :: State GateClosed SecondaryEnabled (H Idle NeedAck) } }
++    A { @Haskell @Begin
++West :: State GateClosed SecondaryEnabled (H Idle NeedAck)
++	@End @Haskell }
+ @Rowa
+-    A { @Haskell { Mid :: State GateClosed SecondaryBlocked (H Idle NeedAck) } }
++    A { @Haskell @Begin
++Mid :: State GateClosed SecondaryBlocked (H Idle NeedAck)
++	@End @Haskell }
+ @Rowa
+-    A { @Haskell { South :: State GateClosed SecondaryBlocked (H Idle Idle') } }
++    A { @Haskell @Begin
++South :: State GateClosed SecondaryBlocked (H Idle Idle')
++	@End @Haskell }
+ @Rowa
+-    A { @Haskell { SouthEast :: State GateOpen SecondaryBlocked (H Idle Idle') } }
++    A { @Haskell @Begin
++SouthEast :: State GateOpen SecondaryBlocked (H Idle Idle')
++	@End @Haskell }
+ }
+ 
+ 
+@@ -985,14 +1002,14 @@
+ To formally introduce the facets, we employ another @Omega feature,
+ namely @I { user-defined kinds }, whose alternatives can be used to
+ parameterise the @Haskell { State } datatype:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ kind Gate = GateClosed | GateOpen
+ kind Secondary = SecondaryEnabled | SecondaryBlocked
+ kind Handshake = Idle | NeedAck | Requested
+ 
+ data State :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
+   State :: [Transition g s h] -&gt; State g s h
+-}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
+ 
+ On its right side, figure @NumberOf { machine } shows
+ the states along with the facets and
+@@ -1006,16 +1023,27 @@
+ @PP
+ We can implement the elementary actions as a GADT:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ data Action :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
+   RequestExclusive :: Action (a, b, Idle) (a, b, NeedAck)
+   AckExclusive :: Action (a, b, Requested) (a, b, Idle)
+   OpenGate :: Action (GateClosed, SecondaryBlocked, c) (GateOpen, SecondaryBlocked, c)
+   BlockSecondary :: Action (a, SecondaryEnabled, c) (a, SecondaryBlocked, c)
+-  ...
+-}
++  -- ...
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
+ 
+-Then state transitions would correspond to @Haskell { Thrist Action }s.
++Then state transitions would correspond to @Haskell { Thrist Action }s that
++originate from a state:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
++data Transition :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
++  From :: State g' s' h' -&gt; Thrist Action (g', s', h') (g, s, h) -&gt; Transition g s h
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
++
++For instance the @Haskell { South } state could be defined thus:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
++South = State [From West [OpenGate]l]
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
++
+ @PP
+ What do we gain with such a declarative description of the state machine at
+ hand?
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000345.html">[Al4nin-commits] r582 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000347.html">[Al4nin-commits] r584 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#346">[ date ]</a>
+              <a href="thread.html#346">[ thread ]</a>
+              <a href="subject.html#346">[ subject ]</a>
+              <a href="author.html#346">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

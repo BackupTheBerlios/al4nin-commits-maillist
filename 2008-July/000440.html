@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r677 - trunk/purgatory/db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r677%20-%20trunk/purgatory/db&In-Reply-To=%3C200807071259.m67Cx50N006592%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000439.html">
+   <LINK REL="Next"  HREF="000441.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r677 - trunk/purgatory/db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r677%20-%20trunk/purgatory/db&In-Reply-To=%3C200807071259.m67Cx50N006592%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r677 - trunk/purgatory/db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Jul  7 14:59:05 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000439.html">[Al4nin-commits] r676 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000441.html">[Al4nin-commits] r678 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#440">[ date ]</a>
+              <a href="thread.html#440">[ thread ]</a>
+              <a href="subject.html#440">[ subject ]</a>
+              <a href="author.html#440">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-07 14:59:03 +0200 (Mon, 07 Jul 2008)
+New Revision: 677
+
+Modified:
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+add two more refs and prettify others
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2008-07-05 16:47:30 UTC (rev 676)
++++ trunk/purgatory/db/BibTexDB	2008-07-07 12:59:03 UTC (rev 677)
+@@ -75,7 +75,7 @@
+  author = {Tarmo Uustalu and Varmo Vene},
+  edition = {CEFP},
+  editor = {Zolt&#225;n Horv&#225;th},
+- pages = {135-167},
++ pages = {135--167},
+  publisher = {Springer},
+  booktitle = {Lecture Notes in Computer Science},
+  volume = {4164},
+@@ -93,7 +93,7 @@
+   journal = {Electr. Notes Theor. Comput. Sci.},
+   volume = {158},
+   year = {2006},
+-  pages = {219-236},
++  pages = {219--236},
+   doi = {<A HREF="http://dx.doi.org/10.1016/j.entcs.2006.04.012">http://dx.doi.org/10.1016/j.entcs.2006.04.012</A>},
+   bibsource = {DBLP, <A HREF="http://dblp.uni-trier.de">http://dblp.uni-trier.de</A>}
+ }
+@@ -107,7 +107,7 @@
+  journal = {Science of Computer Programming},
+  url = {<A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A>},
+  volume = {37},
+- pages = {67-111},
++ pages = {67--111},
+  month = {May},
+  year = {2000}
+ }
+@@ -121,7 +121,7 @@
+  location = {Firenze, Italy},
+  url = {<A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A>},
+  publisher = {ACM Press},
+- pages = {229-240},
++ pages = {229--240},
+  month = {Sep},
+  year = {2001}
+ }
+@@ -162,7 +162,7 @@
+    title = {DSL implementation using staging and monads},
+    booktitle = {DSL'99: Proceedings of the 2nd conference on Conference on Domain-Specific Languages},
+    year = {1999},
+-   pages = {81-94},
++   pages = {81--94},
+    location = {Austin, Texas},
+    publisher = {USENIX Association},
+    address = {Berkeley, CA, USA},
+@@ -178,3 +178,26 @@
+    institution = {Department of Information and Computing Sciences, Utrecht University},
+    url = {<A HREF="http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf">http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf</A>},
+ }
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at article</A>{DBLP:journals/sigplan/Appel88,
++   tag       = {appel98.ssa},
++   author    = {Andrew W. Appel},
++   title     = {SSA is Functional Programming},
++   journal   = {SIGPLAN Notices},
++   volume    = {33},
++   number    = {4},
++   year      = {1998},
++   pages     = {17--20},
++}
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at inproceedings</A>{734159,
++   tag = {duponcheel96.parser},
++   author = {S. Doaitse Swierstra and Luc Duponcheel},
++   title = {Deterministic, Error-Correcting Combinator Parsers},
++   booktitle = {Advanced Functional Programming, Second International School-Tutorial Text},
++   year = {1996},
++   isbn = {3-540-61628-4},
++   pages = {184--207},
++   publisher = {Springer-Verlag},
++   address = {London, UK},
++ }
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2008-07-05 16:47:30 UTC (rev 676)
++++ trunk/purgatory/db/acmrefs.ld	2008-07-07 12:59:03 UTC (rev 677)
+@@ -81,7 +81,7 @@
+    @Author { Tarmo Uustalu and Varmo Vene }
+    @Edition { CEFP }
+    @InAuthor { Zolt&#225;n Horv&#225;th }
+-   @Pages { 135-167 }
++   @Pages { 135--167 }
+    @Publisher { Springer }
+    @InTitle { Lecture Notes in Computer Science }
+    @Volume { 4164 }
+@@ -101,7 +101,7 @@
+    @Journal { Electr. Notes Theor. Comput. Sci. }
+    @Volume { 158 }
+    @Year { 2006 }
+-   @Pages { 219-236 }
++   @Pages { 219--236 }
+    # @Doi { <A HREF="http://dx.doi.org/10.1016/j.entcs.2006.04.012">http://dx.doi.org/10.1016/j.entcs.2006.04.012</A> }
+ }
+ 
+@@ -114,7 +114,7 @@
+    @Journal { Science of Computer Programming }
+    @URL { <A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A> }
+    @Volume { 37 }
+-   @Pages { 67-111 }
++   @Pages { 67--111 }
+    @Month { May }
+    @Year { 2000 }
+ }
+@@ -129,7 +129,7 @@
+    # @Location { Firenze, Italy }
+    @URL { <A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A> }
+    @Publisher { ACM Press }
+-   @Pages { 229-240 }
++   @Pages { 229--240 }
+    @Month { Sep }
+    @Year { 2001 }
+ }
+@@ -178,7 +178,7 @@
+    @Title { DSL implementation using staging and monads }
+    @InTitle { DSL'99: Proceedings of the 2nd conference on Conference on Domain-Specific Languages }
+    @Year { 1999 }
+-   @Pages { 81-94 }
++   @Pages { 81--94 }
+    # @Location { Austin, Texas }
+    @Publisher { USENIX Association }
+    @Address { Berkeley, CA, USA }
+@@ -198,3 +198,30 @@
+ }
+ 
+ 
++{ @Reference
++   @Type { Article }
++   @Tag { appel98.ssa }
++   @Author { Andrew W. Appel }
++   @Title { SSA is Functional Programming }
++   @Journal { SIGPLAN Notices }
++   @Volume { 33 }
++   @Number { 4 }
++   @Year { 1998 }
++   @Pages { 17--20 }
++}
++
++
++{ @Reference
++   @Type { InProceedings }
++   @Tag { duponcheel96.parser }
++   @Author { S. Doaitse Swierstra and Luc Duponcheel }
++   @Title { Deterministic, Error-Correcting Combinator Parsers }
++   @InTitle { Advanced Functional Programming, Second International School-Tutorial Text }
++   @Year { 1996 }
++   # @ISBN { 3-540-61628-4 }
++   @Pages { 184--207 }
++   @Publisher { Springer-Verlag }
++   @Address { London, UK }
++}
++
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000439.html">[Al4nin-commits] r676 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000441.html">[Al4nin-commits] r678 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#440">[ date ]</a>
+              <a href="thread.html#440">[ thread ]</a>
+              <a href="subject.html#440">[ subject ]</a>
+              <a href="author.html#440">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r438 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r438%20-%20trunk/found-bugs&In-Reply-To=%3C200707251338.l6PDcUpi006414%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000199.html">
+   <LINK REL="Next"  HREF="000201.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r438 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r438%20-%20trunk/found-bugs&In-Reply-To=%3C200707251338.l6PDcUpi006414%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r438 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jul 25 15:38:30 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000199.html">[Al4nin-commits] r437 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000201.html">[Al4nin-commits] r439 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-25 15:38:30 +0200 (Wed, 25 Jul 2007)
+New Revision: 438
+
+Added:
+   trunk/found-bugs/issue23-MonadPrime.omg
+Log:
+testcase for issue 23
+
+Copied: trunk/found-bugs/issue23-MonadPrime.omg (from rev 437, trunk/purgatory/MonadPrime.omg)
+===================================================================
+--- trunk/purgatory/MonadPrime.omg	2007-07-25 13:00:56 UTC (rev 437)
++++ trunk/found-bugs/issue23-MonadPrime.omg	2007-07-25 13:38:30 UTC (rev 438)
+@@ -0,0 +1,121 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega MonadPrime.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,RCons,RNil,Eq,Equal,listM)
++
++--import &quot;Thrist.omg&quot; 
++--  (Thrist, Nil, Cons, syntax List(l))
++data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
++ deriving List(l)
++
++-- #################################################
++
++data Monad' :: (* ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
++  Return :: m b -&gt; Monad' m a b
++  Return' :: b -&gt; Monad' m a b
++  Bind :: (t -&gt; m u) -&gt; Monad' m t u
++  Bind' :: (t -&gt; u) -&gt; Monad' m t u
++
++
++t0 = let monad maybeM in [Bind (\5 -&gt; return True), Return $ Just &quot;2&quot;]l
++t1 = [Return $ putStr &quot;dd&quot;, Bind (\ () -&gt; returnIO 3)]l
++t2 = let monad maybeM in [Bind (\5 -&gt; return True), Return' &quot;2&quot;]l
++t3 = [Bind' (\5 -&gt; True), Return' &quot;2&quot;]l
++
++runMP :: Monad m -&gt; m a -&gt; Thrist (Monad' m) a b -&gt; m b
++runMP _ mon []l = mon
++runMP v _ [Return m; rest]l = runMP v m rest
++runMP (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">v at Monad</A> return _ _) _ [Return' m; rest]l = runMP v (return m) rest
++runMP (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">v at Monad</A> _ bind _) mon [Bind f; rest]l = runMP v (bind mon f) rest
++runMP (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">v at Monad</A> return bind _) mon [Bind' f; rest]l = runMP v (bind mon (return . f)) rest
++
++r0 = runMP ioM (returnIO 5) t1
++
++-- #################################################
++
++-- Thrist extending
++
++extendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a) .
++		Thrist b c d -&gt;
++		b d e -&gt;
++		Thrist b c e
++
++extendThrist []l a = [a]l
++extendThrist [b; r]l a = [b; extendThrist r a]l
++
++
++-- Thrist appending
++
++appendThrist :: forall (a :: *1) (b :: a ~&gt; a ~&gt; *0) (c :: a) (d :: a) (e :: a) .
++		Thrist b c d -&gt;
++		Thrist b d e -&gt;
++		Thrist b c e
++
++appendThrist []l a = a
++appendThrist [b; r]l a = [b; appendThrist r a]l
++
++-- Thrist flattening
++
++flattenThrist :: Thrist (Thrist k) a b -&gt; Thrist k a b
++
++flattenThrist []l = []l
++flattenThrist [a; as]l = appendThrist a $ flattenThrist as
++
++-- Thrist instrumenting
++
++intersperseThrist :: (forall (x :: *). k x x) -&gt; Thrist k a b -&gt; Thrist k a b
++
++intersperseThrist i []l = [i]l
++intersperseThrist i [a; as]l = [i, a; intersperseThrist i as]l
++
++
++
++-- Pushing down a function into a specific tuple level
++
++dig :: Nat ~&gt; * ~&gt; *
++{dig Z a} = a
++{dig (S n) (a, b)} = (a, {dig n b})
++
++exch :: Nat ~&gt; * ~&gt; * ~&gt; *
++{exch Z b a} = b
++{exch (S n) b (a, c)} = (a, {exch n b c})
++
++nest :: Nat' n -&gt; ({dig n a} -&gt; b) -&gt; a -&gt; {exch n b a}
++nest Z f a = check (f a)
++nest (S n) f (a, c) = (a, nest n f c)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000199.html">[Al4nin-commits] r437 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000201.html">[Al4nin-commits] r439 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

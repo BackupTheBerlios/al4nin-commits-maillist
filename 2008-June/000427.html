@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r664 - in trunk/purgatory: . db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r664%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200806261436.m5QEaTmX022364%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000426.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r664 - in trunk/purgatory: . db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r664%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200806261436.m5QEaTmX022364%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r664 - in trunk/purgatory: . db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jun 26 16:36:29 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000426.html">[Al4nin-commits] r663 - in trunk/purgatory: . db
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#427">[ date ]</a>
+              <a href="thread.html#427">[ thread ]</a>
+              <a href="subject.html#427">[ subject ]</a>
+              <a href="author.html#427">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-26 16:36:27 +0200 (Thu, 26 Jun 2008)
+New Revision: 664
+
+Modified:
+   trunk/purgatory/Thrist.lout
+   trunk/purgatory/db/refs.ld
+Log:
+make it a bit more precise
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-26 14:25:08 UTC (rev 663)
++++ trunk/purgatory/Thrist.lout	2008-06-26 14:36:27 UTC (rev 664)
+@@ -1301,17 +1301,18 @@
+ Haskell'05 workshop in Tallinn.
+ @PP
+ In his @I {Fun in the Afternoon} talk @Cite {$mcbride07.rstar}, Conor McBride proposed
+-the free category R* as generalization to the list datatype. At the heart of the matter,
+-his R stands  for the first parameter to our @Haskell {Thrist}, while the ''*`` is borrowed
+-from the mathematical notation for free categories, and is essentially our @Haskell {Thrist}
+-type constructor together with the appedThrist operation. To demonstrate his point,
++the free category {@I R}* as generalization to the conventional list datatype and several others.
++At the heart of the matter, his @I R stands  for the first parameter to our @Haskell {Thrist},
++while the ''*`` is borrowed from the mathematical notation for free categories, and thus essentially
++our @Haskell {Thrist} type constructor together with the @Haskell {appendThrist} operation.
++To demonstrate his point,
+ @ID @Haskell {
+ data List' :: * ~&gt; * ~&gt; * where
+   Elem :: a -&gt; List' a a
+ }
+-is a similar adapter to the one in @NumberOf { section.arrow-monad } and @Haskell {Thrist List'} the
+-datatype McBride proposes as the new list datatype. In this special case we really obtain
+-a free category, since @Haskell {List'} defines identity morphisms only.
++is a similar adapter to the one in @NumberOf { section.arrow-monad } and @Haskell {Thrist List'} is the
++datatype McBride proposes as the new list type. In this special case we really obtain
++a free category, since @Haskell {List'} defines identity morphisms.
+ @PP
+ Chuan-kai Lin's @I { Unimo } framework @Cite { $lin06.unimo } is an attempt to describe monads operationally
+ by interpreting a datastructure that describes the monad. By the fact that the interpreter
+
+Modified: trunk/purgatory/db/refs.ld
+===================================================================
+--- trunk/purgatory/db/refs.ld	2008-06-26 14:25:08 UTC (rev 663)
++++ trunk/purgatory/db/refs.ld	2008-06-26 14:36:27 UTC (rev 664)
+@@ -62,7 +62,7 @@
+ }
+ 
+ { @Reference
+-   @Type { Misc }
++   @Type { InProceedings }
+    @Tag { mcbride07.rstar }
+    @Author { Conor McBride }
+    @InTitle { Fun in the Afternoon }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000426.html">[Al4nin-commits] r663 - in trunk/purgatory: . db
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#427">[ date ]</a>
+              <a href="thread.html#427">[ thread ]</a>
+              <a href="subject.html#427">[ subject ]</a>
+              <a href="author.html#427">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r399 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r399%20-%20trunk/purgatory&In-Reply-To=%3C200706281357.l5SDvvI6014165%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000160.html">
+   <LINK REL="Next"  HREF="000162.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r399 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r399%20-%20trunk/purgatory&In-Reply-To=%3C200706281357.l5SDvvI6014165%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r399 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jun 28 15:57:57 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000160.html">[Al4nin-commits] r398 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000162.html">[Al4nin-commits] r400 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-28 15:57:56 +0200 (Thu, 28 Jun 2007)
+New Revision: 399
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+lots of edits
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-06-27 10:32:13 UTC (rev 398)
++++ trunk/purgatory/Thrist.lout	2007-06-28 13:57:56 UTC (rev 399)
+@@ -61,26 +61,29 @@
+   Cons :: a -&gt; List a -&gt; List a
+ }
+ @PP
+-We deliberately avoid the traditional syntax of defining the List datatype,
+-and use a GADT-style definition, because we want to build on this fundament later.
+-It is enough to say that List does not impose any constraints on the contained datatype
+-whatsoever:
++We deliberately avoid the traditional syntax of defining the @Haskell {List} datatype,
++and use a @I {GADT-style} definition{@FootNote {in a @I {generalized algebraic datatype}
++the data constructor is allowed to define a more specific type than the datatype itself }},
++because we want to build on this fundament later.
++It is enough to say that @Haskell {List} does not impose any constraints on the
++contained datatype whatsoever:
+ @LD {
+ {Cons 42 (Cons 33 (Cons 5 Nil))} @Prompt
+   { Cons 42 (Cons 33 (Cons 5 Nil)) :: List In }
+ }
+ 
+ Departing from single-parameter datatypes we focus on two-parameter
+-datatypes from now on. The most prominent member of this class of types
+-is the arrow type:
++datatypes from now on. These are more interesting for our purposes,
++because the two parameters can be put in relation to each other.
++The most prominent member of this class of types is the arrow type:
+ 
+ @LD {
+ { :k (-&gt;) } @Prompt
+   { (-&gt;) :: *0 ~&gt; *0 ~&gt; *0 }
+ }
+ 
+-Fully saturated, a -&gt; b signifies the type of all functions that take elements of a to
+-elements of b. Again, a and b can be any type, concrete ones will do just like
++Fully saturated, @Haskell {a -&gt; b} signifies the type of all functions that take elements of @Haskell {a} to
++elements of @Haskell {b}. Again, @Haskell {a} and @Haskell {b} can be any type, concrete ones will do just like
+ universally qualified ones:
+ @LD {
+ {id} @Prompt
+@@ -112,7 +115,7 @@
+ 
+ The type of the composition function constrains the types of its arguments in
+ a nontrivial way: the range of the second funtion must match with the domain
+-of the first. (universal types will always match, monotypes must be equal).
++of the first. (Universal types will always match, monotypes must be equal).
+ Violating this rule gives a type error:
+ 
+ @LD {
+@@ -141,14 +144,15 @@
+ resembling the addition, where @Haskell { (23 + 19) } gives @Haskell {42} and this result has completely
+ lost all memories of the fact how it was obtained. But can we create a datastructure
+ that has all properties of function composition, without being amnesiac?
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ Indeed we can, and the rest of this chapter shall explain how.
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ Our crucial observation from the introduction was that the types at the ends of the function
+-arrows must thread up (we turn around the arrow for this demonstration), intuitively:
++arrows must thread up (we turn around the arrow for this demonstration), intuitively @FootNote { we
++reconcile the conflict between the function arrow's @Haskell {(-&gt;)} direction and the customary
++composition @Haskell {g . f} by considering a modified @I {reverse composition} }:
+ 
+-&quot;b &lt;- a (.) a &lt;- c  ===  b &lt;- c&quot;
+-&quot;        ^^^^^&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> { @Haskell {a -&gt;} @Box @Haskell {b (.) b} @Haskell {-&gt; c} ===  @Haskell {a -&gt; c} }
+ 
+ We also observe that the intermediate types do not show up in the end result's type.
+ 
+@@ -157,32 +161,36 @@
+ @ID @Haskell {
+ data Thrist :: * ~&gt; * ~&gt; * where
+   Nil :: Thrist a a
+-  Cons :: (b, a) -&gt; Thrist a c -&gt; Thrist b c
++  Cons :: (a, b) -&gt; Thrist b c -&gt; Thrist a c
+ }
+-[here we have a proper GADT]
+ 
+-We can now duplicate the &quot;feeling&quot; of function composition:
++The alert reader will have noticed that we have defined a proper GADT,
++since the @Haskell {Nil} constructor is only inhabiting the @I diagonal
++of the @I {two-dimensional} parameter space.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++We can now duplicate the @I feeling of function composition:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Haskell</A> { Cons ('g', 103) (Cons (103, 71) (Cons (71, 'G') Nil)) }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> operators {Base} { Cons ('g', 103) $ Cons (103, 71) $ Cons (71, 'G') Nil }
+ 
+ Also we have obtained a datatype that is not amnesiac, i.e. it can be
+ torn apart at any place by pattern matching, though we have to pay
+-the price that the intermediate types are a bit hard to deal with (we revisit this issue later).
++the price that the intermediate types are a bit hard to deal with
++(we shall revisit this issue later).
+ @PP
+ It appears that we have reached our goal, we can form list-like data where the intermediate
+-types thread up, we are happy and name our new toy Thrist, a pormanteau of thread and list.
++types thread up, we are happy and name our new toy @I Thrist, a portmanteau of thread and list.
+ @PP
+-Our joy quickly fades away when we compare our thrist with our composition function.
+-How can data of type Thrist a b be interpreted as an arrow type a &lt;- b ?
+-If we fail to provide this embedding, we cannot consider Thrists being a generalisation of
++Our joy, however, quickly fades away when we compare our thrist with the composition function.
++How can some data of type @Haskell {Thrist a b} be interpreted as an arrow type @Haskell {a -&gt; b}?
++If we fail to provide this embedding, we cannot consider thrists being a generalisation of
+ function composition.
+-
+-Not everything is lost, however. Close scrutiny reveals that our usage of (,), pronounced &quot;pair&quot;
+-is the culprit. If we could liberate ourselves from this premature decision, we could gain back
+-our hope.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Not everything is lost, however. Close scrutiny reveals that our usage of
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {(,)}{@FootNote { pronounced &quot;\&quot;pair\&quot;&quot;}},
++is the culprit. If we could liberate ourselves from this
++premature decision, we could gain back our hope.
+ @End @SubSection
+ 
+-
+ @SubSection
+ @Title { The Improved Thrist }
+ @Begin
+@@ -192,27 +200,29 @@
+ @ID @Haskell {
+ data Thrist :: (* ~&gt; * ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
+   Nil :: Thrist p a a
+-  Cons :: p b a -&gt; Thrist p a c -&gt; Thrist p b c
++  Cons :: p a b -&gt; Thrist p b c -&gt; Thrist p a c
+ }
+-All that remains of the pair is the bitter taste and the letter &quot;p&quot; in the definition of Thrist.
++All that remains of the pair is the bitter aftertaste
++and the letter @Haskell {p} in the definition of @Haskell {Thrist}.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ It looks like we are getting closer now:
+ @LD {
+ { Cons chr (Cons (&quot;\\&quot;x -&gt; x + 32) (Cons ord Nil)) } @Prompt
+ { ... : Thrist (-&gt;) Char Char }
+ }
+-We have created an arrow thrist!
++We have created an @I {arrow thrist}!
+ 
+-Immediately we can think of our previous attempt:
++Immediately we can retry our previous attempt:
+ @LD {
+ { Cons ('g', 103) (Cons (103, 71) (Cons (71, 'G') Nil)) } @Prompt
+ {  ... : Thrist (,) Char Char }
+ }
+-The pair thrist that caused us some headache before!
+-
++The @I {pair thrist} that caused us some headache before!
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ We shall explore some other interesting but sometimes futile
+ thrists later in the discussion. But now let's put the last missing
+ piece in place to show that an arrow thrist is strictly more general
+-than function composition, the runArrowThrist function:
++than function composition, the @Haskell {runArrowThrist} function:
+ 
+ @ID @Haskell {
+ runArrowThrist :: Thrist (-&gt;) b c -&gt; c -&gt; b
+@@ -220,14 +230,15 @@
+ runArrowThrist (Cons f r) a = runThrist r (f a)
+ }
+ 
+-This function now confirms the vague intuition that Nil plays the r&#244;le of
++This function now confirms the vague intuition that @Haskell {Nil} plays the r&#244;le of
+ the neutral element of the arrow thrist, just like the identity function
+-plays the r&#244;le of the neutal element in the monoid of composed functions.
+-
++plays the r&#244;le of the neutral element in the monoid of composed functions.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> {
+ [Question: is every thrist a monoid? &quot;<A HREF="http://en.wikipedia.org/wiki/Monoid">http://en.wikipedia.org/wiki/Monoid</A>&quot;]
+ [close with dominoes: &quot;<A HREF="http://en.wikipedia.org/wiki/Dominoes">http://en.wikipedia.org/wiki/Dominoes</A>&quot;]
++}
+ 
+-
+ @End @SubSection
+ 
+ @EndSubSections
+@@ -235,7 +246,7 @@
+ @End @Section
+ 
+ @Section
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Three practical Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Three Practical Thrists }
+ @Begin
+ @PP
+ 
+@@ -251,7 +262,7 @@
+ @BeginSubSections
+ 
+ @SubSection
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Application One: the Cat Thrist }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Application one: the Cat Thrist }
+ @Begin
+ @PP
+ Like all stack-oriented languages Cat employs a simple idiom of
+@@ -318,9 +329,9 @@
+ { [Push 19, Push 23, Add, Pop]l :: Thrist Cat a a }
+ }
+ @Omega's parser and printer perform the conversion to
+-the internal form when the list-like brackets [] followed
+-by a l letter are encountered.
+-
++the internal form when the list-like brackets @Haskell {[]} followed
++by the letter &quot;\&quot;l\&quot;&quot; are encountered.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ We can now continue using this terser syntax:
+ 
+ @LD {
+@@ -351,20 +362,22 @@
+ @PP
+ Now it is time to build an interpreter for Thrist Cat, and
+ thus define its big-step semantics:
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell {
+ interpret' :: Thrist Cat a b -&gt; a -&gt; b
+ interpret' []l st = st
+ interpret' [Push x; rest]l st = interpret' rest (x, st)
+ interpret' [Pop; rest]l (a, st) = interpret' rest st
+ interpret' [Dup; rest]l (a, st) = interpret' rest (a, a, st)
+ interpret' [Add; rest]l (a, b, st) = interpret' rest (a + b, st)
+-
++}
+ It works:
+ 
+-prompt&gt; interpret' [Push 19, Push 23, Add]l ()
+-  (42, ()) :: (Int, ())
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> {
++{ interpret' [Push 19, Push 23, Add]l () } @Prompt
++{ (42, ()) :: (Int, ()) }
++}
+ 
+-With this basic functionality in place we get bolder and define
++With this basic functionality in place, we get bolder and define
+ a primitive with side effect:
+ 
+ @ID @Haskell {
+@@ -373,8 +386,8 @@
+   ...
+ }
+ 
+-To interpret this primitive we have to restructure
+-our interpret' function to wrap the stack into the IO monad:
++To interpret the @Haskell {Print} primitive we have to restructure
++our @Haskell {interpret'} function to wrap the stack into the @Haskell {IO} monad:
+ 
+ @ID @Haskell {
+ interpret' :: Thrist Cat a b -&gt; IO a -&gt; IO b
+@@ -418,7 +431,7 @@
+ be started with any stack shape and they finish with the same
+ stack unchanged. We can ensure this property by writing
+ a top-level interpreter function for Cat programs using
+-rank-2 polymorphism:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> {rank-2 polymorphism}:
+ 
+ @ID @Haskell {
+ interpret :: (forall a . Thrist Cat a a) -&gt; IO ()
+@@ -636,7 +649,7 @@
+ @End @SubSubSection
+ 
+ @SubSubSection
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> {  }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Using the Combinators }
+ @Begin
+ @PP
+ How can we use our combinators to describe the parsing steps 0) to 6) above?
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000160.html">[Al4nin-commits] r398 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000162.html">[Al4nin-commits] r400 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

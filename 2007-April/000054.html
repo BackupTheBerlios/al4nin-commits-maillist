@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r292 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r292%20-%20trunk/purgatory&In-Reply-To=%3C200704112145.l3BLjYrD007162%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000053.html">
+   <LINK REL="Next"  HREF="000055.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r292 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r292%20-%20trunk/purgatory&In-Reply-To=%3C200704112145.l3BLjYrD007162%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r292 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Apr 11 23:45:34 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000053.html">[Al4nin-commits] r291 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000055.html">[Al4nin-commits] r293 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#54">[ date ]</a>
+              <a href="thread.html#54">[ thread ]</a>
+              <a href="subject.html#54">[ subject ]</a>
+              <a href="author.html#54">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-11 23:45:34 +0200 (Wed, 11 Apr 2007)
+New Revision: 292
+
+Modified:
+   trunk/purgatory/AdministrativeNormalForm.omg
+Log:
+exhibiting bug
+
+Modified: trunk/purgatory/AdministrativeNormalForm.omg
+===================================================================
+--- trunk/purgatory/AdministrativeNormalForm.omg	2007-04-11 21:06:08 UTC (rev 291)
++++ trunk/purgatory/AdministrativeNormalForm.omg	2007-04-11 21:45:34 UTC (rev 292)
+@@ -45,16 +45,16 @@
+ -- Figure 1 introduces the source language (CBV variant)
+ 
+ kind Cat = Term | Value
+-kind Form = General | Administrative
++kind Form = General | Administrative Form
+ 
+ data L :: Cat ~&gt; Form ~&gt; *0 where
+   Var :: Label l -&gt; L Term General
+   Lam :: Label l -&gt; L a f -&gt; L Value General
+   App :: L a f -&gt; L b g -&gt; L Term General
+-  Let :: Label l -&gt; L a f -&gt; L b g -&gt; L Term Administrative
+-  LetRec :: [(Label l, L Value General)] -&gt; L a f -&gt; L Term Administrative
++  Let :: Label l -&gt; L a f -&gt; L b g -&gt; L Term (Administrative f)
++  LetRec :: [(Label l, L Value General)] -&gt; L a f -&gt; L Term (Administrative General)
+ 
+-anf :: L a f -&gt; L Term Administrative
++anf :: L a f -&gt; L Term (Administrative General)
+ 
+ -- Let reductions (from computational lambda calculus)
+ anf (App (Let x e1 e2) e3) = anf (Let x e1 (App e2 e3))
+@@ -67,11 +67,15 @@
+ anf (Let x1 (LetRec d e1) e) = LetRec d (Let x1 e1 e)
+ 
+ -- idempotent forms
+-anf (i@(Let _ _ _)) = i
++anf (i@(Let _ (Var _) _)) = i
++anf (i@(Let _ (Lam _ _) _)) = i
++anf (i@(Let _ (App _ _) _)) = i
+ anf (i@(LetRec _ _)) = i
+ 
+ -- kill-all rule
+-anf e = Let `fresh e (Var `fresh)
++anf (e@(Var _)) = Let `fresh e (Var `fresh)
++anf (e@(App _ _)) = Let `fresh e (Var `fresh)
++anf (e@(Lam _ _)) = Let `fresh e (Var `fresh)
+ 
+ 
+ -- Section 2.3 -- Introduce the ANF language
+@@ -88,10 +92,22 @@
+ 
+ -- convert normalized source to ANF
+ 
+-conv :: L Term Administrative -&gt; ANF (ANFTerm No No)
++conv :: L Term (Administrative General) -&gt; ANF (ANFTerm No No)
+ conv (Let l e1 e2) = ANFLet l (conv' e1) (conv' e2)
+ 
++--cat2lambda :: Cat ~&gt; YesNo
++--{cat2lambda Term} = No
++--{cat2lambda Value} = Yes
++
++cat2lambda' :: Cat ~&gt; ANFCat
++{cat2lambda' Term} = ANFTerm Yes No
++{cat2lambda' Value} = ANFTerm Yes Yes
++ 
++
+ -- expression conversions
+-conv' :: L a General -&gt; ANF (ANFTerm Yes l)
++conv' :: L a General -&gt; ANF {cat2lambda' a}
++--conv' :: L a General -&gt; ANF (ANFTerm Yes {cat2lambda a}) -- BUG?
++-- While parsing a type var, unknown type: cat2lambda, at line: 105 column: 1
++
+ conv' (Var l) = ANFVar l
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000053.html">[Al4nin-commits] r291 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000055.html">[Al4nin-commits] r293 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#54">[ date ]</a>
+              <a href="thread.html#54">[ thread ]</a>
+              <a href="subject.html#54">[ subject ]</a>
+              <a href="author.html#54">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

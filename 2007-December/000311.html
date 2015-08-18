@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r548 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r548%20-%20trunk/purgatory&In-Reply-To=%3C200712051052.lB5AqRoU023269%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000310.html">
+   <LINK REL="Next"  HREF="000312.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r548 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r548%20-%20trunk/purgatory&In-Reply-To=%3C200712051052.lB5AqRoU023269%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r548 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec  5 11:52:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000310.html">[Al4nin-commits] r547 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000312.html">[Al4nin-commits] r549 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#311">[ date ]</a>
+              <a href="thread.html#311">[ thread ]</a>
+              <a href="subject.html#311">[ subject ]</a>
+              <a href="author.html#311">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-05 11:52:27 +0100 (Wed, 05 Dec 2007)
+New Revision: 548
+
+Modified:
+   trunk/purgatory/SetEmulation.omg
+Log:
+fleshed out a bit more
+
+Modified: trunk/purgatory/SetEmulation.omg
+===================================================================
+--- trunk/purgatory/SetEmulation.omg	2007-12-05 08:58:11 UTC (rev 547)
++++ trunk/purgatory/SetEmulation.omg	2007-12-05 10:52:27 UTC (rev 548)
+@@ -27,10 +27,14 @@
+ 
+ 
+ exclude :: Row Tag * ~&gt; Tag ~&gt; Row Tag *
+-{exclude RNil n} = RNil
+-{exclude (RCons (Label l) v (Label l)} = {exclude r a}
+-{exclude (RCons Z m r) (S n)} = RCons a m {strip Z r {plus a (S n)}}
++{exclude RNil o} = RNil
++{exclude (RCons a v r) `a} = {exclude r a}
++----{exclude (RCons `a v r) `a} = {exclude r a} -- BUG
+ 
++--{exclude (RCons (Label `b) v r) (Label `b)} = {exclude r a}
++--{exclude (RCons (Label `c) v r) (Label `c)} = {exclude r a}
++-- {exclude (RCons l v r) o} = RCons l v {exclude r o}
++
+ {-
+ 
+ strip :: Nat ~&gt; Row Nat Nat ~&gt; Nat ~&gt; Row Nat Nat
+@@ -45,5 +49,14 @@
+ 
+ data SingleLabel :: Row Tag * ~&gt; * where
+   None :: SingleLabel RNil
+-  More :: Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
++  More :: Equal {exclude rest l} rest =&gt; Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
+  deriving Record(s)
++
++{-
++t1 :: SingleLabel {`a=Int}r
++t1 = {`a=42}s
++t2 = {`a=25,`b=42}s
++
++##test &quot;duplicate tags&quot;
++ t3 = {`a=25,`a=25}s
++-}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000310.html">[Al4nin-commits] r547 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000312.html">[Al4nin-commits] r549 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#311">[ date ]</a>
+              <a href="thread.html#311">[ thread ]</a>
+              <a href="subject.html#311">[ subject ]</a>
+              <a href="author.html#311">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

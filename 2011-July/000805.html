@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1043 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1043%20-%20trunk/purgatory&In-Reply-To=%3C20110722163806.109CB480B15%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1043 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1043%20-%20trunk/purgatory&In-Reply-To=%3C20110722163806.109CB480B15%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1043 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 22 18:38:05 CEST 2011</I>
+    <P><UL>
+        
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#805">[ date ]</a>
+              <a href="thread.html#805">[ thread ]</a>
+              <a href="subject.html#805">[ subject ]</a>
+              <a href="author.html#805">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-07-22 18:38:05 +0200 (Fri, 22 Jul 2011)
+New Revision: 1043
+
+Modified:
+   trunk/purgatory/AdministrativeNormalForm.omg
+Log:
+try a new start
+
+Modified: trunk/purgatory/AdministrativeNormalForm.omg
+===================================================================
+--- trunk/purgatory/AdministrativeNormalForm.omg	2011-01-28 16:27:03 UTC (rev 1042)
++++ trunk/purgatory/AdministrativeNormalForm.omg	2011-07-22 16:38:05 UTC (rev 1043)
+@@ -1,7 +1,7 @@
+ -- -*-Haskell-*-
+ 
+ {-
+- * Copyright (c) 2007 Gabor Greif
++ * Copyright (c) 2007-2011 Gabor Greif
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a copy
+  * of this software and associated documentation files (the &quot;Software&quot;), to deal
+@@ -44,6 +44,20 @@
+ 
+ -- Figure 1 introduces the source language (CBV variant)
+ 
++-- Terms e ::= x | \x.e | ee | let x = e in e | letrec xi = vi in e
++-- Values v ::= \x.e
++-- Types tau ::= b | tau -&gt; tau
++
++kind SrcCat = T | V
++
++data Src :: SrcCat ~&gt; * where
++  Var :: Label l -&gt; Src T
++  Lam :: Label l -&gt; Src a -&gt; Src V
++  App :: Src a -&gt; Src b -&gt; Src T
++  Let :: Label l -&gt; Src a -&gt; Src b -&gt; Src T
++  LetRec :: Label l -&gt; Src V -&gt; Src a -&gt; Src T
++
++{-
+ kind Cat = Term | Value
+ kind Form = General | Administrative Form
+ 
+@@ -111,3 +125,4 @@
+ 
+ conv' (Var l) = ANFVar l
+ 
++-}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#805">[ date ]</a>
+              <a href="thread.html#805">[ thread ]</a>
+              <a href="subject.html#805">[ subject ]</a>
+              <a href="author.html#805">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

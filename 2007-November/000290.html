@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r527 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r527%20-%20trunk/purgatory&In-Reply-To=%3C200711131545.lADFjlsQ013808%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000289.html">
+   <LINK REL="Next"  HREF="000291.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r527 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r527%20-%20trunk/purgatory&In-Reply-To=%3C200711131545.lADFjlsQ013808%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r527 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 13 16:45:47 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000289.html">[Al4nin-commits] r526 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000291.html">[Al4nin-commits] r528 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#290">[ date ]</a>
+              <a href="thread.html#290">[ thread ]</a>
+              <a href="subject.html#290">[ subject ]</a>
+              <a href="author.html#290">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-13 16:45:47 +0100 (Tue, 13 Nov 2007)
+New Revision: 527
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+simplified
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-13 15:30:51 UTC (rev 526)
++++ trunk/purgatory/ThristParser.omg	2007-11-13 15:45:47 UTC (rev 527)
+@@ -562,21 +562,12 @@
+ 	  isName _ = Nothing
+ 
+ parseBinaryOperand :: Parse [Token] (DExpr PHbinary_operand PHbinary_operator, [Token])
+-parseBinaryOperand = or [ Wrap [ Seq (Sure detectUnary) parseOperand
+-			       , sureFirst (\ (unary, operand) -&gt; BinaryOperandUnary unary operand)
+-			       ]l
+-			]
++parseBinaryOperand = Wrap [ Seq (Sure detectUnary) parseOperand
++			  , sureFirst (\ (unary, operand) -&gt; BinaryOperandUnary unary operand)
++			  ]l
+     where detectUnary ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at U</A> _):t) = (Just h, t)
+ 	  detectUnary t = (Nothing, t)
+ 
+-{-
+-parseBinaryOperand = Try look2
+-    where look2 ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Num</A> _):t) = Just (BinaryOperandUnary Nothing ((OperandLeaf . LeafLit . LitNum) h), t)
+-          look2 ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Str</A> _):t) = Just (BinaryOperandUnary Nothing ((OperandLeaf . LeafLit . LitString) [h]), t)
+-          look2 (H Ht:t) = Just (BinaryOperandUnary Nothing ((OperandLeaf . LeafLit) LitTrue), t)
+-          look2 (H Hf:t) = Just (BinaryOperandUnary Nothing ((OperandLeaf . LeafLit) LitFalse), t)
+-          look2 _ = Nothing
+--}
+ parseExpr :: Parse [Token] (Phrase PHexpression, [Token])
+ parseExpr = Wrap $ [Seq parseBinaryOperand
+                         (Rep $ Seq parseBinOp parseBinaryOperand)
+@@ -585,7 +576,7 @@
+           thristize (operand, []) = [operand]l
+ 
+ 
+-tExpr = [Num 42, B Bplus, Num 25, B Band, H Ht]
++tExpr = [U Unot, Num 42, B Bplus, Num 25, B Band, H Ht]
+ 
+ tExpr0 = parse [parseExpr]l tExpr
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000289.html">[Al4nin-commits] r526 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000291.html">[Al4nin-commits] r528 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#290">[ date ]</a>
+              <a href="thread.html#290">[ thread ]</a>
+              <a href="subject.html#290">[ subject ]</a>
+              <a href="author.html#290">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

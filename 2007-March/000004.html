@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r242 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r242%20-%20trunk/purgatory&In-Reply-To=%3C200703152301.l2FN1cow018540%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000003.html">
+   <LINK REL="Next"  HREF="000005.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r242 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r242%20-%20trunk/purgatory&In-Reply-To=%3C200703152301.l2FN1cow018540%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r242 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Mar 16 00:01:38 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000003.html">[Al4nin-commits] r241 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000005.html">[Al4nin-commits] r243 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-16 00:01:37 +0100 (Fri, 16 Mar 2007)
+New Revision: 242
+
+Modified:
+   trunk/purgatory/LLVM.omg
+Log:
+added Switch
+
+Modified: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-03-15 22:30:32 UTC (rev 241)
++++ trunk/purgatory/LLVM.omg	2007-03-15 23:01:37 UTC (rev 242)
+@@ -44,6 +44,7 @@
+   Unwind :: Instr t n
+   Branch :: BasicBlock t Normal -&gt; Instr t n
+   Return :: Instr LVoid n
++  Switch :: Value a -&gt; BasicBlock t Normal -&gt; [(Value a, BasicBlock t Normal)] -&gt; Instr t n
+ ----  Prod :: Instr n -&gt; Instr n
+ -- deriving List(i)
+ 
+@@ -54,6 +55,7 @@
+ t1 = Phi (Phi (NoPhi (Branch (NoPhi Unwind))))
+ t2 = NoPhi (Branch (NoPhi Return))
+ t3 = NoPhi (Branch t2)
++t4 = NoPhi (Switch (Ref &quot;ggg&quot;) t2 [(LitB True, t3)])
+ 
+ data Value :: Type ~&gt; * where
+   LitI :: Int -&gt; Value (LInt #32)
+@@ -66,3 +68,4 @@
+ f1 = Function (LitB True) t1
+ f2 = Function (LitB False) t2
+ f3 = Function (LitI 42) t3
++f4 = Function (LitI 42) t4
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000003.html">[Al4nin-commits] r241 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000005.html">[Al4nin-commits] r243 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

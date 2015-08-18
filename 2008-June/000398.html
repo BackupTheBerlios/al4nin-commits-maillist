@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r635 - trunk/purgatory/db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r635%20-%20trunk/purgatory/db&In-Reply-To=%3C200806041448.m54Emie3028920%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000399.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r635 - trunk/purgatory/db</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r635%20-%20trunk/purgatory/db&In-Reply-To=%3C200806041448.m54Emie3028920%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r635 - trunk/purgatory/db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun  4 16:48:44 CEST 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000399.html">[Al4nin-commits] r636 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#398">[ date ]</a>
+              <a href="thread.html#398">[ thread ]</a>
+              <a href="subject.html#398">[ subject ]</a>
+              <a href="author.html#398">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-04 16:48:43 +0200 (Wed, 04 Jun 2008)
+New Revision: 635
+
+Modified:
+   trunk/purgatory/db/BibTeX2lout.awk
+   trunk/purgatory/db/acmrefs.ld
+Log:
+do not put URLs in quotes. there are built-in mechanisms in lout that accept slashes and do proper word breaking there
+
+Modified: trunk/purgatory/db/BibTeX2lout.awk
+===================================================================
+--- trunk/purgatory/db/BibTeX2lout.awk	2008-03-13 21:09:48 UTC (rev 634)
++++ trunk/purgatory/db/BibTeX2lout.awk	2008-06-04 14:48:43 UTC (rev 635)
+@@ -54,7 +54,7 @@
+ /title.*=.*/ {print &quot;   @Title { &quot; cont &quot; }&quot;; next}
+ # /.*=.*/ {print &quot;   @TitleNote { &quot; cont &quot; }&quot;; next}
+ /type.*=.*/ {print &quot;   @TRType { &quot; cont &quot; }&quot;; next}
+-/url.*=.*/ {print &quot;   @URL { \&quot;&quot; cont &quot;\&quot; }&quot;; next}
++/url.*=.*/ {print &quot;   @URL { &quot; cont &quot; }&quot;; next}
+ /volume.*=.*/ {print &quot;   @Volume { &quot; cont &quot; }&quot;; next}
+ /year.*=.*/ {print &quot;   @Year { &quot; cont &quot; }&quot;; next}
+ /isbn.*=.*/ {print &quot;   # @ISBN { &quot; cont &quot; }&quot;; next}
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2008-03-13 21:09:48 UTC (rev 634)
++++ trunk/purgatory/db/acmrefs.ld	2008-06-04 14:48:43 UTC (rev 635)
+@@ -100,7 +100,7 @@
+    @Title { Generalising Monads to Arrows }
+    @Author { John Hughes }
+    @Journal { Science of Computer Programming }
+-   @URL { &quot;<A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A>&quot; }
++   @URL { <A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A> }
+    @Volume { 37 }
+    @Pages { 67-111 }
+    @Month { May }
+@@ -115,7 +115,7 @@
+    @Author { Ross Paterson }
+    @InTitle { International Conference on Functional Programming }
+    # @Location { Firenze, Italy }
+-   @URL { &quot;<A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A>&quot; }
++   @URL { <A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A> }
+    @Publisher { ACM Press }
+    @Pages { 229-240 }
+    @Month { Sep }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000399.html">[Al4nin-commits] r636 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#398">[ date ]</a>
+              <a href="thread.html#398">[ thread ]</a>
+              <a href="subject.html#398">[ subject ]</a>
+              <a href="author.html#398">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

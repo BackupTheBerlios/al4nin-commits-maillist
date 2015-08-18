@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r644 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r644%20-%20trunk/purgatory&In-Reply-To=%3C200806191031.m5JAVHtp031079%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000406.html">
+   <LINK REL="Next"  HREF="000408.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r644 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r644%20-%20trunk/purgatory&In-Reply-To=%3C200806191031.m5JAVHtp031079%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r644 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jun 19 12:31:17 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000406.html">[Al4nin-commits] r643 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000408.html">[Al4nin-commits] r645 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#407">[ date ]</a>
+              <a href="thread.html#407">[ thread ]</a>
+              <a href="subject.html#407">[ subject ]</a>
+              <a href="author.html#407">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-19 12:31:13 +0200 (Thu, 19 Jun 2008)
+New Revision: 644
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+wrap up the section on categories
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-13 14:42:18 UTC (rev 643)
++++ trunk/purgatory/Thrist.lout	2008-06-19 10:31:13 UTC (rev 644)
+@@ -7,6 +7,7 @@
+ @Include { haskellx }
+ @Database @FontDef {&quot;db/lm&quot;}
+ @Database @Reference {&quot;db/acmrefs&quot;}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Database</A> @Reference {&quot;db/refs&quot;}
+ 
+ def @TargetForExtract right output {}
+ 
+@@ -1194,16 +1195,37 @@
+   @Title { Connection to Categories }
+ @Begin
+ @PP
+-The type-threaded nature of the Thrist datatype is the distinguishing feature of @I { free categories } too. In the Appendix
+-we supply an @Haskell { appendThrist } function that can be regarded as the inner multiplication (concatenation)
+-operation in the free category. {@Omega}'s user-defined kind definition allows for defining categories (with countable
+-object set) as non-inhabited types.
+-
+-encoding free categories as Thrists
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> every Thrist gives rise to a category?
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> RevThrist is the opposite category?
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> commutative diagrams?
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> limits?
++When looking at the Wikipedia page @Cite {$wikipedia.groupoid} that explains mathematical
++structures possessing a binary operation, we can make an attempt to gain some insight
++of how thrists can be fitted in a niche. Obviously, the @I associativity property holds,
++like for lists, it is impossible to distinguish thrists appended @Footnote {see Appendix A.2}
++as long the ordered sequence of elements is pointwise equal. For reference, the table
++of mathematical structures with an associative binary operation is reproduced in Figure XXX???.
++Clearly, the @Haskell {Cons} operation mandates an order, so @I commutativity cannot hold.
++Also, not every datatype that can serve as a first parameter to @Haskell {Thrist} has an inverse,
++even when disregarding any semantics and concentrating on the types of its constructors.
++So it remains to find out whether totality holds to settle on the exact concept. Can we always
++form a new thrist by appending two arbitrary thrists? The answer is clearly @I {no}, as we
++have already stated several times, the typing rule for the @Haskell {Cons} operation may interfere.
++So, looking up the concept with these properties in Figure XXX??? brings us straight to @I {category}.
++Looking at it from another angle we can imagine @I {directed graphs}, and thrists corresponding
++to any @I path between two @I {nodes}, respecting directionality. But this is nothing new, as
++directed graphs and categories are the same concept.
++There is still something missing, though. For a mathematical structure to be a category: each object
++must have a corresponding @I {identity morphism}. This is not in general fulfilled for
++an arbitrary datatype that is passed to @Haskell {Thrist}, but is it possible to obtain it for
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {Thrist p} for an admissible @Haskell {p}?
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Let's look at the problem from another angle first. The type-threaded nature of the
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {Thrist} datatype is the distinguishing feature of @I { free categories } @Cite { $maclane.working }
++too. In the Appendix we supply an @Haskell { appendThrist } function that can be regarded
++as the inner multiplication operation (concatenation) in the free category. So,
++a free category is a free monoid @Cite { $wikipedia.free-monoid } over an arbitrary category C
++where C's available morphisms restrict concatenation, or simply put, words formed from objects of C
++with consecutive letters having an arrow in C between them. The @Haskell {Thrist}'s typing rule very much
++tells the same story, and @Haskell {Nil :: Thist p a a} is obviously the identity
++under @Haskell { appendThrist }. So we have shown @Haskell {Thrist p} to be a category,
++which happens to be a free category C* if the datatype @Haskell {p} is isomorphic to C.
+ @End @SubSection
+ 
+ 
+@@ -1215,8 +1237,8 @@
+   @Title { Other Work }
+ @Begin
+ @PP
+-David Roundy's @I { Darcs } system @Cite { $roundy.darcs2 } is a version control system
+-which builds upon a theory of patches, defining the evolution of data repositories (and
++David Roundy's @I { Darcs } @Cite { $roundy.darcs2 } is a version control system
++which builds upon a theory of patches @Cite { $TMR8.patch }, defining the evolution of data repositories (and
+ documents therein) as a gradual application of individual changes. The recent adoption
+ of GADTs into the system has lead to a two-parameter @Haskell {Patch} datatype and
+ @Haskell {FL}, @Haskell {RL} GADTs which are used for sequencing these (among others).
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000406.html">[Al4nin-commits] r643 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000408.html">[Al4nin-commits] r645 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#407">[ date ]</a>
+              <a href="thread.html#407">[ thread ]</a>
+              <a href="subject.html#407">[ subject ]</a>
+              <a href="author.html#407">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

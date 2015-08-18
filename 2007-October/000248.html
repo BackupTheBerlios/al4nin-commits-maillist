@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r486 - trunk/purgatory/db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r486%20-%20trunk/purgatory/db&In-Reply-To=%3C200710280137.l9S1baeV000205%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000247.html">
+   <LINK REL="Next"  HREF="000249.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r486 - trunk/purgatory/db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r486%20-%20trunk/purgatory/db&In-Reply-To=%3C200710280137.l9S1baeV000205%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r486 - trunk/purgatory/db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Oct 28 02:37:36 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000247.html">[Al4nin-commits] r485 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000249.html">[Al4nin-commits] r487 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#248">[ date ]</a>
+              <a href="thread.html#248">[ thread ]</a>
+              <a href="subject.html#248">[ subject ]</a>
+              <a href="author.html#248">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-28 02:37:31 +0100 (Sun, 28 Oct 2007)
+New Revision: 486
+
+Modified:
+   trunk/purgatory/db/
+   trunk/purgatory/db/BibTeX2lout.awk
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+updated database and toolset a bit
+
+
+Property changes on: trunk/purgatory/db
+___________________________________________________________________
+Name: svn:ignore
+   + *.li
+
+
+Modified: trunk/purgatory/db/BibTeX2lout.awk
+===================================================================
+--- trunk/purgatory/db/BibTeX2lout.awk	2007-10-26 16:42:35 UTC (rev 485)
++++ trunk/purgatory/db/BibTeX2lout.awk	2007-10-28 01:37:31 UTC (rev 486)
+@@ -1,3 +1,6 @@
++# Usage : awk -f BibTeX2lout.awk &lt; BibTexDB &gt; acmrefs.ld
++#
++
+ # Here is the complete set of values that you may give to the @Type option:
+ # Book TechReport Article InBook
+ # Proceedings MastersThesis InProceedings
+@@ -14,6 +17,7 @@
+ # /Misc.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
+ # /Unpublished.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
+ # /Article.*=.*/ {print &quot;Article { &quot; $4 &quot; }&quot;; next}
++/@article[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { Article }&quot;; have = 1; next}
+ # /InBook.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
+ # /InCollection.*=.*/ {print &quot;InBook { &quot; $4 &quot; }&quot;; next}
+ /@inproceedings[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { InProceedings }&quot;; have = 1; next}
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2007-10-26 16:42:35 UTC (rev 485)
++++ trunk/purgatory/db/BibTexDB	2007-10-28 01:37:31 UTC (rev 486)
+@@ -43,3 +43,27 @@
+  }
+ 
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at article</A>{hughes:arrows,
++ title = {Generalising Monads to Arrows},
++ author = {John Hughes},
++ journal = {Science of Computer Programming},
++ url = {<A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A>},
++ volume = {37},
++ pages = {67-111},
++ month = {May},
++ year = {2000}
++}
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at inproceedings</A>{PatersonRA:notation,
++ title = {A New Notation for Arrows},
++ author = {Ross Paterson},
++ booktitle = {International Conference on Functional Programming},
++ location = {Firenze, Italy},
++ url = {<A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A>},
++ publisher = {ACM Press},
++ pages = {229-240},
++ month = {Sep},
++ year = {2001}
++}
++
++
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2007-10-26 16:42:35 UTC (rev 485)
++++ trunk/purgatory/db/acmrefs.ld	2007-10-28 01:37:31 UTC (rev 486)
+@@ -46,3 +46,30 @@
+ }
+ 
+ 
++{ @Reference
++   @Type { Article }
++   @Title { Generalising Monads to Arrows }
++   @Author { John Hughes }
++   @Journal { Science of Computer Programming }
++   @URL { <A HREF="http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps">http://www.cs.chalmers.se/~rjmh/Papers/arrows.ps</A> }
++   @Volume { 37 }
++   @Pages { 67-111 }
++   @Month { May }
++   @Year { 2000 }
++}
++
++
++{ @Reference
++   @Type { InProceedings }
++   @Title { A New Notation for Arrows }
++   @Author { Ross Paterson }
++   @InTitle { International Conference on Functional Programming }
++   # @Location { Firenze, Italy }
++   @URL { <A HREF="http://www.soi.city.ac.uk/~ross/papers/notation.html">http://www.soi.city.ac.uk/~ross/papers/notation.html</A> }
++   @Publisher { ACM Press }
++   @Pages { 229-240 }
++   @Month { Sep }
++   @Year { 2001 }
++}
++
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000247.html">[Al4nin-commits] r485 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000249.html">[Al4nin-commits] r487 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#248">[ date ]</a>
+              <a href="thread.html#248">[ thread ]</a>
+              <a href="subject.html#248">[ subject ]</a>
+              <a href="author.html#248">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

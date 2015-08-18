@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1132 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2012-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1132%20-%20trunk/purgatory&In-Reply-To=%3C20120419133119.0533355B0C%40scm.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000893.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1132 - trunk/purgatory</H1>
+    <B>heisenbug at scm.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1132%20-%20trunk/purgatory&In-Reply-To=%3C20120419133119.0533355B0C%40scm.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1132 - trunk/purgatory">heisenbug at scm.berlios.de
+       </A><BR>
+    <I>Thu Apr 19 15:31:18 CEST 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000893.html">[Al4nin-commits] r1131 - trunk/purgatory
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2012-04-19 15:31:18 +0200 (Thu, 19 Apr 2012)
+New Revision: 1132
+
+Modified:
+   trunk/purgatory/GrammarLike.lhs
+Log:
+comment out non-working
+
+
+Modified: trunk/purgatory/GrammarLike.lhs
+===================================================================
+--- trunk/purgatory/GrammarLike.lhs	2012-04-19 13:29:10 UTC (rev 1131)
++++ trunk/purgatory/GrammarLike.lhs	2012-04-19 13:31:18 UTC (rev 1132)
+@@ -109,7 +109,10 @@
+ &gt;   type Final (Foo `By` Foo) = Foo
+ &gt;   produce (_ `By` f) = return f
+ 
++This is not ripe yet
+ 
++&gt; {-
++
+ Let's extend `By` to ignorable parses (e.g. punctuation)
+ 
+ &gt; data BackSlash
+@@ -126,3 +129,4 @@
+ &gt;   produce (By f' f) = do { d &lt;- pd; produce (By (f' undefined) (f d)) }
+ &gt;     where pd = produce $ converse f' undefined
+ 
++&gt; -}
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000893.html">[Al4nin-commits] r1131 - trunk/purgatory
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#894">[ date ]</a>
+              <a href="thread.html#894">[ thread ]</a>
+              <a href="subject.html#894">[ subject ]</a>
+              <a href="author.html#894">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

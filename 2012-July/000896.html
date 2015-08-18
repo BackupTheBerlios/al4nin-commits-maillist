@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1134 - trunk/purgatory/plugin-example
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2012-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1134%20-%20trunk/purgatory/plugin-example&In-Reply-To=%3C20120710024017.A6C6055B0C%40scm.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000895.html">
+   <LINK REL="Next"  HREF="000897.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1134 - trunk/purgatory/plugin-example</H1>
+    <B>heisenbug at scm.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1134%20-%20trunk/purgatory/plugin-example&In-Reply-To=%3C20120710024017.A6C6055B0C%40scm.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1134 - trunk/purgatory/plugin-example">heisenbug at scm.berlios.de
+       </A><BR>
+    <I>Tue Jul 10 04:40:17 CEST 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000895.html">[Al4nin-commits] r1133 - in trunk/purgatory: . plugin-example
+</A></li>
+        <LI>Next message: <A HREF="000897.html">[Al4nin-commits] r1135 - trunk/purgatory/plugin-example
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#896">[ date ]</a>
+              <a href="thread.html#896">[ thread ]</a>
+              <a href="subject.html#896">[ subject ]</a>
+              <a href="author.html#896">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2012-07-10 04:40:17 +0200 (Tue, 10 Jul 2012)
+New Revision: 1134
+
+Modified:
+   trunk/purgatory/plugin-example/If.hs
+   trunk/purgatory/plugin-example/Main.hs
+   trunk/purgatory/plugin-example/XYZuse.hs
+Log:
+some cleanups
+
+Modified: trunk/purgatory/plugin-example/If.hs
+===================================================================
+--- trunk/purgatory/plugin-example/If.hs	2012-07-09 18:48:53 UTC (rev 1133)
++++ trunk/purgatory/plugin-example/If.hs	2012-07-10 02:40:17 UTC (rev 1134)
+@@ -2,8 +2,10 @@
+ 
+ import Foreign.Ptr
+ 
+-data Tree = Tree (Ptr Tree)
++data Tree = Tree (Ptr Tree) deriving Show
+ 
+ data Interface = Interface {
+-        processTree :: Ptr Tree -&gt; IO (Ptr Tree)
++   processTree :: Ptr Tree -&gt; IO (Ptr Tree)
++ , exampleTree :: Ptr Tree
++ , version :: Int
+ }
+
+Modified: trunk/purgatory/plugin-example/Main.hs
+===================================================================
+--- trunk/purgatory/plugin-example/Main.hs	2012-07-09 18:48:53 UTC (rev 1133)
++++ trunk/purgatory/plugin-example/Main.hs	2012-07-10 02:40:17 UTC (rev 1134)
+@@ -14,10 +14,11 @@
+ -- ...
+ 
+ import Foreign.Ptr
+-import System.Plugins
++import System.Plugins.Load
+ import If
+ 
++main = do LoadSuccess _ v &lt;- load &quot;XYZuse.o&quot; [&quot;.&quot;] [] &quot;resource&quot;
++          t &lt;- processTree v (exampleTree v)
++          putStrLn (show t)
++          return (version v)
+ 
+-
+-main = load &quot;XYZuse.o&quot; [&quot;.&quot;] [] &quot;resource&quot; &gt;&gt;= (\(LoadSuccess _ v) -&gt; (processTree v nullPtr))
+-
+
+Modified: trunk/purgatory/plugin-example/XYZuse.hs
+===================================================================
+--- trunk/purgatory/plugin-example/XYZuse.hs	2012-07-09 18:48:53 UTC (rev 1133)
++++ trunk/purgatory/plugin-example/XYZuse.hs	2012-07-10 02:40:17 UTC (rev 1134)
+@@ -1,7 +1,10 @@
+ module XYZuse (resource) where
+ 
+ import If
++import Foreign.Ptr
+ 
+ resource = Interface {
+-        processTree = return
++   processTree = return
++ , exampleTree = nullPtr
++ , version = 2
+ }
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000895.html">[Al4nin-commits] r1133 - in trunk/purgatory: . plugin-example
+</A></li>
+	<LI>Next message: <A HREF="000897.html">[Al4nin-commits] r1135 - trunk/purgatory/plugin-example
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#896">[ date ]</a>
+              <a href="thread.html#896">[ thread ]</a>
+              <a href="subject.html#896">[ subject ]</a>
+              <a href="author.html#896">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

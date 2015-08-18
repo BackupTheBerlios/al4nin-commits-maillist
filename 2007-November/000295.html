@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r532 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r532%20-%20trunk/purgatory&In-Reply-To=%3C200711141138.lAEBcBd3032270%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000294.html">
+   <LINK REL="Next"  HREF="000296.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r532 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r532%20-%20trunk/purgatory&In-Reply-To=%3C200711141138.lAEBcBd3032270%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r532 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 14 12:38:11 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000294.html">[Al4nin-commits] r531 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000296.html">[Al4nin-commits] r533 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-14 12:38:10 +0100 (Wed, 14 Nov 2007)
+New Revision: 532
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+better literal parsing, simplifications, Meander is there for primitive debugging
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-13 23:14:34 UTC (rev 531)
++++ trunk/purgatory/ThristParser.omg	2007-11-14 11:38:10 UTC (rev 532)
+@@ -52,6 +52,7 @@
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])  -- consume as many as matches, return rest
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])       -- all must match, return rest
+   Wrap :: Thrist Parse a b -&gt; Parse a b              -- treat a chain of parses as one
++  Meander :: Label l -&gt; Thrist Parse a b -&gt; Parse a b-- observable point to break cycles
+   Or :: Parse a b -&gt; Parse a b -&gt; Parse a b          -- match first or if it doesn't, the second
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
+   Seq1 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
+@@ -123,6 +124,11 @@
+ 				 return (b:bs, rest)
+ 
+ parse [Wrap thr; r]l a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
++parse [Meander l thr; r]l a = do
++			      let i = trace (&quot;\nentering: &quot; ++ show l ++ &quot;\nwith: &quot; ++ show r ++ &quot;\nto parse: &quot; ++ show a)
++			      a' &lt;- parse thr a
++			      parse r a'
++			     where monad maybeM
+ 
+ parse [Seq1 p1 p2; r]l (a1:a2:rest) = do { b1 &lt;- parse [p1]l a1; b2 &lt;- parse [p2]l a2; parse r ((b1, b2), rest) } where monad maybeM
+ parse [Seq1 _ _; _]l _ = Nothing
+@@ -547,9 +553,6 @@
+               where monad maybeM
+           one _ = Nothing
+ 
+---optionally :: ([a] -&gt; Maybe b) -&gt; Parse [a] (Maybe b, [a])
+---optionally p = Or (Try p
+-
+ parseArgument :: Parse [Token] (Phrase PHargument, [Token])
+ parseArgument = or [ Wrap [ Seq (Try symbol) (Or (Wrap [parseExpression, sureFirst Just]l)
+                                                  (Wrap [epsilon, sureFirst (\_ -&gt; Nothing)]l))
+@@ -573,28 +576,37 @@
+           flat (arg1, args) = arg1 : map snd args
+           none t = ([], t)
+ 
++parseLeaf :: Parse [Token] (Phrase PHleaf, [Token])
++parseLeaf = or [ Wrap [Try isLit, sureFirst LeafLit]l
++	       , Wrap [Try isParen, parseExpression, Try isClosingParen, sureFirst LeafParen]l
++	       ]
++    where isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Num</A> _):t) = Just (LitNum h, t)
++	  isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Str</A> _):t) = Just (LitString [h], t)
++	  isLit (H Ht:t) = Just (LitTrue, t)
++	  isLit (H Hf:t) = Just (LitFalse, t)
++	  isLit _ = Nothing
++	  isParen (P PparenthesisOpen:t) = Just t
++	  isParen _ = Nothing
++	  isClosingParen (exp, P PparenthesisClose:t) = Just (exp, t)
++	  isClosingParen _ = Nothing
++
+ parseOperand :: Parse [Token] (Phrase PHoperand, [Token])
+-parseOperand = or [ Wrap [Try isLit, sureFirst (OperandLeaf . LeafLit)]l
+-		  , Wrap [Seq parseOperand
+-			  (or [ Wrap [Try isDot, Sure snd, Try isName
++parseOperand = or [ Wrap [parseLeaf, sureFirst OperandLeaf]l
++		  , Meander `Operand [Seq parseOperand
++			  (or [ Wrap [Try isDot, Try isName
+ 				     , sureFirst (\n o -&gt; OperandAccess o n)
+ 				     ]l
+-			      , Wrap [Try isParen, Sure snd, parseArguments --- Try isClosingParen
++			      , Meander `OperandP [Try isParen, parseArguments, Try isClosingParen
+ 				     , sureFirst (\args o -&gt; OperandCall o args)
+ 				     ]l
+ 			      ])
+ 			 , sureFirst (\ (o, builder) -&gt; builder o)]l
+ 	       ]
+-    where isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Num</A> _):t) = Just (LitNum h, t)
+-	  isLit ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Str</A> _):t) = Just (LitString [h], t)
+-	  isLit (H Ht:t) = Just (LitTrue, t)
+-	  isLit (H Hf:t) = Just (LitFalse, t)
+-	  isLit _ = Nothing
+-	  isDot (P Pdot:t) = Just ((), t)
++    where isDot (P Pdot:t) = Just t
+ 	  isDot _ = Nothing
+-	  isParen (P PparenthesisOpen:t) = Just ((), trace (show t) t)
++	  isParen (P PparenthesisOpen:t) = Just t
+ 	  isParen _ = Nothing
+-	  isClosingParen (P PparenthesisOpen:t) = Just ((), t)
++	  isClosingParen (args, P PparenthesisClose:t) = Just (args, t)
+ 	  isClosingParen _ = Nothing
+ 	  isName ((<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">h at Resv</A> _):t) = Just (h, t)
+ 	  isName _ = Nothing
+@@ -607,7 +619,8 @@
+ 	  detectUnary t = (Nothing, t)
+ 
+ parseExpression :: Parse [Token] (Phrase PHexpression, [Token])
+-parseExpression = Wrap $ [Seq parseBinaryOperand
++--parseExpression = Wrap $ [Seq parseBinaryOperand
++parseExpression = Meander `Expression $ [Seq parseBinaryOperand
+                               (Rep $ Seq parseBinOp parseBinaryOperand)
+                               , sureFirst (Expression . thristize)]l
+     where thristize (operand1, ((op, operand2):rest)) = [operand1, BinaryOperandOperator op; thristize (operand2, rest)]l
+@@ -615,10 +628,10 @@
+ 
+ 
+ tExpr = [U Unot, Num 42, B Bplus, Num 25, B Band, H Ht]
+-
+ tExpr0 = parse [parseExpression]l tExpr
+ 
+ tExprParens = [U Unot, Num 42, B Bplus, P PparenthesisOpen, Num 25, B Band, H Ht, P PparenthesisClose]
++tExprParens0 = parse [parseExpression]l tExprParens
+ 
+ -- ############### Cat syntax ###############
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000294.html">[Al4nin-commits] r531 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000296.html">[Al4nin-commits] r533 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r889 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r889%20-%20trunk/purgatory&In-Reply-To=%3C20101209134826.7C17F480E70%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000650.html">
+   <LINK REL="Next"  HREF="000652.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r889 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r889%20-%20trunk/purgatory&In-Reply-To=%3C20101209134826.7C17F480E70%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r889 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Dec  9 14:48:26 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000650.html">[Al4nin-commits] r888 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000652.html">[Al4nin-commits] r890 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#651">[ date ]</a>
+              <a href="thread.html#651">[ thread ]</a>
+              <a href="subject.html#651">[ subject ]</a>
+              <a href="author.html#651">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-09 14:48:26 +0100 (Thu, 09 Dec 2010)
+New Revision: 889
+
+Modified:
+   trunk/purgatory/Kinding2.omg
+Log:
+feeble beginnings for Thrist Frag
+
+Modified: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-09 13:18:07 UTC (rev 888)
++++ trunk/purgatory/Kinding2.omg	2010-12-09 13:48:26 UTC (rev 889)
+@@ -113,6 +113,14 @@
+   Appl :: Expr f -&gt; Expr {south {charge f}} -&gt; Expr {heart f}
+ 
+ 
++data Frag :: Walk n m p ~&gt; Walk n m' p' ~&gt; * where
++  Heart :: Qual n (1+n)w -&gt; Frag n n
++  Qual :: Qual v {up v} -&gt; Frag v w
++
++
++
++
++
+ -- Tests
+ 
+ -- TODO ##test &quot;exclude Term categorizer&quot;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000650.html">[Al4nin-commits] r888 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000652.html">[Al4nin-commits] r890 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#651">[ date ]</a>
+              <a href="thread.html#651">[ thread ]</a>
+              <a href="subject.html#651">[ subject ]</a>
+              <a href="author.html#651">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

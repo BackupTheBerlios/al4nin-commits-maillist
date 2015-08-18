@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r923 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r923%20-%20trunk/purgatory&In-Reply-To=%3C20101214005315.BAC924801A9%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000684.html">
+   <LINK REL="Next"  HREF="000686.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r923 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r923%20-%20trunk/purgatory&In-Reply-To=%3C20101214005315.BAC924801A9%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r923 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Dec 14 01:53:15 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000684.html">[Al4nin-commits] r922 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000686.html">[Al4nin-commits] r924 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#685">[ date ]</a>
+              <a href="thread.html#685">[ thread ]</a>
+              <a href="subject.html#685">[ subject ]</a>
+              <a href="author.html#685">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-14 01:53:15 +0100 (Tue, 14 Dec 2010)
+New Revision: 923
+
+Modified:
+   trunk/purgatory/Kinding.omg
+Log:
+tweaks
+
+Modified: trunk/purgatory/Kinding.omg
+===================================================================
+--- trunk/purgatory/Kinding.omg	2010-12-14 00:38:24 UTC (rev 922)
++++ trunk/purgatory/Kinding.omg	2010-12-14 00:53:15 UTC (rev 923)
+@@ -49,13 +49,13 @@
+   North :: Walk n 0t None ~&gt; Walk (1+n)t 0t None
+   Pair :: Walk k l p ~&gt; Walk n m None ~&gt; Walk n m {k=l;p}p
+   SE :: Walk (1+n)t m {k=l;p}p ~&gt; Walk n (1+m)t {k=l;p}p
+- deriving syntax (w) Nat(Origin, North) Tick(SE) Pair(Pair)
++ deriving syntax(w) Nat(Origin, North) Tick(SE) Pair(Pair)
+ 
+ -- list of walks ending in the same stratum
+ data Walks :: Nat ~&gt; *1 where
+   Heart :: Walks n
+   Wrap :: Walk n m p ~&gt; Walks n ~&gt; Walks n
+- deriving syntax (ws) List(Heart, Wrap)
++ deriving syntax(ws) List(Heart, Wrap)
+ 
+ -- Qualifiers are
+ --   * 0-dimensional: 42, Int, *, ...
+@@ -74,7 +74,7 @@
+   Term :: Qual 0w 1w
+   Ext :: Qual p {up p} -&gt; Qual r s -&gt; Qual (p, r)w s
+   Lam :: Qual p {up p} -&gt; Qual (p`1)w {up (p`1)w}
+- deriving syntax (ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
++ deriving syntax(ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
+ 
+ -- tau': calculate a qualifier's classifier
+ up :: Walk n m p ~&gt; Walk (1+n)t m' p'
+@@ -119,7 +119,7 @@
+           =&gt; Qual a b
+           -&gt; Context Anchored [f; r]ws
+           -&gt; Context Anchored r
+- deriving syntax (c) List(Empty, Qualify) Pair(Appl)
++ deriving syntax(c) List(Empty, Qualify) Pair(Appl)
+ 
+ -- tau: classify context
+ upc :: Walks n ~&gt; Walks (1+n)t
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000684.html">[Al4nin-commits] r922 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000686.html">[Al4nin-commits] r924 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#685">[ date ]</a>
+              <a href="thread.html#685">[ thread ]</a>
+              <a href="subject.html#685">[ subject ]</a>
+              <a href="author.html#685">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

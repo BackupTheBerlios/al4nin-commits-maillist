@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r840 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r840%20-%20trunk/purgatory&In-Reply-To=%3C20101129173206.0EEE4480022%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000603.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r840 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r840%20-%20trunk/purgatory&In-Reply-To=%3C20101129173206.0EEE4480022%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r840 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Nov 29 18:32:05 CET 2010</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000603.html">[Al4nin-commits] r841 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#602">[ date ]</a>
+              <a href="thread.html#602">[ thread ]</a>
+              <a href="subject.html#602">[ subject ]</a>
+              <a href="author.html#602">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-11-29 18:32:05 +0100 (Mon, 29 Nov 2010)
+New Revision: 840
+
+Added:
+   trunk/purgatory/Appli.hs
+Log:
+thrist as applicative
+
+Added: trunk/purgatory/Appli.hs
+===================================================================
+--- trunk/purgatory/Appli.hs	                        (rev 0)
++++ trunk/purgatory/Appli.hs	2010-11-29 17:32:05 UTC (rev 840)
+@@ -0,0 +1,68 @@
++{-
++ * Copyright (c) 2010 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++{-# LANGUAGE GADTs, KindSignatures, EmptyDataDecls, TypeOperators #-}
++
++-- See my blog post
++--     <A HREF="http://heisenbug.blogspot.com/2010/11/applicative-structures-and-thrists.html">http://heisenbug.blogspot.com/2010/11/applicative-structures-and-thrists.html</A>
++
++module Appli where
++
++data Thrist :: (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * where
++  Nil :: Thrist p a a
++  Cons :: p a b -&gt; Thrist p b c -&gt; Thrist p a c
++
++
++f :: Int -&gt; Bool -&gt; Char -&gt; [Int]
++f i b c = if b then [i] else [0]
++
++a :: Int
++a = 42
++b = True
++c = 'A'
++
++{- Variant 0
++data Appli :: * -&gt; * -&gt; * where
++  Fun :: (a -&gt; b) -&gt; Appli (a -&gt; b) c
++  Arg :: a -&gt; Appli b (a -&gt; b)
++  Par :: Thrist Appli a c -&gt; Appli b (a -&gt; b)
++-}
++
++data Peg
++{- Variant 1
++data Appli :: * -&gt; * -&gt; * where
++  Fun :: (a -&gt; b) -&gt; Appli (a -&gt; b) Peg
++  Arg :: a -&gt; Appli b (a -&gt; b)
++  Par :: Thrist Appli a Peg -&gt; Appli b (a -&gt; b)
++-}
++
++-- Variant 2 ( the winner! )
++--
++data Appli :: (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * where
++  Fun :: (a ~&gt; b) -&gt; Appli (~&gt;) (a ~&gt; b) Peg
++  Arg :: a -&gt; Appli (~&gt;) b (a ~&gt; b)
++  Par :: Thrist (Appli (~&gt;)) a Peg -&gt; Appli (~&gt;) b (a ~&gt; b)
++
++t0 = Cons (Arg c) $ Cons (Arg b) $ Cons (Arg a) $ Cons (Fun f) Nil
++t1 = Par t0
++t2 = Cons t1 $ Cons (Fun length) Nil
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000603.html">[Al4nin-commits] r841 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#602">[ date ]</a>
+              <a href="thread.html#602">[ thread ]</a>
+              <a href="subject.html#602">[ subject ]</a>
+              <a href="author.html#602">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

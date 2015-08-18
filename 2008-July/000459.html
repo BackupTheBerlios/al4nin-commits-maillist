@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r696 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r696%20-%20trunk/purgatory&In-Reply-To=%3C200807111403.m6BE3lLB012873%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000458.html">
+   <LINK REL="Next"  HREF="000460.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r696 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r696%20-%20trunk/purgatory&In-Reply-To=%3C200807111403.m6BE3lLB012873%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r696 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 11 16:03:47 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000458.html">[Al4nin-commits] r695 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000460.html">[Al4nin-commits] r697 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#459">[ date ]</a>
+              <a href="thread.html#459">[ thread ]</a>
+              <a href="subject.html#459">[ subject ]</a>
+              <a href="author.html#459">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-11 16:03:45 +0200 (Fri, 11 Jul 2008)
+New Revision: 696
+
+Modified:
+   trunk/purgatory/Makefile
+   trunk/purgatory/Thrist.lout
+Log:
+rework the statemachine code
+
+Modified: trunk/purgatory/Makefile
+===================================================================
+--- trunk/purgatory/Makefile	2008-07-10 09:15:05 UTC (rev 695)
++++ trunk/purgatory/Makefile	2008-07-11 14:03:45 UTC (rev 696)
+@@ -33,3 +33,4 @@
+ check: Thrist.lout
+ 	$(AWK) -f extract.awk &lt; $&lt;
+ 	cat check/Parser.incomplete* | sed -e &quot;s/  | .../--  | .../1&quot; &gt; check/Parser.omg
++	cat check/Machine.part* &gt; check/Machine.omg
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-10 09:15:05 UTC (rev 695)
++++ trunk/purgatory/Thrist.lout	2008-07-11 14:03:45 UTC (rev 696)
+@@ -916,7 +916,7 @@
+ As the execution of the thrist proceeds, incrementally more of the token are analysed, condensed and converted.
+ 
+ ######################## THIS FIGURE SHOULD SHOW UP IN A DIFFERENT PLACE #############################
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TargetForExtract</A> &quot;check/Machine2&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Machine.part2&quot;
+ @Figure
+     @Tag { machine }
+     @Caption { State machine fragment }
+@@ -1112,11 +1112,13 @@
+ To formally introduce the facets, we employ another @Omega feature,
+ namely @I { user-defined kinds }, whose alternatives can be used to
+ parameterize the @Haskell { State } datatype:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TargetForExtract</A> &quot;check/Machine1&quot;
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Machine.part1&quot;
+ @LD @Haskell @Begin
+ kind Gate = GateClosed | GateOpen
+ kind Secondary = SecondaryEnabled | SecondaryBlocked
+-kind Handshake = Idle | NeedAck | Requested
++kind HandshakeIn = Idle | Requested
++kind HandshakeOut = Idle' | NeedAck
++kind Handshake = H HandshakeIn HandshakeOut
+ 
+ data State :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
+   State :: [Transition g s h] -&gt; State g s h
+@@ -1132,15 +1134,16 @@
+ @Title { Action Thrists }
+ @Begin
+ @PP
+-We can implement the elementary actions as a GADT:
++We can implement the elementary actions as a GADT{@FootNote {the code is not syntactically correct
++(@Omega has no pairs at the kind level), but demonstrates our point}}:
+ 
+ @ID @Haskell @Begin
+-data Action :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
+-  RequestExclusive :: Action (a, b, Idle) (a, b, NeedAck)
+-  AckExclusive :: Action (a, b, Requested) (a, b, Idle)
++data Action :: (Gate, Secondary, Handshake) ~&gt; (Gate, Secondary, Handshake) ~&gt; * where
++  RequestExclusive :: Action (a, b, H c Idle') (a, b, H c NeedAck)
++  AckExclusive :: Action (a, b, H Requested c) (a, b, H Idle c)
+   OpenGate :: Action (GateClosed, SecondaryBlocked, c) (GateOpen, SecondaryBlocked, c)
+   BlockSecondary :: Action (a, SecondaryEnabled, c) (a, SecondaryBlocked, c)
+-  -- ...
++  ...
+ @End @Haskell
+ 
+ Then state transitions would correspond to @Haskell { Thrist Action }s that
+@@ -1218,6 +1221,7 @@
+ thrist of length greater or equal to 2, then the following function @Haskell { trans }
+ can be applied to get a proof object by transitivity:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TargetForExtract</A> &quot;check/Curious&quot;
+ @ID @Haskell @Begin
+ trans :: Thrist Equal a b -&gt; Equal a b
+ trans []l = Eq
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000458.html">[Al4nin-commits] r695 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000460.html">[Al4nin-commits] r697 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#459">[ date ]</a>
+              <a href="thread.html#459">[ thread ]</a>
+              <a href="subject.html#459">[ subject ]</a>
+              <a href="author.html#459">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

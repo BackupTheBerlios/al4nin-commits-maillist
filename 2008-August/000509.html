@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r747 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r747%20-%20trunk/purgatory&In-Reply-To=%3C200808080535.m785ZkKG023328%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000508.html">
+   <LINK REL="Next"  HREF="000510.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r747 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r747%20-%20trunk/purgatory&In-Reply-To=%3C200808080535.m785ZkKG023328%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r747 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug  8 07:35:46 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000508.html">[Al4nin-commits] r746 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000510.html">[Al4nin-commits] r748 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#509">[ date ]</a>
+              <a href="thread.html#509">[ thread ]</a>
+              <a href="subject.html#509">[ subject ]</a>
+              <a href="author.html#509">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-08-08 07:35:43 +0200 (Fri, 08 Aug 2008)
+New Revision: 747
+
+Modified:
+   trunk/purgatory/WayMark.lhs
+Log:
+initial impl of lookup
+
+Modified: trunk/purgatory/WayMark.lhs
+===================================================================
+--- trunk/purgatory/WayMark.lhs	2008-08-07 05:52:59 UTC (rev 746)
++++ trunk/purgatory/WayMark.lhs	2008-08-08 05:35:43 UTC (rev 747)
+@@ -61,6 +61,8 @@
+ returns the numerical pattern for Value*.
+ 
+ Note: for simplicity the required step count is 3 at the moment.
++In the end it may well be a value that depends on the bit pattern
++itself.
+ 
+ &gt; requiredSteps = 3
+ 
+@@ -73,7 +75,24 @@
+ The lookup function calls compute' to get the bit pattern and returns also the
+ position of a potential start pointer at which the fresh marks could be reapplied.
+ 
++&gt; lookup :: UsePtr -&gt; (Int, UsePtr)
++&gt; lookup p = case repaint False requiredSteps 0 0 p of
++&gt;            Nothing -&gt; (i, p)
++&gt;            Just pos -&gt; (i, fst $ reapply i pos requiredSteps p)
++&gt;   where
++&gt;     i = compute' 0 0 p
++&gt;     reapply i 1 steps (Tagged Zero p) = (Tagged Stop $ fst $ reapply i 0 steps p, 0)
++&gt;     reapply i 1 steps (Tagged One p) = (Tagged Stop $ fst $ reapply i 0 steps p, 0)
++&gt;     reapply i 0 0 p = (p, i)
++&gt;     reapply i 0 (s + 1) p = (Tagged (if odd i' then One else Zero) p', i' `div` 2)
++&gt;         where (p', i') = reapply i 0 s p
++&gt;     reapply i (offs + 1) steps (Tagged t p) = (Tagged t $ fst $ reapply i offs steps p, 0)
+ 
++Now we have to provide the function for obtaining the repaint position.
++Be sure that a possible digit before this position must be changed to a Stop
++to avoid cluster extension.
++The function returns the index relative to UsePtr (zero based) where
++the requiredSteps digits maust be placed.
+ 
+ &gt; repaint :: Bool -&gt; Int -&gt; Int -&gt; Int -&gt; UsePtr -&gt; Maybe Int
+ 
+@@ -91,7 +110,6 @@
+ valid cluster and we are not permitted to overpaint anything. But
+ we have to carry on and shift the pos:
+ 
+-
+ E.g. 10s
+        ^
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000508.html">[Al4nin-commits] r746 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000510.html">[Al4nin-commits] r748 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#509">[ date ]</a>
+              <a href="thread.html#509">[ thread ]</a>
+              <a href="subject.html#509">[ subject ]</a>
+              <a href="author.html#509">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

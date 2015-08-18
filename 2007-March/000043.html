@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r281 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r281%20-%20trunk/purgatory&In-Reply-To=%3C200703231651.l2NGpwoW003364%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000042.html">
+   <LINK REL="Next"  HREF="000044.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r281 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r281%20-%20trunk/purgatory&In-Reply-To=%3C200703231651.l2NGpwoW003364%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r281 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Mar 23 17:51:58 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000042.html">[Al4nin-commits] r280 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000044.html">[Al4nin-commits] r282 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#43">[ date ]</a>
+              <a href="thread.html#43">[ thread ]</a>
+              <a href="subject.html#43">[ subject ]</a>
+              <a href="author.html#43">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-23 17:51:57 +0100 (Fri, 23 Mar 2007)
+New Revision: 281
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+induction not done yet
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-23 00:18:01 UTC (rev 280)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-23 16:51:57 UTC (rev 281)
+@@ -93,15 +93,18 @@
+ 
+ stratDiff :: Stratum ~&gt; Stratum ~&gt; Nat
+ { stratDiff Ground Ground } = #0
++--{ stratDiff Ground (Up y) } = #0 -- cheating
+ { stratDiff (Up x) (Up x)} = #0
+ { stratDiff (Up x) (Up y)} = { stratDiff x y }
+ { stratDiff (Up x) Ground } = S { stratDiff x Ground }
+ { stratDiff (Push x y) z } = { stratDiff x z }
++--{ stratDiff Ground (Up x) } = unreachable
+ 
+ -- --------- From       To
+ data Henk :: Stratum ~&gt; Stratum ~&gt; *0 where
+   Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) } Ground
+-  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk (Push (Up strat) from) to
++  Bind :: Nat' { stratDiff (Push (Up strat) from) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk (Push (Up strat) from) to
++--  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk (Push (Up strat) from) to
+ --  Func :: (a-&gt;b) -&gt; Henk (Up Ground) Ground -- use Lit and {arr2stratum + cleaner}
+ --  Ref :: Label l -&gt; Henk Ground strat
+ --  Type :: Tractable a -&gt; Henk { tract2stratum (Tractable a) } (Up Ground)
+@@ -182,7 +185,7 @@
+ teachDifficult :: Nat' #0 -&gt; Henk (Push (Up g) i) to -&gt; Equal {stratDiff (Up g) to} #0
+ teachDifficult t (Bind t _ (Type IntTractable) (Type IntTractable)) = Eq
+ 
+-teachVictory :: Nat' #0 -&gt; Henk (Push (Up g) i) to -&gt; Equal {collapsePi {stratDiff (Push (Up g) i) to} (Push (Up g) i)} Ground
++teachVictory :: Nat' #0 -&gt; Henk (Push (Up g) i) to -&gt; Equal {collapsePi {stratDiff (Push (Up g) i) (Up q)} (Push (Up g) i)} Ground
+ teachVictory t (Bind t _ (Type IntTractable) (Type IntTractable)) = Eq
+ -- where theorem teachDifficult
+ 
+@@ -192,9 +195,16 @@
+ teachTo :: Nat' #0 -&gt; Henk (Push (Up g) i) to -&gt; Henk Ground (Up (Up g)) -&gt; Equal (Henk Ground (Up to)) (Henk Ground (Up (Up g)))
+ teachTo t (Bind t _ (Type IntTractable) (Type IntTractable)) Star = Eq
+ 
++teachDiffNonnegative0 :: Nat' #0 -&gt; Henk (Push (Up Ground) i) (Up q) -&gt; Equal {stratDiff Ground q} #0
++teachDiffNonnegative0 t (Bind t _ (Type IntTractable) (Type IntTractable)) = check Eq
+ 
+-tau (b@(Bind Z l q r)) = check Star
+- where theorem teachDifficult, teachVictory, teachTo
++-- Induction step
++teachDiffNonnegative :: Nat' #0 -&gt; Henk (Push g i) g -&gt; Henk (Push (Up g) j) (Up g) -&gt; Equal {stratDiff Ground q} #0
++teachDiffNonnegative t (Bind t _ Star Star) (Bind t _ Star Star) = check Eq
++ where theorem teachDiffNonnegative0
++
++tau (b@(Bind Z l q r)) = Star
++ where theorem teachDifficult, teachVictory, teachTo, teachDiffNonnegative
+ -- where theorem sameStrat0, sameStrat2, teachPi2Up', teachVictory, teachTo
+ -- where theorem sameStrat0, sameStrat2, teachPi2Up', teachDifficult, teachVictory
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000042.html">[Al4nin-commits] r280 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000044.html">[Al4nin-commits] r282 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#43">[ date ]</a>
+              <a href="thread.html#43">[ thread ]</a>
+              <a href="subject.html#43">[ subject ]</a>
+              <a href="author.html#43">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

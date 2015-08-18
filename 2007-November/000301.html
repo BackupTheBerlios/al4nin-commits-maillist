@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r538 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r538%20-%20trunk/found-bugs&In-Reply-To=%3C200711170922.lAH9MjUu010735%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000300.html">
+   <LINK REL="Next"  HREF="000302.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r538 - trunk/found-bugs</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r538%20-%20trunk/found-bugs&In-Reply-To=%3C200711170922.lAH9MjUu010735%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r538 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Nov 17 10:22:45 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000300.html">[Al4nin-commits] r537 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000302.html">[Al4nin-commits] r539 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-17 10:22:40 +0100 (Sat, 17 Nov 2007)
+New Revision: 538
+
+Added:
+   trunk/found-bugs/issue38-DejaVu.omg
+Log:
+reduced testcase, saying 'Non type constructor: _b as range of constructor: Ahh'
+
+Copied: trunk/found-bugs/issue38-DejaVu.omg (from rev 537, trunk/purgatory/DejaVu.omg)
+===================================================================
+--- trunk/purgatory/DejaVu.omg	2007-11-15 23:26:36 UTC (rev 537)
++++ trunk/found-bugs/issue38-DejaVu.omg	2007-11-17 09:22:40 UTC (rev 538)
+@@ -0,0 +1,91 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Eq,Equal,
++  listM, foldl, foldr)
++
++
++import &quot;Thrist.omg&quot; 
++  (Thrist, Nil, Cons, syntax List(l))
++
++
++data Test :: * ~&gt; * where
++  Ahh :: Test Int
++  Bgg :: Bool -&gt; Test Bool
++  Cff :: a -&gt; Test a -&gt; Test a
++  Dee :: Test a -&gt; Test b -&gt; Test (a, b)
++
++
++test1 :: Test (Int, Bool)
++test1 = Dee (Cff 42 test8) (Bgg True)
++
++test8 :: Test Int
++test8 = Cff 25 test8
++
++
++
++data DejaVu :: * ~&gt; * ~&gt; * where
++  Bgg0 :: DejaVu Bool (Test Bool)
++  Cff0 :: DejaVu a (Test a)
++  Cff1 :: DejaVu (Test a) (Test a)
++  Dee0 :: DejaVu (Test a) (Test (a, b))
++  Dee1 :: DejaVu (Test b) (Test (a, b))
++  Stop :: a -&gt; DejaVu () a
++
++-- 1st order dejavu of test1:
++
++--sind1st = [[Stop, Dee0]l, [Stop, Dee1]l]
++
++-- 2nd order dejavu of test1:
++
++--sind2st = [[Stop, Cff0, Dee0]l, [Stop, Cff1, Dee0]l, [Stop, Bgg0, Dee1]l]
++
++--data Rup :: * 
++
++nth :: Nat ~&gt; * ~&gt; *
++{nth Z (a-&gt;b)} = a
++{nth (S n) (a-&gt;b)} = {nth n b}
++
++ult :: * ~&gt; *
++{ult (a-&gt;b)} = {ult b}
++{ult (Test a)} = Test a
++
++observer :: Nat' n -&gt; (a -&gt; b) -&gt; DejaVu {nth n (a -&gt; b)} {ult b} -&gt; (DejaVu {nth n (a -&gt; b)} {ult b}, Nat' n)
++observer a f d = (d, a)
++
++deja' :: Thrist DejaVu () (Test a) -&gt; Thrist DejaVu () (Test a)
++deja' (t@(Cons (Stop Ahh) Nil)) = t
++
++
++{-
++deja :: [Thrist DejaVu () (Test a)] -&gt; [Thrist DejaVu () (Test a)]
++--deja [] = []
++--deja ((t@(Cons (Stop Ahh) _)):r) = t:(deja r)
++deja ((t@[Stop Ahh; _]l):r) = t : deja r -- bug: Non type constructor: _b as range of constructor: Ahh
++deja ([Stop (Bgg b)]l:r) = [Stop b, Bgg0; more]l : deja r
++--deja (Cff o t) = [[Stop o, Cff0]l, [Stop t, Cff1]l]
++--deja (Dee o t) = [[Stop o, Dee0]l, [Stop t, Dee1]l]
++-}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000300.html">[Al4nin-commits] r537 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000302.html">[Al4nin-commits] r539 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#301">[ date ]</a>
+              <a href="thread.html#301">[ thread ]</a>
+              <a href="subject.html#301">[ subject ]</a>
+              <a href="author.html#301">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

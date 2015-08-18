@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r718 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r718%20-%20trunk/purgatory&In-Reply-To=%3C200807182134.m6ILYdR8026363%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000479.html">
+   <LINK REL="Next"  HREF="000481.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r718 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r718%20-%20trunk/purgatory&In-Reply-To=%3C200807182134.m6ILYdR8026363%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r718 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 18 23:34:39 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000479.html">[Al4nin-commits] r717 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000481.html">[Al4nin-commits] r719 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#480">[ date ]</a>
+              <a href="thread.html#480">[ thread ]</a>
+              <a href="subject.html#480">[ subject ]</a>
+              <a href="author.html#480">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-18 23:34:37 +0200 (Fri, 18 Jul 2008)
+New Revision: 718
+
+Modified:
+   trunk/purgatory/WayMark.lhs
+Log:
+feeble beginnings of a better construct'
+
+Modified: trunk/purgatory/WayMark.lhs
+===================================================================
+--- trunk/purgatory/WayMark.lhs	2008-07-18 15:45:03 UTC (rev 717)
++++ trunk/purgatory/WayMark.lhs	2008-07-18 21:34:37 UTC (rev 718)
+@@ -95,4 +95,8 @@
+ &gt; construct' (Val i (One p)) (Remove 0 rest) = construct' (Val i p) rest
+ &gt; construct' (Val i (Stop p)) (Remove 0 rest) = construct' (Val i p) rest
+ 
++&gt; construct' (Val i (Stop p)) (Remove (n+1) rest) = Val i (Stop p')
++&gt;     where (Val i' p') = construct' (Val i p) (Remove n rest)
++
++
+       &gt;     where v = remove 
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000479.html">[Al4nin-commits] r717 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000481.html">[Al4nin-commits] r719 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#480">[ date ]</a>
+              <a href="thread.html#480">[ thread ]</a>
+              <a href="subject.html#480">[ subject ]</a>
+              <a href="author.html#480">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

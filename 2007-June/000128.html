@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r366 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r366%20-%20trunk/purgatory&In-Reply-To=%3C200706011356.l51DuHII029294%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000127.html">
+   <LINK REL="Next"  HREF="000129.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r366 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r366%20-%20trunk/purgatory&In-Reply-To=%3C200706011356.l51DuHII029294%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r366 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jun  1 15:56:17 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000127.html">[Al4nin-commits] r365 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000129.html">[Al4nin-commits] r367 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#128">[ date ]</a>
+              <a href="thread.html#128">[ thread ]</a>
+              <a href="subject.html#128">[ subject ]</a>
+              <a href="author.html#128">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-01 15:56:17 +0200 (Fri, 01 Jun 2007)
+New Revision: 366
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+added C-style comments, fixed reverse bug
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-06-01 13:40:34 UTC (rev 365)
++++ trunk/purgatory/ThristParser.omg	2007-06-01 13:56:17 UTC (rev 366)
+@@ -159,7 +159,7 @@
+ 
+ parse (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">u at UpTo</A> p1 p2) r) a = case parse' a [] of
+ 				  Nothing -&gt; Nothing
+-				  Just (fill, (b2, rest)) -&gt; case parse #[p1]l fill of
++				  Just (fill, (b2, rest)) -&gt; case parse #[p1]l (reverse fill []) of
+ 							     Nothing -&gt; Nothing
+ 							     Just (b1, []) -&gt; parse r ((b1, b2), rest)
+ 							     _ -&gt; Nothing
+@@ -171,6 +171,8 @@
+     parse' (food@(head:tail)) acc = case parse #[p2]l food of
+ 				    Nothing -&gt; parse' tail (head:acc)
+ 				    Just b2 -&gt; Just (acc, b2)
++    reverse [] acc = acc
++    reverse (a:as) acc = reverse as (a:acc)
+ 
+ -- ##########################################
+ -- ############ pattern compiler ############
+@@ -351,10 +353,13 @@
+ 	    , bulkWords coreWords core (Token . R)
+ 	    , bulkWords hashWords hash (Token . H)
+ 	    , Wrap #[Seq (word &quot;//&quot;) (Rep1 $ ButNot1 (Sure id) (letter '\n')), sureFirst (\(boring, comment) -&gt; Whitespace (boring ++ comment))]l
++	    , Wrap #[Seq (word &quot;/*&quot;) (UpTo (Rep1 $ Sure id) (word &quot;*/&quot;)), sureFirst (\(boring1, (comment, boring2)) -&gt; Whitespace (boring1 ++ comment ++ boring2))]l
+             , Wrap $ Cons (word &quot;!&quot;) (Cons (Sure snd) (extendThrist num (sureFirst mkTest))) -- experiment
+             ]
+ 
+ t6 = parse #[Rep token']l &quot;33//dsd hh \n42&quot;
++t7 = parse #[Rep token']l &quot;33/*dsd hh */42&quot;
++t7a = parse #[Rep token']l &quot;33/**/42&quot;
+ 
+ mkTest :: Int -&gt; Token'
+ mkTest i = Test (walk i (Ex Z)) where
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000127.html">[Al4nin-commits] r365 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000129.html">[Al4nin-commits] r367 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#128">[ date ]</a>
+              <a href="thread.html#128">[ thread ]</a>
+              <a href="subject.html#128">[ subject ]</a>
+              <a href="author.html#128">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

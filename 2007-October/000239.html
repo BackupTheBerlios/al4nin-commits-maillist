@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r477 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r477%20-%20trunk/purgatory&In-Reply-To=%3C200710241604.l9OG4jkl022985%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000238.html">
+   <LINK REL="Next"  HREF="000240.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r477 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r477%20-%20trunk/purgatory&In-Reply-To=%3C200710241604.l9OG4jkl022985%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r477 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Oct 24 18:04:45 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000238.html">[Al4nin-commits] r476 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000240.html">[Al4nin-commits] r478 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-24 18:04:45 +0200 (Wed, 24 Oct 2007)
+New Revision: 477
+
+Modified:
+   trunk/purgatory/StateMachine.omg
+   trunk/purgatory/Thrist.lout
+Log:
+demo implementation of the states in the paper
+
+Modified: trunk/purgatory/StateMachine.omg
+===================================================================
+--- trunk/purgatory/StateMachine.omg	2007-10-24 14:58:03 UTC (rev 476)
++++ trunk/purgatory/StateMachine.omg	2007-10-24 16:04:45 UTC (rev 477)
+@@ -1,4 +1,29 @@
++-- -*-Haskell-*-
+ 
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++
+ import &quot;LangPrelude.prg&quot;
+ 
+ import &quot;Thrist.omg&quot;
+@@ -26,6 +51,7 @@
+ 
+ data Obligation :: Pair Gate (Pair Secondary Handshake) ~&gt; Pair Gate (Pair Secondary Handshake) ~&gt; * where
+   ExclusiveRequested :: Obligation (a, b, Idle)p (a, b, Requested)p
++  AckReceived :: Obligation (a, b, NeedAck)p (a, b, Idle)p
+ 
+ data Action :: Pair Gate (Pair Secondary Handshake) ~&gt; Pair Gate (Pair Secondary Handshake) ~&gt; * where
+   RequestExclusive :: Action (a, b, Idle)p (a, b, NeedAck)p
+@@ -34,3 +60,17 @@
+   BlockSecondary :: Action (a, SecondaryEnabled, c)p (a, SecondaryBlocked, c)p
+   -- ...
+ 
++north :: State GateClosed SecondaryEnabled Idle
++north = State []
++
++west :: State GateClosed SecondaryBlocked NeedAck
++west = State [Transit north []l [BlockSecondary, RequestExclusive]l]
++
++east :: State GateClosed SecondaryBlocked Idle
++east = State [Transit north [ExclusiveRequested]l [BlockSecondary, AckExclusive]l]
++
++southeast :: State GateClosed SecondaryBlocked NeedAck
++southeast = State [Transit east []l [RequestExclusive]l]
++
++south :: State GateOpen SecondaryBlocked Idle
++south = State [Transit southeast [AckReceived]l [OpenGate]l]
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-10-24 14:58:03 UTC (rev 476)
++++ trunk/purgatory/Thrist.lout	2007-10-24 16:04:45 UTC (rev 477)
+@@ -687,17 +687,17 @@
+ @ID @F {{@Box 0X}{@Box E0}UL}
+ }
+ @ListItem { We fold the hex string found to a decimal integer
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @F {{@Box 0X}{@Box {@Box E0}}UL}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@CurveBox {@Box E0}}UL}
+ (at this step we would fail if the string had been empty)
+ }
+ @ListItem { We look for an optional signedness hint
+ @ID @F {{@Box 0X}{@CurveBox {@Box E0}}{@Box U}L}
+ }
+ @ListItem { We look for an optional storage size hint
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @F {{@Box 0X}{@Box {@Box E0}}{@Box U}{@Box L}}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@CurveBox {@Box E0}}{@Box U}{@Box L}}
+ }
+ @ListItem { We encapsulate the distilled information into a token datatype
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @F @Box {{@Box 0X}{@Box {@Box E0}}{@Box U}{@Box L}}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F @Box {{@Box 0X}{@CurveBox {@Box E0}}{@Box U}{@Box L}}
+ }
+ @EndList
+ @End @SubSubSection
+@@ -728,15 +728,15 @@
+ 
+ @DashList
+ @ListItem {  @Haskell {(Atom 'X')} matches only the capital @Haskell {'X'} character }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> {  @Haskell {Epsilon} matches a zero-size prefix of a list of as and returns an empty list of bs along with the unconsumed rest of as }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ListItem</A> {  @Haskell {Epsilon} matches a zero-size prefix of a list of @Haskell {as} and returns an empty list of @Haskell {bs} along with the unconsumed rest of @Haskell {as} }
+ @ListItem {  @Haskell {(Sure ord)} alway matches, consuming a @Haskell {Char} and returning its @Haskell {Int} ASCII value }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> {  @Haskell {(Try hexdigit)} matches only if a characker is a hexadecimal one and returns its hex value, fails otherwise }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ListItem</A> {  @Haskell {(Try hexdigit)} matches only if a character is a hexadecimal one and returns its hex value, fails otherwise }
+ @ListItem {  @Haskell {(Rep1 (Atom 'X'))} matches as many capital @Haskell {'X'}s as possible and returns a pair consisting the matched and unconsumed portions }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> {  @Haskell {(Group [Atom 'a', Atom 'b'])} matches only a prefix @Haskell {&quot;ab&quot;} in the input, returning it in a pair along with the unmatched portion or fails otherwise }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ListItem</A> {  @Haskell {(Group [Atom 'a', Atom 'b'])} matches only a prefix @Haskell {&quot;\&quot;ab\&quot;&quot;} in the input, returning it in a pair along with the unconsumed portion or fails otherwise }
+ @ListItem {  @Haskell {(CataPlus foldDec)} consumes a pair of a list of digits and some other data, if the list is empty it fails, otherwise it folds the sequence to a number, then returns the pair of this number and the other data, which remains unchanged }
+ @EndList
+ 
+-In the above descriptions we only suggest a possible semantics, the data of type Parse does not mandate it in any way. So when we talked about &quot;returns soandso&quot; then this is just an intention.
++In the above descriptions we only suggest a possible semantics, the data of type Parse does not mandate it in any way. So when we talked about &quot;\&quot;returns such-and-such\&quot;&quot; then this is just an intention.
+ 
+ The end result of parsing a token will amount to
+ 
+@@ -844,11 +844,11 @@
+ @Rowa
+     A { @Haskell { West :: State GateClosed SecondaryBlocked NeedAck } }
+ @Rowa
+-    A { @Haskell { East :: State GateClosed SecondaryBlocked Requested } }
++    A { @Haskell { East :: State GateClosed SecondaryBlocked Idle } }
+ @Rowa
++    A { @Haskell { Southeast :: State GateClosed SecondaryBlocked NeedAck } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
+     A { @Haskell { South :: State GateOpen SecondaryBlocked Idle } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Rowa</A>
+-    A { @Haskell { Southeast :: State GateClosed SecondaryBlocked NeedAck } }
+ }
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000238.html">[Al4nin-commits] r476 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000240.html">[Al4nin-commits] r478 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#239">[ date ]</a>
+              <a href="thread.html#239">[ thread ]</a>
+              <a href="subject.html#239">[ subject ]</a>
+              <a href="author.html#239">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

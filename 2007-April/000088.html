@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r326 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r326%20-%20trunk/purgatory&In-Reply-To=%3C200704200859.l3K8xMgb008728%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000087.html">
+   <LINK REL="Next"  HREF="000089.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r326 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r326%20-%20trunk/purgatory&In-Reply-To=%3C200704200859.l3K8xMgb008728%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r326 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Apr 20 10:59:22 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000087.html">[Al4nin-commits] r325 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000089.html">[Al4nin-commits] r327 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-20 10:59:13 +0200 (Fri, 20 Apr 2007)
+New Revision: 326
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+started adding literate documentation
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-19 17:08:36 UTC (rev 325)
++++ trunk/purgatory/Thrist.omg	2007-04-20 08:59:13 UTC (rev 326)
+@@ -40,7 +40,7 @@
+ 
+ kind Doe = Wi | So
+ 
+-data DooBiDoo :: Doe ~&gt; Doe ~&gt; * where
++data DooBiDoo :: Doe ~&gt; Doe ~&gt; *0 where
+   ToWi :: DooBiDoo a Wi
+   SoToWi :: DooBiDoo So Wi
+   WiToWi :: DooBiDoo Wi Wi
+@@ -48,13 +48,35 @@
+   SoTo :: DooBiDoo So b
+   ToSo :: DooBiDoo a So
+ 
++data ShuBiDoo :: Doe ~&gt; Doe ~&gt; *0 where
++  WiTo :: ShuBiDoo Wi a
+ 
++--$   @Definition { A @I thrist is a list-like datastructure
++--$ with three type indices. It enforces the invariants that
++--$ @List { @Item { it can only contain members of the same type with two type indices
++--$ and } @Item { that the type indices of consequtive members must match
++--$ up in the specific manner that the second type index of the
++--$ left member must equal the first type index of the right one. } } }
++
++--{
+ data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
+   Nil :: Thrist k a a
+   Cons :: k c b -&gt; Thrist k b a -&gt; Thrist k c a
+  deriving List(l)
++--}
+ 
++--$   @Note { The name thrist is a portmanteau of thread and list
++--$ conveying the essence of a list where the members' types are
++--$ threaded up. }
+ 
++{--@
++By means of the @Code { deriving List(l) } declaration
++we specified that thrists can be entered in @Omega using
++special syntax, making it amenable to reading from the
++listener, pattern matching and outputting.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at P</A> The following example session demonstrates this:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+-- at -</A>}
++
+ {- Example session:
+ 
+ prompt&gt; #[]l
+@@ -67,9 +89,16 @@
+  #[ToWi,WiToWi,ToSo]l : forall (a:Doe).Thrist DooBiDoo a So
+ prompt&gt; #[ToWi,WiToWi,ToSo,SoTo]l
+  #[ToWi,WiToWi,ToSo,SoTo]l : forall (a:Doe) (b:Doe).Thrist DooBiDoo a b
++prompt&gt; #[ToWi, WiTo]l
++ In the expression: Cons WiTo Nil
++ the result type: Thrist ShuBiDoo Wi b
++ was not what was expected: Thrist DooBiDoo Wi a
+ 
+ -}
+ 
++##test &quot;different constants: SchubiDoo   !=   DooBiDoo&quot;
++ fail0 = #[ToWi, WiTo]l
++
+ cat :: Thrist DooBiDoo a b -&gt; String
+ cat Nil = &quot;&quot;
+ cat (Cons ToWi r) = &quot;ToWi &quot; ++ cat r
+@@ -91,9 +120,11 @@
+ data Cat :: CatShape ~&gt; CatShape ~&gt; *0 where
+   Push :: a -&gt; Cat (Shape s) (Shape (RCons a s))
+   Dup :: Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
++--  Dig :: Pick Row Nat -&gt; Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
+   Print :: Cat (Shape (RCons t s)) (Shape s)
+   PopN :: Nat' (S n) -&gt; Cat (Shape {blow (S n) s}) (Shape s)
+   Swap :: Cat (Shape (RCons a (RCons b s))) (Shape (RCons b (RCons a s)))
++-- Perm :: Pick Row Nat -- TODO
+   Add :: Cat (Shape (RCons Int (RCons Int s))) (Shape (RCons Int s))
+   Greater :: Cat (Shape (RCons Int (RCons Int s))) (Shape (RCons Bool s))
+   If :: Thrist Cat (Shape s) (Shape t) -&gt;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000087.html">[Al4nin-commits] r325 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000089.html">[Al4nin-commits] r327 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#88">[ date ]</a>
+              <a href="thread.html#88">[ thread ]</a>
+              <a href="subject.html#88">[ subject ]</a>
+              <a href="author.html#88">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

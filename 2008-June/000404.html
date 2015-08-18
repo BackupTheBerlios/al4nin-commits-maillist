@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r641 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r641%20-%20trunk/purgatory&In-Reply-To=%3C200806111555.m5BFtwhZ025413%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000403.html">
+   <LINK REL="Next"  HREF="000405.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r641 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r641%20-%20trunk/purgatory&In-Reply-To=%3C200806111555.m5BFtwhZ025413%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r641 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun 11 17:55:58 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000403.html">[Al4nin-commits] r640 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000405.html">[Al4nin-commits] r642 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#404">[ date ]</a>
+              <a href="thread.html#404">[ thread ]</a>
+              <a href="subject.html#404">[ subject ]</a>
+              <a href="author.html#404">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-11 17:55:57 +0200 (Wed, 11 Jun 2008)
+New Revision: 641
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+more tweaks
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-11 15:43:41 UTC (rev 640)
++++ trunk/purgatory/Thrist.lout	2008-06-11 15:55:57 UTC (rev 641)
+@@ -163,7 +163,7 @@
+ Indeed we can, and the rest of this section shall explain how.
+ @PP
+ Our crucial observation from the introduction was that the types at the ends of the function
+-arrows must thread up, intuitively @FootNote { we reconcile the conflict between
++arrows must thread up, intuitively @FootNote { we reconcile the discrepancy between
+ the function arrow's @Haskell {(-&gt;)} direction and the customary
+ composition @Haskell {g . f} by considering a modified @I {reverse composition} }:
+ 
+@@ -181,7 +181,7 @@
+ @End @Haskell
+ 
+ The alert reader will have noticed that we have defined a proper GADT,
+-since the @Haskell {Nil} constructor is only inhabiting the @I diagonal
++since e.g. the @Haskell {Nil} constructor is only inhabiting the @I diagonal
+ of the @I {two-dimensional} parameter space.
+ @PP
+ We can now duplicate the @I feeling of function composition:
+@@ -202,7 +202,7 @@
+ function composition.
+ @PP
+ Not everything is lost, however. Close scrutiny reveals that our usage of
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Haskell</A> {(,)}{@FootNote { pronounced &quot;\&quot;pair\&quot;&quot;}},
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {(,)}{@FootNote { pronounced &quot;\&quot;pair\&quot;&quot;}}
+ is the culprit. If we could liberate ourselves from this
+ premature decision, we could gain back our hope.
+ @End @SubSection
+@@ -241,7 +241,7 @@
+ We shall explore some other interesting but sometimes futile
+ thrists later in the discussion. But now let's put the last missing
+ piece in place to show that an arrow thrist is strictly more general
+-than function composition, the @Haskell {runArrowThrist} function:
++than function composition. Here comes the @Haskell {runArrowThrist} function:
+ 
+ @LD @Haskell @Begin
+ runArrowThrist :: Thrist (-&gt;) b c -&gt; c -&gt; b
+@@ -253,7 +253,7 @@
+ This function now confirms the vague intuition that @Haskell {Nil} plays the r{@Char ocircumflex}le of
+ the neutral element of the arrow thrist, just like the identity function
+ plays the r{@Char ocircumflex}le of the neutral element in the monoid of composed functions.
+-We shall encounter this recurring fact as we proceed to our implementations.
++We shall encounter this recurring fact as we proceed to our examples' implementations.
+ @LP The definition of @Haskell { runArrowThrist } on a @Haskell { Cons } constructor
+ deserves some attention. We have not yet explicitly mentioned it, but range of
+ the function @Haskell { f } is existentially qualified, because it does not
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000403.html">[Al4nin-commits] r640 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000405.html">[Al4nin-commits] r642 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#404">[ date ]</a>
+              <a href="thread.html#404">[ thread ]</a>
+              <a href="subject.html#404">[ subject ]</a>
+              <a href="author.html#404">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

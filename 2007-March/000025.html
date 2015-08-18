@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r263 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r263%20-%20trunk/purgatory&In-Reply-To=%3C200703180128.l2I1S06e027021%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000024.html">
+   <LINK REL="Next"  HREF="000026.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r263 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r263%20-%20trunk/purgatory&In-Reply-To=%3C200703180128.l2I1S06e027021%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r263 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Mar 18 02:28:00 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000024.html">[Al4nin-commits] r262 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000026.html">[Al4nin-commits] r264 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-18 02:27:58 +0100 (Sun, 18 Mar 2007)
+New Revision: 263
+
+Modified:
+   trunk/purgatory/LLVM.omg
+Log:
+adding one more rule to findInLTypeRow makes intersectLTypeRows work
+
+Modified: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-03-18 01:18:01 UTC (rev 262)
++++ trunk/purgatory/LLVM.omg	2007-03-18 01:27:58 UTC (rev 263)
+@@ -140,16 +140,13 @@
+ 
+ intersectLTypeRows :: Row HasLType ~&gt; Row HasLType ~&gt; Row HasLType
+ { intersectLTypeRows RNil rhs } = RNil
+--- { intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l t) rest2) } = RCons (HasL l t) { intersectLTypeRows rest1 rest2 }
+---{ intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l2 t2) rest2) }
+---  = { appendLTypeRows { findInLTypeRow (HasL l t) rest2 }
+---                      { intersectLTypeRows (RCons (HasL l t) rest1) rest2 } }
+-{ intersectLTypeRows (RCons (HasL l t) rest1) rhs }
+-  = { appendLTypeRows { findInLTypeRow (HasL l t) rhs }
++{ intersectLTypeRows (RCons a rest1) rhs }
++  = { appendLTypeRows { findInLTypeRow a rhs }
+                       { intersectLTypeRows rest1 rhs } }
+ 
+ findInLTypeRow :: HasLType ~&gt; Row HasLType ~&gt; Row HasLType
+ { findInLTypeRow a (RCons a rest) } = RCons a { findInLTypeRow a rest }
++{ findInLTypeRow a (RCons a' rest) } = { findInLTypeRow a rest }
+ { findInLTypeRow a RNil } = RNil
+ 
+ appendLTypeRows :: Row HasLType ~&gt; Row HasLType ~&gt; Row HasLType
+@@ -166,6 +163,8 @@
+  Wum :: Wum RNil
+  Wum2 :: Wum (RCons (HasL `hh LFloat) RNil)
+ 
+-a :: Wum { intersectLTypeRows (RCons (HasL `hh LFloat) RNil) (RCons (HasL `hh LFloat) RNil) }
++--a :: Wum { intersectLTypeRows (RCons (HasL `hh LFloat) RNil) (RCons (HasL `hh LFloat) RNil) }
++--a :: Wum { intersectLTypeRows (RCons (HasL `hh LFloat) RNil) (RCons (HasL `gg LFloat) (RCons (HasL `hh LFloat) RNil)) }
++a :: Wum { intersectLTypeRows (RCons (HasL `gg LFloat) (RCons (HasL `hh LFloat) RNil)) (RCons (HasL `hh LFloat) RNil) }
+ --a :: Wum { intersectLTypeRows (RCons (HasL `hh LFloat) RNil) RNil }
+ a = Wum2
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000024.html">[Al4nin-commits] r262 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000026.html">[Al4nin-commits] r264 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

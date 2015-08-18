@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r494 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r494%20-%20trunk/purgatory&In-Reply-To=%3C200710291211.l9TCBNK8006217%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000255.html">
+   <LINK REL="Next"  HREF="000257.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r494 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r494%20-%20trunk/purgatory&In-Reply-To=%3C200710291211.l9TCBNK8006217%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r494 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Oct 29 13:11:23 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000255.html">[Al4nin-commits] r493 - trunk/purgatory/db
+</A></li>
+        <LI>Next message: <A HREF="000257.html">[Al4nin-commits] r495 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-29 13:11:15 +0100 (Mon, 29 Oct 2007)
+New Revision: 494
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+reference other papers
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-10-29 11:37:08 UTC (rev 493)
++++ trunk/purgatory/Thrist.lout	2007-10-29 12:11:15 UTC (rev 494)
+@@ -839,7 +839,7 @@
+     C { SE:: @Node SouthEast }
+ }
+ 
+-||1fx { Base -2p } @Font @Tbl
++||1f { Base -2p } @Font @Tbl
+     aformat { @Cell A }
+ {
+ @Rowa
+@@ -1143,8 +1143,8 @@
+ @Considerations { a word about Unimo: does compilation of the unimo value (staging) give the performance back? probably not,
+ the values are included into the data structure, each monadic &quot;do{}&quot; needs to be compiled. In our context the thrists (Parser)
+ do not contain &quot;external&quot; values, so no recompilation is necessary. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Comonads?, see paper @Cite {heunenJacobs},
+-Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { Comonads?, see paper @Cite { $heunenjacobs.monoid },
++Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming @Cite { $uustaluvene05.dataflow } }
+ 
+ @End @SubSection
+ 
+@@ -1176,10 +1176,10 @@
+ his work only as the datatypes modelling the @I { effect basis } of monads, while they are not needed
+ for the general case.
+ @PP
+-Chris Heunen and Bart Jacobs' work @Cite {heunenJacobs} on the connection of Arrows and Monads and their category theoretical
++Chris Heunen and Bart Jacobs' work @Cite { $heunenjacobs.monoid } on the connection of Arrows and Monads and their category theoretical
+ formalisation is of relevance because it reveals the mathematical structure behind these constructs.
+ Arrows appeared in the general mindset as a pragmatic approach to deal with a certain class of parsers
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Cite</A> {hughes2000} that did not fit into the monadic framework.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Cite</A> { $hughes00.arrows } that did not fit into the monadic framework.
+ Nilsson provides a method for optimizing limited cases of arrow combinator libraries using GADTs. He
+ is still bound to the limitations of the amesiac nature of function composition inside the arrow
+ framework for functional reactive programming, but seem to gain some noticeable gains in performance
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000255.html">[Al4nin-commits] r493 - trunk/purgatory/db
+</A></li>
+	<LI>Next message: <A HREF="000257.html">[Al4nin-commits] r495 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#256">[ date ]</a>
+              <a href="thread.html#256">[ thread ]</a>
+              <a href="subject.html#256">[ subject ]</a>
+              <a href="author.html#256">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r398 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r398%20-%20trunk/purgatory&In-Reply-To=%3C200706271032.l5RAWKNm029062%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000159.html">
+   <LINK REL="Next"  HREF="000161.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r398 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r398%20-%20trunk/purgatory&In-Reply-To=%3C200706271032.l5RAWKNm029062%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r398 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun 27 12:32:20 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000159.html">[Al4nin-commits] r397 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000161.html">[Al4nin-commits] r399 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#160">[ date ]</a>
+              <a href="thread.html#160">[ thread ]</a>
+              <a href="subject.html#160">[ subject ]</a>
+              <a href="author.html#160">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-27 12:32:13 +0200 (Wed, 27 Jun 2007)
+New Revision: 398
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+more @Haskell-ization
+
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-06-26 15:39:40 UTC (rev 397)
++++ trunk/purgatory/Thrist.lout	2007-06-27 10:32:13 UTC (rev 398)
+@@ -386,7 +386,7 @@
+ }
+ In similar spirit we have to rewrite the other cases too:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell operators {Regular} {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell operators {Base} {
+ interpret' [Pop; rest]l st = do
+ 	(a, st') &lt;- st
+ 	interpret' rest $ return st'
+@@ -549,46 +549,39 @@
+ But first let's be clear about what we aim at. We demonstrate the process of
+ parsing by the example of a lexer with semantic evaluation. Our tokens
+ are the various literal numerals like they occur in the C language:
+-
+-0xcafeBabe 0XE0UL 123456L
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {0xCafeBabe 0XE0UL 123456L}
+ These are the steps we wish to proceed on the second token:
+ 
+ 0) token as read from character stream:
+ 
+-0XE0UL
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F 0XE0UL
+ 
+-1) We match the &quot;0X&quot; prefix
+-
+-0XE0UL
++1) We match the @F &quot;0X&quot; prefix:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}E0UL}
+ --
+-
+-2) We expect 0 or more hexadecimal characters (we come to the explanation of 0 later)
+-
+-0XE0UL
+---++
+-
++2) We expect zero or more hexadecimal characters (we come to the explanation of why zero, later)
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@Box E0}UL}
+ 3) We fold the hex string found to a decimal integer
+-
+-0XE0UL
+ --++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@Box {@Box E0}}UL}
++--++
+   vv
+ 
+ 4) We look for optional signedness hint
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@Box {@Box E0}}{@Box U}L}
+ 
+-0XE0UL
+ --++u
+   vv
+ 
+ 5) We look for optional storage size hint
+ 
+-0XE0UL
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F {{@Box 0X}{@Box {@Box E0}}{@Box U}{@Box L}}
+ --++us
+   vv
+ 
+ 6) we encapsulate the distilled information into a token datatype
+ 
+-0XE0UL
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @F @Box {{@Box 0X}{@Box {@Box E0}}{@Box U}{@Box L}}
+ --++us
+   vv
+ tttttt
+@@ -650,37 +643,39 @@
+ 
+ First, we use
+ 
+-Group [Atom '0', Atom 'X']
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> operators {Base} {Group [Atom '0', Atom 'X']}
+ 
+-to match the prefix of the string &quot;0XE0UL&quot; and produce (&quot;0X&quot;, &quot;E0UL&quot;) :: ([Char], [Char])
++to match the prefix of the string @Haskell {&quot;0XE0UL&quot;} and
++produce @Haskell {(&quot;0X&quot;, &quot;E0UL&quot;) :: ([Char], [Char])}
+ 
+ then we can discard the prefix because we know we have to do base 16 conversion later,
+ we can use
+ 
+-Sure snd
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {Sure snd}
+ 
+-to do this obtaining &quot;E0UL&quot; :: [Char]. Then
++to do this obtaining @Haskell {&quot;E0UL&quot; :: [Char]}. Then
+ 
+-Rep1 $ Try hexdigit
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> operators {Base} {Rep1 $ Try hexdigit}
+ 
+ will split off two more characters, converting them to hex values on the way, we obtain ([0, 14], &quot;UL&quot;) :: ([Int], [Char]). We cannot
+ discard either component, so we proceed in parallel with
+ 
+-Par (CataPlus foldHex)
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell operators {Base} {Par (CataPlus foldHex)
+        (Wrap [Rep1 $ Atom 'U', Par (Sure id) (Rep1 $ Atom 'L')]l)
++}
+ 
+-the first component produces 14, the second will proceed by splutting of any 'U' and then
++the first component produces 14, the second will proceed by splitting of any 'U' and then
+ splitting off any L producing a triple (&quot;U&quot;, (&quot;L&quot;, &quot;&quot;)).
+ 
+-At this stage we have (14, (&quot;U&quot;, (&quot;L&quot;, &quot;&quot;))) :: (Int, ([Char], ([Char], [Char]))).
++At this stage we have @Haskell {(14, (&quot;U&quot;, (&quot;L&quot;, &quot;&quot;))) :: (Int, ([Char], ([Char], [Char])))}.
+ 
+ Finally we feed this into
+ 
+-Try numberToken
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {Try numberToken}
+ 
+ that verifies the correct usage of Us and Ls, and creates a pair
+ 
+-(Number 14 True True, &quot;&quot;) :: (Token, [Char])
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {(Number 14 True True, &quot;&quot;) :: (Token, [Char])}
+ 
+ of the parsed token and the rest of the input.
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000159.html">[Al4nin-commits] r397 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000161.html">[Al4nin-commits] r399 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#160">[ date ]</a>
+              <a href="thread.html#160">[ thread ]</a>
+              <a href="subject.html#160">[ subject ]</a>
+              <a href="author.html#160">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

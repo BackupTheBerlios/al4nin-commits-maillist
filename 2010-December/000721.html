@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r959 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r959%20-%20trunk/purgatory&In-Reply-To=%3C20101217184641.CC733480BFF%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000720.html">
+   <LINK REL="Next"  HREF="000722.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r959 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r959%20-%20trunk/purgatory&In-Reply-To=%3C20101217184641.CC733480BFF%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r959 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 17 19:46:41 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000720.html">[Al4nin-commits] r958 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000722.html">[Al4nin-commits] r960 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-17 19:46:41 +0100 (Fri, 17 Dec 2010)
+New Revision: 959
+
+Modified:
+   trunk/purgatory/Evidence.omg
+Log:
+strengthen coherence by exchanging tags
+
+Modified: trunk/purgatory/Evidence.omg
+===================================================================
+--- trunk/purgatory/Evidence.omg	2010-12-17 16:08:41 UTC (rev 958)
++++ trunk/purgatory/Evidence.omg	2010-12-17 18:46:41 UTC (rev 959)
+@@ -9,15 +9,15 @@
+   Typed :: Value -&gt; Value -&gt; Value
+  deriving syntax(va) LeftList(Sole, App) Pair(Typed)
+ 
+-data Raw :: * ~&gt; * ~&gt; * where
+-  Def :: Value -&gt; Raw Value Value
+-  Annotated :: Value -&gt; Value -&gt; Raw Value Value
++data Raw :: Tag ~&gt; * ~&gt; * ~&gt; * where
++  Def :: Value -&gt; Raw t Value Value
++  Annotated :: Value -&gt; Value -&gt; Raw t Value Value
+  deriving syntax(ra) Pair(Annotated)
+ 
+ -- well-formedness: check that names are always defined at the point of reference
+ 
+-data WellFormed :: Sofar Tag ~&gt; Sofar Tag ~&gt; * where
+-  DefFormed :: Raw Value Value -&gt; NamesSofar [r; n]sf -&gt; WellFormed r [r; n]sf
++data WellFormed :: Tag ~&gt; Sofar Tag ~&gt; Sofar Tag ~&gt; * where
++  DefFormed :: Raw n Value Value -&gt; NamesSofar [r; n]sf -&gt; WellFormed n r [r; n]sf
+ 
+ data Sofar :: *1 ~&gt; *1 where
+   No :: Sofar t
+@@ -47,9 +47,9 @@
+   At :: Nat' l -&gt; WellLevelled l
+ 
+ -- representation of contexts with names
+-data VerboseContext :: (a ~&gt; a ~&gt; *) ~&gt; a ~&gt; a ~&gt; * where
++data VerboseContext :: (Tag ~&gt; a ~&gt; a ~&gt; *) ~&gt; a ~&gt; a ~&gt; * where
+   E :: VerboseContext k a a
+-  Q :: Label n -&gt; k a b -&gt; VerboseContext k b c -&gt; VerboseContext k a c
++  Q :: Label n -&gt; k n a b -&gt; VerboseContext k b c -&gt; VerboseContext k a c
+  deriving syntax(ve) Record(E, Q)
+ 
+ -- Examples of VerboseContext
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000720.html">[Al4nin-commits] r958 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000722.html">[Al4nin-commits] r960 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#721">[ date ]</a>
+              <a href="thread.html#721">[ thread ]</a>
+              <a href="subject.html#721">[ subject ]</a>
+              <a href="author.html#721">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

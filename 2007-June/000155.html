@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r393 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r393%20-%20trunk/purgatory&In-Reply-To=%3C200706231626.l5NGQec3000251%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000154.html">
+   <LINK REL="Next"  HREF="000156.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r393 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r393%20-%20trunk/purgatory&In-Reply-To=%3C200706231626.l5NGQec3000251%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r393 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Jun 23 18:26:40 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000154.html">[Al4nin-commits] r392 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000156.html">[Al4nin-commits] r394 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#155">[ date ]</a>
+              <a href="thread.html#155">[ thread ]</a>
+              <a href="subject.html#155">[ subject ]</a>
+              <a href="author.html#155">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-23 18:26:40 +0200 (Sat, 23 Jun 2007)
+New Revision: 393
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+define Cata{Star|Plus} with {Sure|Try}
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-06-23 12:39:40 UTC (rev 392)
++++ trunk/purgatory/ThristParser.omg	2007-06-23 16:26:40 UTC (rev 393)
+@@ -53,9 +53,9 @@
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])  -- consume as many as matches, return rest
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])       -- all must match, return rest
+ -- CataStar can be implemented by Sure
+-  CataStar :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)    -- collapse zero or more elements
++--  CataStar :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)    -- collapse zero or more elements
+ -- CataPlus can be implemented by Try
+-  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)    -- collapse one or more elements
++--  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)    -- collapse one or more elements
+   Wrap :: Thrist Parse a b -&gt; Parse a b              -- treat a chain of parses as one
+   Or :: Parse a b -&gt; Parse a b -&gt; Parse a b          -- match first or if it doesn't, the second
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
+@@ -134,10 +134,10 @@
+       parseGroup _ [] = Nothing            -- input too short
+       parseGroup (p:ps) (a:as) = do { b &lt;- parse [p]l a; (bs, rest) &lt;- parseGroup ps as; return (b:bs, rest) }
+ 
+-parse [CataStar f; r]l (a, over) = parse r ((f a), over)
++---parse [CataStar f; r]l (a, over) = parse r ((f a), over)
+ 
+-parse [CataPlus _; _]l ([], _) = Nothing
+-parse [CataPlus f; r]l (a, over) = parse r ((f a), over)
++---parse [CataPlus _; _]l ([], _) = Nothing
++---parse [CataPlus f; r]l (a, over) = parse r ((f a), over)
+ 
+ parse [Wrap thr; r]l a = do { a' &lt;- parse thr a; parse r a' } where monad maybeM
+ 
+@@ -174,6 +174,16 @@
+     reverse [] acc = acc
+     reverse (a:as) acc = reverse as (a:acc)
+ 
++
++cataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++cataPlus f = Try inner
++         where inner ([], _) = Nothing
++               inner (as, c) = Just (f as, c)
++
++cataStar :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
++cataStar f = Sure (\(as, c) -&gt; (f as, c))
++
++
+ -- ##########################################
+ -- ############ pattern compiler ############
+ -- ##########################################
+@@ -209,9 +219,9 @@
+ t1 = parse [Seq (Wrap [Rep1 $ letter 'a', proper]l) (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
+ t1a = parse [Seq (proper' $ Rep1 $ letter 'a') (Seq (Rep1 $ letter 'b') (Rep1 (letter 'c')))]l &quot;abbc&quot;
+ 
+-num = [Rep1 digit, CataPlus (base 10)]l
+-hexnum = [Rep1 hexdigit, CataPlus (base 16)]l
+-binnum = [Rep1 bindigit, CataPlus (base 2)]l
++num = [Rep1 digit, cataPlus (base 10)]l
++hexnum = [Rep1 hexdigit, cataPlus (base 16)]l
++binnum = [Rep1 bindigit, cataPlus (base 2)]l
+ 
+ 
+ chexnum = [Seq (Seq1 (letter '0') (alts letter &quot;xX&quot;)) (Wrap hexnum), Sure (snd . fst)]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000154.html">[Al4nin-commits] r392 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000156.html">[Al4nin-commits] r394 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#155">[ date ]</a>
+              <a href="thread.html#155">[ thread ]</a>
+              <a href="subject.html#155">[ subject ]</a>
+              <a href="author.html#155">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

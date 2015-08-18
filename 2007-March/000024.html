@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r262 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r262%20-%20trunk/purgatory&In-Reply-To=%3C200703180118.l2I1I3fr026299%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000023.html">
+   <LINK REL="Next"  HREF="000025.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r262 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r262%20-%20trunk/purgatory&In-Reply-To=%3C200703180118.l2I1I3fr026299%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r262 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Mar 18 02:18:03 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000023.html">[Al4nin-commits] r261 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000025.html">[Al4nin-commits] r263 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#24">[ date ]</a>
+              <a href="thread.html#24">[ thread ]</a>
+              <a href="subject.html#24">[ subject ]</a>
+              <a href="author.html#24">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-18 02:18:01 +0100 (Sun, 18 Mar 2007)
+New Revision: 262
+
+Modified:
+   trunk/purgatory/LLVM.omg
+Log:
+broke up intersectLTypeRows into more digestable chunks
+
+Modified: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-03-18 00:10:17 UTC (rev 261)
++++ trunk/purgatory/LLVM.omg	2007-03-18 01:18:01 UTC (rev 262)
+@@ -45,9 +45,8 @@
+ kind HasLType :: *1 where
+   HasL :: Tag ~&gt; Type FstClass Returnable ~&gt; HasLType
+ 
+-i1 :: Type FstClass Returnable
+---{i1} = LInt *1
+--- type i1 = LInt #1
++--i1 :: a ~&gt; Type FstClass Returnable
++-- {i1 g} = LInt #1
+ 
+ kind BB = Entry | Normal
+ 
+@@ -141,14 +140,23 @@
+ 
+ intersectLTypeRows :: Row HasLType ~&gt; Row HasLType ~&gt; Row HasLType
+ { intersectLTypeRows RNil rhs } = RNil
+-{ intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l t) rest2) } = RCons (HasL l t) { intersectLTypeRows rest1 rest2 }
+-{ intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l2 t2) rest2) } = { intersectLTypeRows (RCons (HasL l t) rest1) rest2 }
++-- { intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l t) rest2) } = RCons (HasL l t) { intersectLTypeRows rest1 rest2 }
++--{ intersectLTypeRows (RCons (HasL l t) rest1) (RCons (HasL l2 t2) rest2) }
++--  = { appendLTypeRows { findInLTypeRow (HasL l t) rest2 }
++--                      { intersectLTypeRows (RCons (HasL l t) rest1) rest2 } }
++{ intersectLTypeRows (RCons (HasL l t) rest1) rhs }
++  = { appendLTypeRows { findInLTypeRow (HasL l t) rhs }
++                      { intersectLTypeRows rest1 rhs } }
+ 
++findInLTypeRow :: HasLType ~&gt; Row HasLType ~&gt; Row HasLType
++{ findInLTypeRow a (RCons a rest) } = RCons a { findInLTypeRow a rest }
++{ findInLTypeRow a RNil } = RNil
+ 
+-intersectTypeRows :: Row HasType ~&gt; Row HasType ~&gt; Row HasType
+-{ intersectTypeRows RNil rhs } = RNil
+-{ intersectTypeRows (RCons (Has l t) rest1) (RCons (Has l t) rest2) } = RCons (Has l t) { intersectTypeRows rest1 rest2 }
++appendLTypeRows :: Row HasLType ~&gt; Row HasLType ~&gt; Row HasLType
++{ appendLTypeRows RNil rhs } = rhs
++{ appendLTypeRows (RCons head rest) rhs } = RCons head { appendLTypeRows rest rhs }
+ 
++
+ prefix :: Nat ~&gt; Nat ~&gt; Nat
+ { prefix Z Z } = Z
+ { prefix (S a) (S b) } = S {prefix a b}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000023.html">[Al4nin-commits] r261 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000025.html">[Al4nin-commits] r263 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#24">[ date ]</a>
+              <a href="thread.html#24">[ thread ]</a>
+              <a href="subject.html#24">[ subject ]</a>
+              <a href="author.html#24">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

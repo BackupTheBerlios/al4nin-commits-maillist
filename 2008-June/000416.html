@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r653 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r653%20-%20trunk/purgatory&In-Reply-To=%3C200806231517.m5NFHXrh019343%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000415.html">
+   <LINK REL="Next"  HREF="000417.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r653 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r653%20-%20trunk/purgatory&In-Reply-To=%3C200806231517.m5NFHXrh019343%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r653 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Jun 23 17:17:33 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000415.html">[Al4nin-commits] r652 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000417.html">[Al4nin-commits] r654 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#416">[ date ]</a>
+              <a href="thread.html#416">[ thread ]</a>
+              <a href="subject.html#416">[ subject ]</a>
+              <a href="author.html#416">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-23 17:17:31 +0200 (Mon, 23 Jun 2008)
+New Revision: 653
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+move table so that it appears on the right page
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-23 15:13:57 UTC (rev 652)
++++ trunk/purgatory/Thrist.lout	2008-06-23 15:17:31 UTC (rev 653)
+@@ -1138,61 +1138,7 @@
+   @Title { Connection to Arrows and Monads }
+ @Begin
+ @PP
+-Since arrows in the Haskell world also originated from the generalization of function
+-composition it is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
+-our Thrist datastructure. Obviously any instance of the Haskell type class @Haskell { Arrow } can
+-be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
+-function that is rather canonic, and will be given in the Appendix. This semantics obviously
+-guarantees the arrow laws @Cite { $hughes00.arrows }. On the other hand thrists are not always
+-easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
+-to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
+-mandates a function argument for the method @Haskell { arr }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell @Cite { $paterson01.notation }}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+-Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library,
+-but he only considers the identity function as a special case. He observes a substantial
+-speedup in microbenchmarks when the optimizer is able to discover and short-circuit
+-the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
+-e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
+-significant win in using the former, when compiling to @Haskell { Code } the underlying
+-metaprogramming system in @Omega presumably possesses all the information to recover
+-the identity function from the @Omega interpreter's internals. In case of
+-translation to a different programming system every function inside of @Haskell { Try } and @Haskell { Sure }
+-constructors would need auxiliary denotation anyway, and could be optimized
+-either on export or inside of the external system itself.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+-Monads can also be regarded as a specialization to arrows, so we expect that @Haskell { Thrist (Monad' T) }
+-can be canonically derived. Here @Haskell { Monad' T a b } represents the type of a monadic actions
+-either starting afresh and resulting a monadic value @Haskell { T b } or representing a Kleisli arrow
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Haskell</A> { a -&gt; T b }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> We can define the adapter @Haskell { Monad' } to have three parameters, the first fixing the @Haskell { Monad }
+-and the last two to accomodate for the @Haskell { Thrist } interface:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TODO</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LD</A> @Haskell {
+-data Monad' :: (* ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
+-  Feed :: m b -&gt; Monad' m a b
+-  Digest :: (a -&gt; m b) -&gt; Monad' m a b
+-}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a value of type @Haskell { Thrist (Monad' T) } corresponds to the @F { do ... } syntactic sugar expression in Haskell }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Unimo? for ensuring that the interpreter obeys monadic semantics,
+- in an Appendix: use Unimo to constuct an @Omega Monad' -&gt; Monad function, hmm this is not correct, unimo :: ??? -&gt; Monad } 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a word about Unimo: does compilation of the unimo value (staging) give the performance back? probably not,
+-the values are included into the data structure, each monadic &quot;do{}&quot; needs to be compiled. In our context the thrists (Parser)
+-do not contain &quot;external&quot; values, so no recompilation is necessary. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Comonads?, see paper @Cite { $heunenjacobs.monoid },
+-Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming @Cite { $uustaluvene05.dataflow } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { since thrists do not provide a binding construct like the do-notation
+-one has to resort to point-free passing of intermediate values (i.e. returning tuples) }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Control.Applicative ? }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at End</A> @SubSection
+ 
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at SubSection</A>
+-  @Title { Connection to Categories }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+-
+ @Figure
+     @Tag { binary }
+     @Caption { Mathematical structures with binary inner operation }
+@@ -1257,7 +1203,60 @@
+     F { no }
+ }
+ 
++Since arrows in the Haskell world also originated from the generalization of function
++composition it is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
++our Thrist datastructure. Obviously any instance of the Haskell type class @Haskell { Arrow } can
++be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
++function that is rather canonic, and will be given in the Appendix. This semantics obviously
++guarantees the arrow laws @Cite { $hughes00.arrows }. On the other hand thrists are not always
++easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
++to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
++mandates a function argument for the method @Haskell { arr }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell @Cite { $paterson01.notation }}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library,
++but he only considers the identity function as a special case. He observes a substantial
++speedup in microbenchmarks when the optimizer is able to discover and short-circuit
++the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
++e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
++significant win in using the former, when compiling to @Haskell { Code } the underlying
++metaprogramming system in @Omega presumably possesses all the information to recover
++the identity function from the @Omega interpreter's internals. In case of
++translation to a different programming system every function inside of @Haskell { Try } and @Haskell { Sure }
++constructors would need auxiliary denotation anyway, and could be optimized
++either on export or inside of the external system itself.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Monads can also be regarded as a specialization to arrows, so we expect that @Haskell { Thrist (Monad' T) }
++can be canonically derived. Here @Haskell { Monad' T a b } represents the type of a monadic actions
++either starting afresh and resulting a monadic value @Haskell { T b } or representing a Kleisli arrow
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> { a -&gt; T b }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A> We can define the adapter @Haskell { Monad' } to have three parameters, the first fixing the @Haskell { Monad }
++and the last two to accomodate for the @Haskell { Thrist } interface:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at TODO</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++data Monad' :: (* ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
++  Feed :: m b -&gt; Monad' m a b
++  Digest :: (a -&gt; m b) -&gt; Monad' m a b
++}
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { a value of type @Haskell { Thrist (Monad' T) } corresponds to the @F { do ... } syntactic sugar expression in Haskell }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { Unimo? for ensuring that the interpreter obeys monadic semantics,
++ in an Appendix: use Unimo to constuct an @Omega Monad' -&gt; Monad function, hmm this is not correct, unimo :: ??? -&gt; Monad } 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { a word about Unimo: does compilation of the unimo value (staging) give the performance back? probably not,
++the values are included into the data structure, each monadic &quot;do{}&quot; needs to be compiled. In our context the thrists (Parser)
++do not contain &quot;external&quot; values, so no recompilation is necessary. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { Comonads?, see paper @Cite { $heunenjacobs.monoid },
++Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming @Cite { $uustaluvene05.dataflow } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { since thrists do not provide a binding construct like the do-notation
++one has to resort to point-free passing of intermediate values (i.e. returning tuples) }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { Control.Applicative ? }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSection
+ 
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSection</A>
++  @Title { Connection to Categories }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ When looking at the Wikipedia page @Cite {$wikipedia.groupoid} that explains mathematical
+ structures possessing a binary operation, we can make an attempt to gain some insight
+ of how thrists can be fitted in a niche. Obviously, the @I associativity property holds,
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000415.html">[Al4nin-commits] r652 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000417.html">[Al4nin-commits] r654 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#416">[ date ]</a>
+              <a href="thread.html#416">[ thread ]</a>
+              <a href="subject.html#416">[ subject ]</a>
+              <a href="author.html#416">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r695 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r695%20-%20trunk/purgatory&In-Reply-To=%3C200807100915.m6A9F6mr006681%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000457.html">
+   <LINK REL="Next"  HREF="000459.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r695 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r695%20-%20trunk/purgatory&In-Reply-To=%3C200807100915.m6A9F6mr006681%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r695 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jul 10 11:15:06 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000457.html">[Al4nin-commits] r694 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000459.html">[Al4nin-commits] r696 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-10 11:15:05 +0200 (Thu, 10 Jul 2008)
+New Revision: 695
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+remove CataPlus, implement rest of numberToken
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-09 22:20:43 UTC (rev 694)
++++ trunk/purgatory/Thrist.lout	2008-07-10 09:15:05 UTC (rev 695)
+@@ -743,12 +743,11 @@
+ @ListItem { we match the @F &quot;0X&quot; prefix:
+ @ID @F {{@Box 0X}E0UL}
+ }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> { we expect zero or more hexadecimal characters (we come to the explanation of why zero, next):
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ListItem</A> { we expect zero or more hexadecimal characters:
+ @ID @F {{@Box 0X}{@Box E0}UL}
+ }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> { we fold the hex string found to a decimal integer:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ListItem</A> { we check for a non-empty hex string and fold it to a decimal integer:
+ @ID @F {{@Box 0X}{@CurveBox {@Box E0}}UL}
+-(at this step we would fail if the string had been empty)
+ }
+ @ListItem { we look for an optional signedness hint:
+ @ID @F {{@Box 0X}{@CurveBox {@Box E0}}{@Box U}L}
+@@ -789,7 +788,6 @@
+   Rep1 :: Parse a b -&gt; Parse [a] ([b], [a])
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])
+---  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
+   Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
+   Wrap :: Thrist Parse a b -&gt; Parse a b
+ @End @Haskell
+@@ -805,7 +803,6 @@
+ @ListItem {  @Haskell {(Rep1 (Atom 'X'))} matches as many capital @Haskell {'X'}s as possible and returns a pair consisting the matched and unconsumed portions }
+ @ListItem {  @Haskell {(Rep part)} similarly tries to match as many @Haskell {part}s in the input's prefix as possible }
+ @ListItem {  @Haskell {(Group [Atom 'a', Atom 'b'])} just matches a prefix @I {''ab``} in the input, returning it in a pair along with the unconsumed portion, or fails otherwise }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ListItem</A> {  @Haskell {(CataPlus foldDec)} consumes a pair of a list of digits and some other data, if the list is empty it fails, otherwise it folds the sequence to a number, then returns the pair of this number and the other data, which remains unchanged }
+ @ListItem {  @Haskell {(Par fst snd)} runs @Haskell {fst} and @Haskell {snd} on the two components of the pair, failing if any of them fails }
+ @ListItem {  @Haskell {(Wrap parseThr)} simply allows to treat a thrist as a @Haskell {Parse}. }
+ @EndList
+@@ -889,7 +886,10 @@
+ 
+ numberToken :: (Int, (String, (String, String))) -&gt; Maybe (Token, String)
+ numberToken (i, (&quot;&quot;, (&quot;&quot;, rest))) = Just (Number i False False, rest)
+--- #### TODO others
++numberToken (i, (&quot;U&quot;, (&quot;&quot;, rest))) = Just (Number i True False, rest)
++numberToken (i, (&quot;&quot;, (&quot;L&quot;, rest))) = Just (Number i False True, rest)
++numberToken (i, (&quot;U&quot;, (&quot;L&quot;, rest))) = Just (Number i True True, rest)
++numberToken _ = Nothing
+ @End @Haskell
+ 
+ Putting all together we can write:
+@@ -1862,7 +1862,6 @@
+   Rep1 :: Parse a b -&gt; Parse [a] ([b], [a])
+   Rep :: Parse [a] (b, [a]) -&gt; Parse [a] ([b], [a])
+   Group :: [Parse a b] -&gt; Parse [a] ([b], [a])
+---  CataPlus :: ([a] -&gt; b) -&gt; Parse ([a], c) (b, c)
+   Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
+   Wrap :: Thrist Parse a b -&gt; Parse a b
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000457.html">[Al4nin-commits] r694 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000459.html">[Al4nin-commits] r696 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

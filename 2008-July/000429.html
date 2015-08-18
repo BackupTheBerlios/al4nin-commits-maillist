@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r666 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r666%20-%20trunk/purgatory&In-Reply-To=%3C200807031515.m63FFf3O015697%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000428.html">
+   <LINK REL="Next"  HREF="000430.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r666 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r666%20-%20trunk/purgatory&In-Reply-To=%3C200807031515.m63FFf3O015697%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r666 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jul  3 17:15:41 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000428.html">[Al4nin-commits] r665 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000430.html">[Al4nin-commits] r667 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#429">[ date ]</a>
+              <a href="thread.html#429">[ thread ]</a>
+              <a href="subject.html#429">[ subject ]</a>
+              <a href="author.html#429">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-03 17:15:40 +0200 (Thu, 03 Jul 2008)
+New Revision: 666
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+more corrections
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-02 14:01:01 UTC (rev 665)
++++ trunk/purgatory/Thrist.lout	2008-07-03 15:15:40 UTC (rev 666)
+@@ -16,6 +16,7 @@
+ def @Prompt left input right output { { Helvetica Base -1p } @Font { prompt&gt; @Haskell { input } @PP { output } } }
+ def @Omega { {@I {@Sym Omega}}mega }
+ def @Cat { { Helvetica Base -1p } @Font Cat }
++def @CLang { { Helvetica Base -1p } @Font C }
+ 
+ @Report
+   @CoverSheet { No }
+@@ -279,14 +280,14 @@
+ @End @Section
+ 
+ @Section
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Three Practical Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Three Practical @Haskell { Thrist }s }
+ @Begin
+ @PP
+ 
+ Now that we have defined the @Haskell { Thrist } datatype and gave a sufficiently
+ generic interface to cover nontrivial cases, time has come to look for
+ real-world applications. Specifically we shall describe a combinator
+-library for creating ASTs of @Cat, a statically typed stack-oriented
++library for creating ASTs of @Cat, a statically typed &quot;stack-oriented&quot;
+ language @Cite { $cat.intro }. As a second application we shall draft a parser
+ combinator library that admits various implementation strategies. We shall also
+ sketch the use of thrists in transition arrows of state machines to obtain certain
+@@ -308,8 +309,8 @@
+ The semantics of procedure calls is defined as the insertion of the
+ called procedure's contents to the point of the invocation.
+ @PP
+-Let's begin with the definition of the @Haskell {Cat} datastucture, that will
+-serve as the first parameter to Thrist. Clearly it should be
++Let's begin with the definition of the @Haskell {Cat} data-stucture, that will
++serve as the first parameter to @Haskell {Thrist}. Clearly it should be
+ parametrized with two types. Naturally we choose the
+ first type parameter to describe the shape of the stack before
+ and the second parameter after the @Haskell {Cat} primitive has been
+@@ -351,7 +352,7 @@
+ 
+ 
+ @SubSubSection
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Making Use of @Omega{}'s Features }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Making Use of {@Omega}'s Features }
+ @Begin
+ @PP
+ We shall from now on make use of a feature of the @Omega language
+@@ -578,7 +579,7 @@
+ }
+ 
+ @LD @Heading { Interpreting Primitives }
+-We finally have all ingredients together to embark on putting down the @Haskell { interpret }
++We finally have all ingredients together to embark on putting down the @Haskell { interpret' }
+ case on @Haskell { Prim }. The key idea is here to pattern match on the representation value in order
+ to incrementally saturate the @Omega function present in the primitive:
+ 
+@@ -601,7 +602,7 @@
+ We demonstrate the technique for a selection of the @Haskell {Cat} primitives
+ only.
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell operators {Base} @Begin
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell operators {Base} @Begin
+ compile' :: Thrist Cat a b -&gt; Code (IO a -&gt; IO b)
+ compile' [Print; rest]l = [| \st -&gt; do
+         (a, st') &lt;- st
+@@ -675,7 +676,7 @@
+ 
+ 
+ @SubSection
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Application two: a GADT-based Parse Thrist }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Application two: a GADT-based Parser Thrist }
+ @Begin
+ @PP
+ Traditional monadic parser combinator libraries (like Parsec) suffer from the
+@@ -696,7 +697,7 @@
+ 
+ But first let's be clear about what we aim at. We demonstrate the process of
+ parsing by the example of a lexer with semantic evaluation. Our tokens
+-are the various literal numerals like they occur in the C language:
++are the various literal numerals like they occur in the @CLang language:
+ @ID @F {0xCafeBabe 0XE0UL 123456L}
+ These are the steps we wish to proceed on the second token:
+ @List
+@@ -732,7 +733,7 @@
+ @Begin
+ @PP
+ 
+-To be able to compose these operations we define the GADT Parse:
++To be able to compose these operations we define the GADT @Haskell {Parse}:
+ 
+ @ID @Haskell {
+ data Parse :: * ~&gt; * ~&gt; * where
+@@ -1020,7 +1021,7 @@
+ To formally introduce the facets, we employ another @Omega feature,
+ namely @I { user-defined kinds }, whose alternatives can be used to
+ parameterise the @Haskell { State } datatype:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell @Begin
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell @Begin
+ kind Gate = GateClosed | GateOpen
+ kind Secondary = SecondaryEnabled | SecondaryBlocked
+ kind Handshake = Idle | NeedAck | Requested
+@@ -1214,7 +1215,7 @@
+ mandates a function argument for the method @Haskell { arr }.
+ @Considerations { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell @Cite { $paterson01.notation }}
+ @PP
+-Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library,
++Nilsson @Cite { $nilsson05.frp } embarks on optimizing a GADT-based @Haskell { Arrow } library,
+ but he only considers the identity function as a special case. He observes a substantial
+ speedup in microbenchmarks when the optimizer is able to discover and short-circuit
+ the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
+@@ -1394,7 +1395,7 @@
+ @LP is parametricity in the first parameter useful? I.e.
+ can we formulate sensible functions on @Haskell { Thrist p a b }, where
+ p is left universal?
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LP</A> Given certain callback functions, can the Thrist be accompanied with
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A> Given certain callback functions, can the @Haskell { Thrist } be accompanied with
+ a generic interpretation function, in the style of @I {Unimo}? Would it be
+ possible to instrument thrists with a monadic semantics this way?
+ @LP Folds on thrists. Hard because types vary. Existentials? Folds are very important
+@@ -1529,9 +1530,9 @@
+ {range Bool} = Bool
+ @End @Haskell
+ 
+-All types in type universe our (simplified) @Cat program can operate on
++All types in the type universe that our (simplified) @Cat program can operate on
+ is witnessed by a value of @Haskell {Tractable}, and @Haskell {sameRep}
+-states their equality.
++states their equality between them.
+ 
+ @LD @Haskell @Begin
+ data Tractable :: * ~&gt; * where
+@@ -1717,7 +1718,7 @@
+ @End @Appendix
+ 
+ @Appendix
+-  @Title { Parsing C Literals }
++  @Title { Parsing @CLang Literals }
+ @Begin
+ @PP
+ @TargetForExtract &quot;check/ParseC&quot;
+@@ -1789,7 +1790,7 @@
+ @End @Appendix
+ 
+ @Appendix
+-  @Title { Adapting Haskell's Arrow Class }
++  @Title { Adapting Haskell's @Haskell {Arrow} Class }
+   @Tag { arrow.adapter }
+ @Begin
+ @PP
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000428.html">[Al4nin-commits] r665 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000430.html">[Al4nin-commits] r667 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#429">[ date ]</a>
+              <a href="thread.html#429">[ thread ]</a>
+              <a href="subject.html#429">[ subject ]</a>
+              <a href="author.html#429">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

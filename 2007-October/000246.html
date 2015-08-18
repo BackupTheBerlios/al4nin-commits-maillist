@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r484 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r484%20-%20trunk/purgatory&In-Reply-To=%3C200710261405.l9QE5mVN018571%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000245.html">
+   <LINK REL="Next"  HREF="000247.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r484 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r484%20-%20trunk/purgatory&In-Reply-To=%3C200710261405.l9QE5mVN018571%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r484 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Oct 26 16:05:48 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000245.html">[Al4nin-commits] r483 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000247.html">[Al4nin-commits] r485 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#246">[ date ]</a>
+              <a href="thread.html#246">[ thread ]</a>
+              <a href="subject.html#246">[ subject ]</a>
+              <a href="author.html#246">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-26 16:05:47 +0200 (Fri, 26 Oct 2007)
+New Revision: 484
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+statemachine beginning to look reasonable
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-10-25 14:55:38 UTC (rev 483)
++++ trunk/purgatory/Thrist.lout	2007-10-26 14:05:47 UTC (rev 484)
+@@ -814,6 +814,8 @@
+     @Caption { State machine fragment }
+ @Diag # vstrut { yes } treehsep { 1c }
+       outline { curvebox }
++      nodelabelfont { Slope -2p }
++      linklabelformat { &quot;/&quot;@Body&quot;/&quot; } 
+ {
+ 
+ 
+@@ -821,18 +823,20 @@
+     # @HTree { @Box Lout @FirstSub arrow { yes } @Box PostScript }
+ 
+ @Tbl
+-    aformat { @Cell A | @Cell B | @Cell C }
++    aformat { @Cell indent { ctr } iv { ctr } A | @Cell indent { ctr } iv { ctr } B }
++    bformat { @Cell indent { ctr } width { 3c } height { 1c } A | @Cell indent { ctr } height { 1c } B | @Cell indent { ctr } height { 1c } C }
+     marginhorizontal { 0.5c }
+     marginvertical { 0.25c }
+ {
+ @Rowa
++    A { NW:: @Node NorthWest }
+     B { N:: @Node North }
+ @Rowa
+     A { W:: @Node West }
+-    C { E:: @Node East }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Rowa</A>
+-    B { S:: @Node South }
+-    C { SE:: @Node Southeast }
++    B { M:: @Node Mid }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowb</A>
++    B { SW:: @Node SouthWest }
++    C { SE:: @Node SouthEast }
+ }
+ 
+ |1fx @Tbl
+@@ -846,18 +850,20 @@
+ @Rowa
+     A { @Haskell { East :: State GateClosed SecondaryBlocked Idle } }
+ @Rowa
+-    A { @Haskell { Southeast :: State GateClosed SecondaryBlocked NeedAck } }
++    A { @Haskell { SouthEast :: State GateClosed SecondaryBlocked NeedAck } }
+ @Rowa
+     A { @Haskell { South :: State GateOpen SecondaryBlocked Idle } }
+ }
+ 
+ 
+ //
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Arrow</A> from { N } to { W }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Arrow</A> from { N } to { E }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Arrow</A> from { W } to { S }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Arrow</A> from { E } to { SE }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Arrow</A> from { SE } to { S }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { NW } to { N } ylabel { req }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { N } to { M } ylabel { plug } ylabelctr { no }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { NW } to { W } ylabel { plug } ylabelctr { no }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { W } to { M } ylabel { req } ylabelctr { no }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { W } to { SW } ylabel { ack }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { M } to { SE } ylabel { ack }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { SW } to { SE } ylabel { req } ylabelctr { no }
+ }
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000245.html">[Al4nin-commits] r483 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000247.html">[Al4nin-commits] r485 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#246">[ date ]</a>
+              <a href="thread.html#246">[ thread ]</a>
+              <a href="subject.html#246">[ subject ]</a>
+              <a href="author.html#246">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

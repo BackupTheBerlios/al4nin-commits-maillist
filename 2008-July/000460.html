@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r697 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r697%20-%20trunk/purgatory&In-Reply-To=%3C200807111440.m6BEepON022001%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000459.html">
+   <LINK REL="Next"  HREF="000461.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r697 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r697%20-%20trunk/purgatory&In-Reply-To=%3C200807111440.m6BEepON022001%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r697 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 11 16:40:51 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000459.html">[Al4nin-commits] r696 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000461.html">[Al4nin-commits] r698 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#460">[ date ]</a>
+              <a href="thread.html#460">[ thread ]</a>
+              <a href="subject.html#460">[ subject ]</a>
+              <a href="author.html#460">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-11 16:40:46 +0200 (Fri, 11 Jul 2008)
+New Revision: 697
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+explain obligations
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-11 14:03:45 UTC (rev 696)
++++ trunk/purgatory/Thrist.lout	2008-07-11 14:40:46 UTC (rev 697)
+@@ -952,27 +952,27 @@
+ {
+ @Rowa
+     A { @Haskell @Begin
+-NorthWest :: State GateClosed SecondaryEnabled (H Idle Idle')
++northWest :: State GateClosed SecondaryEnabled (H Idle Idle')
+         @End @Haskell }
+ @Rowa
+     A { @Haskell @Begin
+-North :: State GateClosed SecondaryEnabled (H Idle Idle')
++north :: State GateClosed SecondaryEnabled (H Idle Idle')
+         @End @Haskell }
+ @Rowa
+     A { @Haskell @Begin
+-West :: State GateClosed SecondaryEnabled (H Idle NeedAck)
++west :: State GateClosed SecondaryEnabled (H Idle NeedAck)
+         @End @Haskell }
+ @Rowa
+     A { @Haskell @Begin
+-Mid :: State GateClosed SecondaryBlocked (H Idle NeedAck)
++mid :: State GateClosed SecondaryBlocked (H Idle NeedAck)
+         @End @Haskell }
+ @Rowa
+     A { @Haskell @Begin
+-South :: State GateClosed SecondaryBlocked (H Idle Idle')
++south :: State GateClosed SecondaryBlocked (H Idle Idle')
+         @End @Haskell }
+ @Rowa
+     A { @Haskell @Begin
+-SouthEast :: State GateOpen SecondaryBlocked (H Idle Idle')
++southEast :: State GateOpen SecondaryBlocked (H Idle Idle')
+         @End @Haskell }
+ }
+ 
+@@ -1131,13 +1131,41 @@
+ @End @SubSubSection
+ 
+ @SubSubSection
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Title</A> { Action Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Triggers as Obligations }
+ @Begin
+ @PP
+-We can implement the elementary actions as a GADT{@FootNote {the code is not syntactically correct
++The state machine holds a distinguished state at any time. Triggers acting on the machine
++are used to initiate a change of the current state. Additionally, triggers can impose
++certain constraints that need to be dealt with during the actual transition. To encode
++triggers we introduce{@FootNote {the code is not syntactically correct
+ (@Omega has no pairs at the kind level), but demonstrates our point}}:
+ 
+ @ID @Haskell @Begin
++data Obligation :: (Gate Secondary Handshake) ~&gt; (Gate Secondary Handshake) ~&gt; * where
++  TriggerExclusive :: Obligation (a, b, H Idle c) (a, b, H Requested c)
++  TriggerAck :: Obligation (a, b, H c NeedAck) (a, b, H c Idle')
++  TriggerPlugged :: Obligation (GateClosed, b, H Idle c) (GateClosed, b, H Idle c)
++  ...
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
++
++From the type signatures we can deduce that e.g. the @Haskell {TriggerAck} clears
++the @Haskell {NeedAck} condition on the current state. On the other hand if the
++obligation raises some condition that corresponds to none of the possible states,
++then the subsequent action is in charge to clear this condition. @Haskell {TriggerExclusive}
++above does raise @Haskell {Requested}, but no state in Figure @NumberOf { machine }
++has such a condition listed. To obtain a transition system that passes the type checker
++some action must turn the @Haskell {Requested} bact to @Haskell {Idle}. We takl about
++transition actions next.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSubSection
++
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSubSection</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Action Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++We can implement the elementary actions as a GADT:
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell @Begin
+ data Action :: (Gate, Secondary, Handshake) ~&gt; (Gate, Secondary, Handshake) ~&gt; * where
+   RequestExclusive :: Action (a, b, H c Idle') (a, b, H c NeedAck)
+   AckExclusive :: Action (a, b, H Requested c) (a, b, H Idle c)
+@@ -1147,15 +1175,19 @@
+ @End @Haskell
+ 
+ Then state transitions would correspond to @Haskell { Thrist Action }s that
+-originate from a state:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at ID</A> @Haskell @Begin
++originate from a state, select a possible transition arrow given a trigger,
++and finally execute a series of actions before settling at the target state:
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell @Begin
+ data Transition :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
+-  From :: State g' s' h' -&gt; Thrist Action (g', s', h') (g, s, h) -&gt; Transition g s h
++  From :: State g' s' h' -&gt;
++          Obligation (g', s', h') (g'', s'', h'') -&gt;
++          Thrist Action (g'', s'', h'') (g, s, h) -&gt; Transition g s h
+ @End @Haskell
+ 
+-For instance the @Haskell { South } state could be defined thus:
++For instance the @Haskell { south } state could be defined thus:
+ @ID @Haskell @Begin
+-South = State [From West [OpenGate]l]
++south = State [From west TriggerAck [BlockSecondary]l]
+ @End @Haskell
+ 
+ @PP
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000459.html">[Al4nin-commits] r696 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000461.html">[Al4nin-commits] r698 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#460">[ date ]</a>
+              <a href="thread.html#460">[ thread ]</a>
+              <a href="subject.html#460">[ subject ]</a>
+              <a href="author.html#460">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

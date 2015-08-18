@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r542 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r542%20-%20trunk/purgatory&In-Reply-To=%3C200711211729.lALHToXj024217%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000304.html">
+   <LINK REL="Next"  HREF="000306.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r542 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r542%20-%20trunk/purgatory&In-Reply-To=%3C200711211729.lALHToXj024217%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r542 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 21 18:29:50 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000304.html">[Al4nin-commits] r541 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000306.html">[Al4nin-commits] r543 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#305">[ date ]</a>
+              <a href="thread.html#305">[ thread ]</a>
+              <a href="subject.html#305">[ subject ]</a>
+              <a href="author.html#305">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-21 18:29:49 +0100 (Wed, 21 Nov 2007)
+New Revision: 542
+
+Modified:
+   trunk/purgatory/clear-c
+Log:
+some explanations
+
+Modified: trunk/purgatory/clear-c
+===================================================================
+--- trunk/purgatory/clear-c	2007-11-17 16:27:16 UTC (rev 541)
++++ trunk/purgatory/clear-c	2007-11-21 17:29:49 UTC (rev 542)
+@@ -3,10 +3,17 @@
+ 
+ 
+ ### USAGE:
+-#   rm ./Version.o makefile ; make EXEC=omega
+-#        GHC=&quot;ghc -O -pgmc clear-c -pgmm clear-c -pgma clear-c -pgml clear-c&quot;
++#   ln -s /home/ggreif/aL4nin/purgatory/clear-c DIR/clear-c
++#   ln -s /home/ggreif/aL4nin/purgatory/clear-c DIR/clear-m
++#   ln -s /home/ggreif/aL4nin/purgatory/clear-c DIR/clear-a
++#   ln -s /home/ggreif/aL4nin/purgatory/clear-c DIR/clear-l
++#   rm ./Version.o makefile ; gmake -f Makefile EXEC=omega \
++#        GHC=&quot;ghc -O -pgmc clear-c -pgmm clear-m -pgma clear-a -pgml clear-l&quot;
+ 
++## SEE: <A HREF="http://www.haskell.org/ghc/docs/latest/html/users_guide/options-phases.html">http://www.haskell.org/ghc/docs/latest/html/users_guide/options-phases.html</A>
+ 
++puts &quot;\#\#\# argv0 = $argv0&quot;
++
+ proc find-o { } {
+     global argv
+ 
+@@ -43,5 +50,6 @@
+ puts $mak &quot;OUTFILE is [find-o]&quot;
+ close $mak
+ 
+-exec touch ./Version.o
++exec touch ./Version.hs
++exec touch ./Toplevel.hs
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000304.html">[Al4nin-commits] r541 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000306.html">[Al4nin-commits] r543 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#305">[ date ]</a>
+              <a href="thread.html#305">[ thread ]</a>
+              <a href="subject.html#305">[ subject ]</a>
+              <a href="author.html#305">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r446 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r446%20-%20trunk/purgatory&In-Reply-To=%3C200709140818.l8E8Iu3a021419%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000207.html">
+   <LINK REL="Next"  HREF="000209.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r446 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r446%20-%20trunk/purgatory&In-Reply-To=%3C200709140818.l8E8Iu3a021419%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r446 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 14 10:18:56 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000207.html">[Al4nin-commits] r445 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000209.html">[Al4nin-commits] r447 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#208">[ date ]</a>
+              <a href="thread.html#208">[ thread ]</a>
+              <a href="subject.html#208">[ subject ]</a>
+              <a href="author.html#208">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-09-14 10:18:56 +0200 (Fri, 14 Sep 2007)
+New Revision: 446
+
+Added:
+   trunk/purgatory/Unimo.omg
+Log:
+just get code from paper, not adapted yet
+
+Added: trunk/purgatory/Unimo.omg
+===================================================================
+--- trunk/purgatory/Unimo.omg	2007-09-14 08:17:01 UTC (rev 445)
++++ trunk/purgatory/Unimo.omg	2007-09-14 08:18:56 UTC (rev 446)
+@@ -0,0 +1,70 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++
++-- Adapt the Unimo concept to Omega
++
++import &quot;LangPrelude.prg&quot; 
++
++
++data Unimo r a 
++  = Unit a 
++  | Effect (r (Unimo r) a) 
++  | forall b. Bind (Unimo r b) (b -&gt; Unimo r a) 
++
++instance Monad (Unimo r) where 
++  return = Unit 
++  (&gt;==) = Bind 
++
++type BindOp r a v = forall b. 
++  r (Unimo r) b 
++  -&gt; (b -&gt; Unimo r a) -&gt; v 
++
++
++type Observer r a v = (a -&gt; v) -&gt; BindOp r a v -&gt; Unimo r a -&gt; v 
++
++observe monad :: Observer r a v 
++observe monad unit op bind op = eval where 
++  eval (Unit v) = unit op v 
++  eval (Effect e) = e `bind op` Unit 
++  eval (Bind (Effect e) k) = e `bind op` k 
++  eval (Bind (Unit v) k) = eval (k v) 
++  eval (Bind (Bind m k) g) = eval (Bind m cont) 
++  where cont v = Bind (k v) g 
++
++
++data StateE s (m :: * -&gt; *) a where 
++  Get :: StateE s m s 
++  Put :: s -&gt; StateE s m () 
++
++type State s = Unimo (StateE s) 
++
++run state :: forall a s. State s a -&gt; s -&gt; (a, s) 
++run state m s = observe monad unit op bind op m where 
++  unit op v = (v, s) 
++  bind op :: BindOp (StateE s) a (a, s) 
++  bind op Get k = run state (k s) s 
++  bind op (Put s1) k = run state (k ()) s1 
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000207.html">[Al4nin-commits] r445 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000209.html">[Al4nin-commits] r447 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#208">[ date ]</a>
+              <a href="thread.html#208">[ thread ]</a>
+              <a href="subject.html#208">[ subject ]</a>
+              <a href="author.html#208">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

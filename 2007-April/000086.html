@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r324 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r324%20-%20trunk/purgatory&In-Reply-To=%3C200704191457.l3JEvl6X005575%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000085.html">
+   <LINK REL="Next"  HREF="000087.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r324 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r324%20-%20trunk/purgatory&In-Reply-To=%3C200704191457.l3JEvl6X005575%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r324 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Apr 19 16:57:47 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000085.html">[Al4nin-commits] r323 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000087.html">[Al4nin-commits] r325 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-19 16:57:44 +0200 (Thu, 19 Apr 2007)
+New Revision: 324
+
+Added:
+   trunk/purgatory/clear-c
+Log:
+embryonal version of haskell background or parallel compilation script
+
+Added: trunk/purgatory/clear-c
+===================================================================
+--- trunk/purgatory/clear-c	2007-04-19 14:26:09 UTC (rev 323)
++++ trunk/purgatory/clear-c	2007-04-19 14:57:44 UTC (rev 324)
+@@ -0,0 +1,47 @@
++#!/opt/exp/bin/tclsh
++#  -*-Tcl-*- for (X)emacs ##
++
++
++### USAGE:
++#   rm ./Version.o makefile ; make EXEC=omega
++#        GHC=&quot;ghc -O -pgmc clear-c -pgmm clear-c -pgma clear-c -pgml clear-c&quot;
++
++
++proc find-o { } {
++    global argv
++
++    if [llength $argv]==2 {
++	puts stderr &quot;OUT2: [lindex $argv 1]\n&quot;
++	return [lindex $argv 1]
++    }
++
++    set flag &quot;&quot;
++
++    foreach i $argv {
++	puts stderr &quot;\#\#\#\#\#\#\#\# $i $flag\n&quot;
++	if [string equal &quot;&quot; $flag] {
++	puts stderr &quot;WOOOO $i\n&quot;
++	    if [string equal $i &quot;-o&quot;] {
++		set flag $i
++	puts stderr &quot;POOOO $flag\n&quot;
++	    }
++	} else {
++	puts stderr &quot;HEY $flag    ---&gt; $i\n&quot;
++	    switch -exact -- $flag {
++		-o { set out $i }
++	    }
++	    set flag &quot;&quot;
++	}
++    }
++
++	puts stderr &quot;OUT: $out\n&quot;
++    return $out
++}
++
++set mak [open &quot;makefile&quot; a]
++puts $mak &quot;$argv&quot;
++puts $mak &quot;OUTFILE is [find-o]&quot;
++close $mak
++
++exec touch ./Version.o
++
+
+
+Property changes on: trunk/purgatory/clear-c
+___________________________________________________________________
+Name: svn:executable
+   + *
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000085.html">[Al4nin-commits] r323 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000087.html">[Al4nin-commits] r325 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#86">[ date ]</a>
+              <a href="thread.html#86">[ thread ]</a>
+              <a href="subject.html#86">[ subject ]</a>
+              <a href="author.html#86">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

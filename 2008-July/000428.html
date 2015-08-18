@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r665 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r665%20-%20trunk/purgatory&In-Reply-To=%3C200807021401.m62E12Sj029011%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000429.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r665 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r665%20-%20trunk/purgatory&In-Reply-To=%3C200807021401.m62E12Sj029011%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r665 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jul  2 16:01:02 CEST 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000429.html">[Al4nin-commits] r666 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-02 16:01:01 +0200 (Wed, 02 Jul 2008)
+New Revision: 665
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+eliminate a TODO
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-06-26 14:36:27 UTC (rev 664)
++++ trunk/purgatory/Thrist.lout	2008-07-02 14:01:01 UTC (rev 665)
+@@ -521,10 +521,20 @@
+ @LD @Heading { More Problems while Interpreting }
+ Unfortunately we have not mastered everything yet. We remember that
+ the semantics of our @Haskell {Cat} combinators is defined by the interpretation
+-function. So we are obliged to extend @Haskell { interpret }. We can try thus:
++function. So we are obliged to extend @Haskell { interpret' }. We can try thus:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TODO</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell operators {Base} @Begin
++interpret' [Prim f; rest]l st = do
++        (a, st') &lt;- st
++        interpret' rest $ return (f a, st')
++  where monad ioM
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
+ 
++But this can only work for @I unary primitives, and since the primitive is allowed to
++possess higher arity it cannot typecheck. Clearly, a solution is needed that is able to
++distinguish between different-arity primitives at runtime. Since we are not inclined
++to introduce a new family of @Haskell { Cat } alternatives, @Haskell { Prim1 }, @Haskell { Prim2 },
++etc., we have to equip @Haskell { Prim } with a second argument.
+ 
+ @LD @Heading { Using Representation Types to Describe Arities }
+ The solution is to attach an object of @I {representation type} to every @Haskell { Prim }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000429.html">[Al4nin-commits] r666 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#428">[ date ]</a>
+              <a href="thread.html#428">[ thread ]</a>
+              <a href="subject.html#428">[ subject ]</a>
+              <a href="author.html#428">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

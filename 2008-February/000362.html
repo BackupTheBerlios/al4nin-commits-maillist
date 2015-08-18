@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r599 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-February/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r599%20-%20trunk/purgatory&In-Reply-To=%3C200802201541.m1KFfU4o021597%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000361.html">
+   <LINK REL="Next"  HREF="000363.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r599 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r599%20-%20trunk/purgatory&In-Reply-To=%3C200802201541.m1KFfU4o021597%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r599 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Feb 20 16:41:30 CET 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000361.html">[Al4nin-commits] r598 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000363.html">[Al4nin-commits] r600 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#362">[ date ]</a>
+              <a href="thread.html#362">[ thread ]</a>
+              <a href="subject.html#362">[ subject ]</a>
+              <a href="author.html#362">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-02-20 16:41:30 +0100 (Wed, 20 Feb 2008)
+New Revision: 599
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+update structure, add paragraph on how Thrist appears in darcs, hint at R* presentation
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-02-20 14:28:36 UTC (rev 598)
++++ trunk/purgatory/Thrist.lout	2008-02-20 15:41:30 UTC (rev 599)
+@@ -49,10 +49,11 @@
+ @Title { Structure of the Paper }
+ @Begin
+ @PP
+-In the first section we motivate our later introduction of @Haskell {Thrist} with well known
+-examples. In the third section we develop three practial applications of @Haskell {Thrist}s.
+-We also present some less useful but entertaining uses. Section four shows
+-up possible future directions and summarizes open problems. Section five concludes.
++In the following section we motivate our later introduction of @Haskell {Thrist}
++with well known examples. The third section is devoted to the development of
++three practial applications of @Haskell {Thrist}s. Next we present some less useful
++but entertaining uses. Section five examines other work, while section six concludes,
++pointing out open problems and showing up possible future directions.
+ @End @Section
+ 
+ @Section
+@@ -1212,6 +1213,18 @@
+   @Title { Other Work }
+ @Begin
+ @PP
++David Roundy's @I { Darcs } system @Cite { $roundy.darcs2 } is a version control system
++which builds upon a theory of patches, defining the evolution of data repositories (and
++documents therein) as a gradual application of individual changes. The recent adoption
++of GADTs into the system has lead to a two-parameter @Haskell {Patch} datatype and
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {FL}, @Haskell {RL} GADTs which are used for sequencing these (among others).
++The definition of @Haskell {FL} is identical to how our @Haskell {Thrist} would be
++defined in Haskell! Being hidden in a utility module, @Haskell {FL} entered the @I { Darcs }
++codebase in the year 2007 but its origins can be traced back to a brain-storming session at
++Haskell'05 workshop in Tallinn.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Conor McBride: R*
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
+ Chuan-kai Lin's @I { Unimo } framework @Cite { $lin06.unimo } is an attempt to describe monads operationally
+ by interpreting a datastructure that describes the monad. By the fact that the interpreter
+ is proven to satisfy the monadic laws, a guarantee is given that the monadic semantics
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000361.html">[Al4nin-commits] r598 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000363.html">[Al4nin-commits] r600 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#362">[ date ]</a>
+              <a href="thread.html#362">[ thread ]</a>
+              <a href="subject.html#362">[ subject ]</a>
+              <a href="author.html#362">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

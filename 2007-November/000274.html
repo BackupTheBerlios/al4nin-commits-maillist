@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r511 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r511%20-%20trunk/purgatory&In-Reply-To=%3C200711111405.lABE50Fq027498%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000273.html">
+   <LINK REL="Next"  HREF="000275.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r511 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r511%20-%20trunk/purgatory&In-Reply-To=%3C200711111405.lABE50Fq027498%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r511 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Nov 11 15:05:00 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000273.html">[Al4nin-commits] r510 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000275.html">[Al4nin-commits] r512 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#274">[ date ]</a>
+              <a href="thread.html#274">[ thread ]</a>
+              <a href="subject.html#274">[ subject ]</a>
+              <a href="author.html#274">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-11 15:04:58 +0100 (Sun, 11 Nov 2007)
+New Revision: 511
+
+Modified:
+   trunk/purgatory/HenkTest.omg
+Log:
+looks like contradiction is not detected when checking unreachable
+
+Modified: trunk/purgatory/HenkTest.omg
+===================================================================
+--- trunk/purgatory/HenkTest.omg	2007-11-11 11:42:08 UTC (rev 510)
++++ trunk/purgatory/HenkTest.omg	2007-11-11 14:04:58 UTC (rev 511)
+@@ -112,8 +112,42 @@
+     where theorem hypClimb = climbLemma (undefined :: Climber' a),
+ 		  plusLemma
+ 
++{-
++sameNat :: Nat' n -&gt; Nat' m -&gt; Maybe (Equal n m) 
++sameNat Z Z = Just Eq
++sameNat (S n) (S m) = case sameNat n m of
++                      Just Eq -&gt; Just Eq
++                      Nothing -&gt; Nothing
++sameNat _ _ = Nothing
++-}
++sameNat :: LE m n -&gt; Nat' n -&gt; Nat' m -&gt; exists (o :: Nat) . (Equal n m + (Equal {diff n m} (S o), Nat' (S o)))
++--sameNat Base Z Z = L Eq
++sameNat Base Z Z = let res = L Eq in Ex res
++sameNat Base Z (S _) = unreachable
++sameNat Base (S o) Z = Ex (R (Eq, S o))
++sameNat (Step pred) (S n) (S m) = case sameNat pred n m of
++                                  Ex (L Eq) -&gt; Ex (L Eq)
++                                  Ex (R (Eq, o)) -&gt; Ex (R (Eq, o))
++--sameNat _ _ = Nothing
+ 
++tautEqual :: Equal a b -&gt; Equal a c -&gt; Equal b c
++tautEqual Eq Eq = Eq
+ 
++diffLemma :: LE m n -&gt; Nat' n -&gt; Nat' m -&gt; Equal {diff n m} Z -&gt; (Equal n m, Equal n m)
++diffLemma Base Z Z Eq = (Eq, Eq)
++diffLemma Base _ (S m) Eq = unreachable
++diffLemma (Step _) _ Z Eq = unreachable
++diffLemma (Step _) Z (S _) Eq = unreachable
++diffLemma (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Step</A> pred) (S n) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at S</A> m) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">w at Eq</A>) = case (w, sameNat pred n m) of
++                                               (_, Ex (L Eq)) -&gt; (Eq, Eq)
++                                               (w, Ex (R (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">v at Eq</A>, o))) -&gt; unreachable
++                                                                            where theorem contradict = tautEqual w v
++--diffLemma (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Step</A> pred) (S n) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at S</A> m) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">w at Eq</A>) = case diffLemma pred n m w of
++--                                               (Eq, Eq) -&gt; check (Eq, Eq)
++--    where theorem ind = diffLemma pred m
++--    where theorem ind = diffLemma pred m
++
++
+ incDiffLemma :: LE m n -&gt; Nat' m -&gt; Equal {diff (S n) m} (S {diff n m})
+ incDiffLemma _ Z = Eq
+ incDiffLemma Base (S m) = unreachable
+@@ -154,6 +188,8 @@
+ --    where theorem hyp = restoreSE (SE cl) (SE cl) Eq
+ 
+ -- issue35:
+---TODO-tau (Bind (SE (LV cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = check (Bind (LV cl) a (tau b))
+---TODO-    where theorem hyp = restoreLV Eq
++{-
++tau (Bind (SE (LV cl)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> qf) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = check (Bind (LV cl) a (tau b))
++    where theorem hyp = restoreLV Eq
++-}
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000273.html">[Al4nin-commits] r510 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000275.html">[Al4nin-commits] r512 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#274">[ date ]</a>
+              <a href="thread.html#274">[ thread ]</a>
+              <a href="subject.html#274">[ subject ]</a>
+              <a href="author.html#274">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

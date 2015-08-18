@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r425 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r425%20-%20trunk/purgatory&In-Reply-To=%3C200707131428.l6DESOuM015006%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000186.html">
+   <LINK REL="Next"  HREF="000188.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r425 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r425%20-%20trunk/purgatory&In-Reply-To=%3C200707131428.l6DESOuM015006%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r425 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jul 13 16:28:24 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000186.html">[Al4nin-commits] r424 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000188.html">[Al4nin-commits] r426 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#187">[ date ]</a>
+              <a href="thread.html#187">[ thread ]</a>
+              <a href="subject.html#187">[ subject ]</a>
+              <a href="author.html#187">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-13 16:28:24 +0200 (Fri, 13 Jul 2007)
+New Revision: 425
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+Epsilon is dead, long live epsilon!
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-07-13 14:23:15 UTC (rev 424)
++++ trunk/purgatory/ThristParser.omg	2007-07-13 14:28:24 UTC (rev 425)
+@@ -44,8 +44,6 @@
+ 
+ 
+ data Parse :: *0 ~&gt; *0 ~&gt; *0 where
+-  -- Epsilon is: Group []
+-  Epsilon :: Parse [a] ([b], [a])       -- always match
+   Atom :: Char -&gt; Parse Char Char       -- exact match
+   Pred :: (a -&gt; Bool) -&gt; Parse a a      -- conditional match
+   Sure :: (a -&gt; b) -&gt; Parse a b         -- always matches and converts
+@@ -61,6 +59,7 @@
+   UpTo :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- scan for c then match b
+   Par :: Parse a b -&gt; Parse c d -&gt; Parse (a, c) (b, d)
+ 
++epsilon = Group []
+ 
+ --letter a = Pred (\(c :: Char) -&gt; ord c == ord a)
+ letter a = Atom a
+@@ -82,7 +81,7 @@
+ 
+ word cs = Group (map letter cs)
+ 
+-optional p = Or p Epsilon
++optional p = Or p epsilon
+ 
+ -- ###############################
+ -- ############ parse ############
+@@ -92,8 +91,6 @@
+ 
+ parse []l a = Just a
+ 
+-parse [Epsilon; r]l as = parse r ([], as)
+-
+ parse [Atom c; r]l a = if ord c == ord a then parse r a else Nothing
+ 
+ parse [Pred p; r]l a = if p a then parse r a else Nothing
+@@ -184,9 +181,6 @@
+ 
+ compileParse []l = [| Just |]
+ 
+-compileParse [Epsilon; r]l = [| \as -&gt; $parseR ([], as)  |]
+-    where parseR = compileParse r
+-
+ compileParse [Atom c; r]l = [| \a -&gt; if $ordC == ord a then $parseR a else Nothing |]
+     where parseR = compileParse r
+ 	  ordC = lift $ ord c
+@@ -269,7 +263,7 @@
+ t3 = Group [letter 'a', letter 'b', letter 'c', letter 'd']
+ t3a = word &quot;abcd&quot;
+ 
+-t4 = Or (word &quot;;&quot;) Epsilon
++t4 = Or (word &quot;;&quot;) epsilon
+ t4a = optional (word &quot;;&quot;)
+ 
+ t5 = parse [Rep1 (ButNot1 (alts letter &quot;ab&quot;) (letter 'b'))]l &quot;abc&quot;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000186.html">[Al4nin-commits] r424 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000188.html">[Al4nin-commits] r426 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#187">[ date ]</a>
+              <a href="thread.html#187">[ thread ]</a>
+              <a href="subject.html#187">[ subject ]</a>
+              <a href="author.html#187">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

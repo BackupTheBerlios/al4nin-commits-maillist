@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r669 - in trunk/purgatory: . db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r669%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200807051133.m65BXeAo025626%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000431.html">
+   <LINK REL="Next"  HREF="000433.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r669 - in trunk/purgatory: . db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r669%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200807051133.m65BXeAo025626%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r669 - in trunk/purgatory: . db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sat Jul  5 13:33:40 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000431.html">[Al4nin-commits] r668 - in trunk/purgatory: . db
+</A></li>
+        <LI>Next message: <A HREF="000433.html">[Al4nin-commits] r670 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#432">[ date ]</a>
+              <a href="thread.html#432">[ thread ]</a>
+              <a href="subject.html#432">[ subject ]</a>
+              <a href="author.html#432">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-05 13:33:38 +0200 (Sat, 05 Jul 2008)
+New Revision: 669
+
+Modified:
+   trunk/purgatory/Thrist.lout
+   trunk/purgatory/db/BibTeX2lout.awk
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+flesh out parsing a bit
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-05 10:20:57 UTC (rev 668)
++++ trunk/purgatory/Thrist.lout	2008-07-05 11:33:38 UTC (rev 669)
+@@ -562,7 +562,9 @@
+ constructor:
+ 
+ @ID @Haskell {
+-  Prim :: Tractable b -&gt; (a -&gt; b) -&gt; Cat {blowUpBy (a -&gt; b) opaque} ({result b}, opaque)
++  Prim :: Tractable b -&gt; (a -&gt; b) -&gt;
++          Cat {blowUpBy (a -&gt; b) opaque}
++              ({result b}, opaque)
+   ...
+ }
+ 
+@@ -614,7 +616,7 @@
+ @Begin
+ @PP
+ A well-known technique to turn an interpreter into a compiler
+-is staging {@Cite {$sheard99.staging}}. The compile function takes a @Haskell {Thrist Cat} into
++is staging @Cite {$sheard99.staging}. The compile function takes a @Haskell {Thrist Cat} into
+ a function of the metalanguage, that when executed causes the
+ same effect as the interpretation of the program itself. Naturally,
+ the compiled program is expected to run faster, since the interpretative
+@@ -668,7 +670,7 @@
+ would have one problem in common, namely that the stack shape would
+ vary depending on the  value of the parameter(s), requiring dependent
+ types to define them. Fortunately @Omega provides a device that is approaching
+-the power of dependent types, namely singleton types and type-level functions.
++the power of dependent types, namely @I {singleton types} and @I {type-level functions}.
+ 
+ Here is a sketch of @Haskell {PopN}:
+ 
+@@ -709,7 +711,7 @@
+ @Title { Application two: a GADT-based Parser Thrist }
+ @Begin
+ @PP
+-Traditional monadic parser combinator libraries (like Parsec) suffer from the
++Traditional monadic parser combinator libraries (like Parsec @Cite {$leijen01.parsec}) suffer from the
+ same problem like the composition operator: they compose easily
+ but cannot be dissected and analysed, or translated to other
+ representations. We proceed similarly to the @Haskell { Thist (-&gt;) } and @Haskell { Thrist Cat } to
+@@ -944,19 +946,27 @@
+ @Title { Defining the Semantics by Interpretation }
+ @Begin
+ @PP
+-We provide the parse function for the Rep constructor as an example:
++We provide the @Haskell {parse} function for the @Haskell {Rep} constructor as an example:
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at LD</A> @Haskell {
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell @Begin
+ parse :: Thrist Parse a b -&gt; a -&gt; Maybe b
+ 
+-parse [Rep p; r]l as = parse r (parseRep [p]l as) where
+-      parseRep :: Thrist Parse [a] (b, [a]) -&gt; [a] -&gt; ([b], [a])
++parse [Rep p; r]l as = parse r (parseRep [p]l as)
++    where
++      parseRep :: Thrist Parse [a] (b, [a]) -&gt;
++                      [a] -&gt; ([b], [a])
+       parseRep _ [] = ([], [])
+       parseRep p as = case parse p as of
+                       Nothing -&gt; ([], as)
+                       Just (b, as') -&gt; (b:bs, rest)
+-                          where (bs, rest) = parseRep p as'
+-}
++          where (bs, rest) = parseRep p as'
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @Haskell
++This code is rather unsurprising: to obtain zero or more of @Haskell {p}
++we have to consume as many from the input as possible and accumulate them
++in the result along with the remaining input.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++For the rest of the implementation we defer to Appendix @NumberOf { parsing.token }
++which contains a working example for parsing hexadecimal tokens.
+ 
+ @End @SubSubSection
+ 
+@@ -965,7 +975,9 @@
+ @Begin
+ @PP
+ In a fashion similar to the @Haskell {Thrist Cat} we can compile our parser combinators to
+-a more efficient algorithm by removing the interpretative overhead.
++a more efficient algorithm by removing the interpretative overhead. We have complete freedom
++in the selection of implementation methodology: we can target the object language directly
++or plumb monadic- resp. arrow-based parser combinators.
+ 
+ @End @SubSubSection
+ 
+@@ -974,6 +986,8 @@
+ @Begin
+ @PP
+ We can run various analyses on our parsers, to ensure that the grammar is unambiguous, for example.
++A popular transformation would be the detection of left-recursion and its transformation to a right-
++recursive form.
+ 
+ @End @SubSubSection
+ 
+@@ -1748,6 +1762,7 @@
+ 
+ @Appendix
+   @Title { Parsing @CLang Literals }
++  @Tag { parsing.token }
+ @Begin
+ @PP
+ @TargetForExtract &quot;check/ParseC&quot;
+
+Modified: trunk/purgatory/db/BibTeX2lout.awk
+===================================================================
+--- trunk/purgatory/db/BibTeX2lout.awk	2008-07-05 10:20:57 UTC (rev 668)
++++ trunk/purgatory/db/BibTeX2lout.awk	2008-07-05 11:33:38 UTC (rev 669)
+@@ -13,6 +13,7 @@
+ # /Conference.*=.*/ {print &quot;Proceedings { &quot; $4 &quot; }&quot;; next}
+ # /PhdThesis.*=.*/ {print &quot;PhDThesis { &quot; $4 &quot; }&quot;; next}
+ # /TechReport.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
++/@techreport[ \t]*{.*/ {print &quot;{ @Reference\n   @Type { TechReport }&quot;; have = 1; next}
+ # /Manual.*=.*/ {print &quot;TechReport { &quot; $4 &quot; }&quot;; next}
+ # /MastersThesis.*=.*/ {print &quot;MastersThesis { &quot; $4 &quot; }&quot;; next}
+ # /Misc.*=.*/ {print &quot;Misc { &quot; $4 &quot; }&quot;; next}
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2008-07-05 10:20:57 UTC (rev 668)
++++ trunk/purgatory/db/BibTexDB	2008-07-05 11:33:38 UTC (rev 669)
+@@ -168,3 +168,13 @@
+    address = {Berkeley, CA, USA},
+    url = {<A HREF="http://www.usenix.org/events/dsl99/full_papers/sheard/sheard_html/dsl.html">http://www.usenix.org/events/dsl99/full_papers/sheard/sheard_html/dsl.html</A>}
+ }
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at techreport</A>{UUCS200135,
++   tag = {leijen01.parsec},
++   author = {D. J. P. Leijen, H. J. M. Meijer},
++   year = {2001},
++   title = {Parsec: Direct style monadic parser combinators for the real world},
++   number = {UU-CS-2001-35},
++   institution = {Department of Information and Computing Sciences, Utrecht University},
++   url = {<A HREF="http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf">http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf</A>},
++}
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2008-07-05 10:20:57 UTC (rev 668)
++++ trunk/purgatory/db/acmrefs.ld	2008-07-05 11:33:38 UTC (rev 669)
+@@ -186,3 +186,15 @@
+ }
+ 
+ 
++{ @Reference
++   @Type { TechReport }
++   @Tag { leijen01.parsec }
++   @Author { D. J. P. Leijen, H. J. M. Meijer }
++   @Year { 2001 }
++   @Title { Parsec: Direct style monadic parser combinators for the real world }
++   @Number { UU-CS-2001-35 }
++   @Institution { Department of Information and Computing Sciences, Utrecht University }
++   @URL { <A HREF="http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf">http://www.cs.uu.nl/research/techreps/repo/CS-2001/2001-35.pdf</A> }
++}
++
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000431.html">[Al4nin-commits] r668 - in trunk/purgatory: . db
+</A></li>
+	<LI>Next message: <A HREF="000433.html">[Al4nin-commits] r670 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#432">[ date ]</a>
+              <a href="thread.html#432">[ thread ]</a>
+              <a href="subject.html#432">[ subject ]</a>
+              <a href="author.html#432">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r333 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r333%20-%20trunk/purgatory&In-Reply-To=%3C200704231816.l3NIGSxk007456%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000094.html">
+   <LINK REL="Next"  HREF="000096.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r333 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r333%20-%20trunk/purgatory&In-Reply-To=%3C200704231816.l3NIGSxk007456%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r333 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Apr 23 20:16:28 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000094.html">[Al4nin-commits] r332 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000096.html">[Al4nin-commits] r334 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-23 20:16:27 +0200 (Mon, 23 Apr 2007)
+New Revision: 333
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+put down some crazy uses of Thrist. maybe they are of some use, sometime, also added some example theorems
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-20 23:29:45 UTC (rev 332)
++++ trunk/purgatory/Thrist.omg	2007-04-23 18:16:27 UTC (rev 333)
+@@ -216,3 +216,106 @@
+  Weee :: CatShape
+  type Weee = Shape (Row *0)
+ 
++
++
++--$ @Section { Crazy uses of Thrists }
++--$ For example we can put functions of type
++--$ a-&gt;b, b-&gt;c into a thrist:
++
++--{
++funThrist = #[ord, (+) 2, chr]l
++
++runThrist :: Thrist (-&gt;) a b -&gt; a -&gt; b
++runThrist Nil b = b
++runThrist (Cons f r) a = runThrist r (f a)
++--}
++
++{-
++-- Example session:
++
++prompt&gt; funThrist
++ #[&lt;primfun to1&gt;,&lt;fn&gt;,&lt;primfun to1&gt;]l : Thrist (-&gt;) Char Char
++prompt&gt; runThrist funThrist
++ &lt;fn&gt; : Char -&gt; Char
++prompt&gt; runThrist funThrist 'x'
++ 'z' : Char
++
++-}
++
++--$ @Item { An interesting use are @Code { Equal } thrists
++--$ as they can express transitivity relationships of
++--$ type equality: @Code { Equal a b /\ Equal b c ==&gt; Equal c a }
++
++plus:: Nat ~&gt; Nat ~&gt; Nat
++{plus Z m} = m
++{plus (S n) m} = S {plus n m}
++
++plusZ :: Nat' n -&gt; Equal {plus n Z} n
++plusZ Z = Eq
++plusZ (S n) = Eq -- :: Equal {plus (S n) Z} (S n) -- reduces to Equal (S {plus n Z}) (S n)
++  where theorem because = plusZ n -- :: Equal {plus n Z} n
++
++
++plusS :: Nat' n -&gt; Equal {plus n (S m)} (S {plus n m})
++plusS Z = Eq :: Equal {plus Z (S m)} (S {plus Z m}) --&gt; Equal (S m) (S {plus Z m}) --&gt; Equal m {plus Z m} --&gt; Equal m m
++plusS (S n) = Eq --::  Equal {plus (S n) (S m)} (S {plus (S n) m})
++                   --&gt; Equal (S {plus n (S m)}) (S (S {plus n m}))
++                   --% Equal    {plus n (S m)}     (S {plus n m})
++    where theorem because = plusS n
++
++
++plusCommutes :: Nat' n -&gt; Nat' m -&gt; Equal {plus n m} {plus m n}
++plusCommutes Z m = Eq --:: Equal {plus Z m} {plus m Z}
++                      --&gt;  Equal m {plus m Z}
++    where theorem because = plusZ m
++
++plusCommutes (S n) m = Eq --:: Equal {plus (S n) m} {plus m (S n)}
++                          --&gt;  Equal (S {plus n m}) {plus m (S n)}
++                          --%  Equal (S {plus n m}) (S {plus m n})
++                          --%  Equal    {plus n m}     {plus m n}
++    where theorem because1 = plusS m, because2 = plusCommutes n m
++
++impliesZero :: Nat' n -&gt; Nat' m -&gt; Equal {plus n m} m -&gt; Equal m Z
++
++{-
++##test &quot;current refinement fails because _a != {plus #0 _a}&quot;
++ impliesZero Z m Eq = Eq --? Equal {plus Z m} m -&gt; Equal m Z
++                        --&gt; Equal m m -&gt; Equal m Z
++-}
++{-
++##test &quot;Annotation not polymorphic enough&quot;
++ impliesZero Z (m :: Nat' m')  (Eq :: Equal m' m') = Eq --? Equal {plus Z m} m -&gt; Equal m Z
++                        --&gt; Equal m m -&gt; Equal m Z
++-}
++impliesZero (S n) m Eq = unreachable --? Equal {plus (S n) m} m -&gt; Equal m Z
++                                     --&gt; Equal (S {plus n m}) m -&gt; Equal m Z
++
++{-
++impliesZero (S n) Z Eq = unreachable --? Equal {plus (S n) Z} Z -&gt; Equal Z Z
++                                     --&gt; Equal (S {plus n Z}) Z -&gt; Equal Z Z
++                                     --% Equal (S n) Z -&gt; Equal Z Z
++--    where theorem plusZ
++
++
++impliesZero (S n) (S m) Eq = unreachable --? Equal {plus (S n) (S m)} (S m) -&gt; Equal (S m) Z
++                                      --&gt; Equal (S {plus n m}) m -&gt; Equal m Z
++-}
++
++
++
++
++--$ I am writing this as an equivalent thrist now
++
++
++{-
++hyp1 :: Nat' a -&gt; Nat' (S b) -&gt; Equal a (S b)
++hyp1 #1 #1 = Eq
++hyp1 (S a) (S b) = Eq
++  where theorem because = hyp1 a b
++-}
++
++##test &quot;Does not work yet&quot;
++ eqThrist = #[Eq :: Equal a (S b)
++           , Eq :: Equal (S b) (S c)
++           , Eq :: (S c) a
++           ]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000094.html">[Al4nin-commits] r332 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000096.html">[Al4nin-commits] r334 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

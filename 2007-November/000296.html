@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r533 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r533%20-%20trunk/found-bugs&In-Reply-To=%3C200711141404.lAEE4GC0017682%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000295.html">
+   <LINK REL="Next"  HREF="000297.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r533 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r533%20-%20trunk/found-bugs&In-Reply-To=%3C200711141404.lAEE4GC0017682%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r533 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Nov 14 15:04:16 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000295.html">[Al4nin-commits] r532 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000297.html">[Al4nin-commits] r534 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#296">[ date ]</a>
+              <a href="thread.html#296">[ thread ]</a>
+              <a href="subject.html#296">[ subject ]</a>
+              <a href="author.html#296">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-14 15:04:16 +0100 (Wed, 14 Nov 2007)
+New Revision: 533
+
+Added:
+   trunk/found-bugs/issue37.omg
+Log:
+testcase for issue37. also contains parsing problems when using/not using spaces in type declarations
+
+Added: trunk/found-bugs/issue37.omg
+===================================================================
+--- trunk/found-bugs/issue37.omg	2007-11-14 11:38:10 UTC (rev 532)
++++ trunk/found-bugs/issue37.omg	2007-11-14 14:04:16 UTC (rev 533)
+@@ -0,0 +1,51 @@
++import &quot;LangPrelude.prg&quot;
++
++{-
++-- unexpected &quot;*&quot; at: &quot;(1+s)) . k...&quot;
++data Test :: level s . forall (k::*(1+s)) . k ~&gt; * where
++  T :: Test a
++-}
++
++{-
++-- this works
++data Test :: level s . forall (k:: *(1+s)) . k ~&gt; * where
++  T :: Test a
++-}
++
++
++{-
++-- unexpected &quot; +s)) . k ~&gt; * where...
++data Test :: level s . forall (k:: *(1 +s)) . k ~&gt; * where
++  T :: Test a
++-}
++
++
++{-
++-- this works
++data Test :: level s . forall (k:: *(1+ s)) . k ~&gt; * where
++  T :: Test a
++-}
++
++
++-- line: 33 column: 1
++-- Unknown level: sv
++
++data Thrist :: level st su . forall (l :: *(1+st)) (m :: *(1+su)) . (l ~&gt; m ~&gt; *)  ~&gt; l ~&gt; m ~&gt; * where
++  Nil :: Thrist k a a
++  Cons :: level st su sv. forall (l :: *(1+st)) (m :: *(1+su)) (n :: *(1+sv)) (k :: l ~&gt; m ~&gt; *) (a :: l) (b :: m) (c :: n) . k a b -&gt; Thrist k b c -&gt; Thrist k a c
++
++
++-- writing &quot;data Thrist :: level st su sv .  ...&quot;
++-- gives:
++--    While checking the type of the constructor: Cons
++--    we checked the well-formedness of:
++--      forall (g:*(1+b)) (h:*(1+a)) (i:*(1+j)) (k:g ~&gt; h ~&gt; *0) (l:g:*(1+b)) (_m:h:*(1+a)) (n:i:*(1+j)).k l _m -&gt; Thrist k _m n -&gt; Thrist k l n :: *0
++--    An error was found.
++--    
++--    while checking the kind of (Thrist f d)
++--    we expected (d::  e:: *(1+b)) but
++--    we inferred (d::  c)
++--    Levels don't match b =/= a
++--      internal info _Levelx37295 =/= _Levelx37296
++
++-- so maybe the levels in the &quot;data&quot; decl and its constructors interact in some strange way?
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000295.html">[Al4nin-commits] r532 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000297.html">[Al4nin-commits] r534 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#296">[ date ]</a>
+              <a href="thread.html#296">[ thread ]</a>
+              <a href="subject.html#296">[ subject ]</a>
+              <a href="author.html#296">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

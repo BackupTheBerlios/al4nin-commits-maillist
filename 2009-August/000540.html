@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r778 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r778%20-%20trunk/purgatory&In-Reply-To=%3C200908050854.n758scSu024833%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000539.html">
+   <LINK REL="Next"  HREF="000541.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r778 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r778%20-%20trunk/purgatory&In-Reply-To=%3C200908050854.n758scSu024833%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r778 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  5 10:54:38 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000539.html">[Al4nin-commits] r777 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000541.html">[Al4nin-commits] r779 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#540">[ date ]</a>
+              <a href="thread.html#540">[ thread ]</a>
+              <a href="subject.html#540">[ subject ]</a>
+              <a href="author.html#540">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-05 10:54:37 +0200 (Wed, 05 Aug 2009)
+New Revision: 778
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+clean up stuff that is now covered with greater generality and is not needed any more
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-05 08:43:19 UTC (rev 777)
++++ trunk/purgatory/LLVM2step.omg	2009-08-05 08:54:37 UTC (rev 778)
+@@ -111,18 +111,11 @@
+   AddDef :: Label l -&gt; DefEvidence r -&gt; DefEvidence [l; r]d
+  deriving List(de)
+ 
+-buildBasicBlock2 :: Label t -&gt;
+-                    Prim Regular i us -&gt;
+-                    Prim Terminator i us' -&gt;
+-                    Maybe (Thrist Instr (A []d {appendUses us {appendUses us' []u}}) (A [t]d []u))
+-buildBasicBlock2 l (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Add</A> _ _) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Ret</A> _) = Just [Def l a, Term r]l
+-buildBasicBlock2 _ _ _ = Nothing
++test9 = undefined
++test10 = undefined
++test11 = undefined
++test12 = undefined
+ 
+-test9 = buildBasicBlock2 `t (Add (Const 40) (Const 2)) (Ret $ Const 2)
+-test10 = buildBasicBlock2 `t (Add (Const 40) (Const 2)) (Ret $ Use `t)
+-test11 = buildBasicBlock2 `t (Add (Const 40) (Use `a)) (Ret $ Use `t)
+-test12 = buildBasicBlock2 `t (Add (Use `c) (Use `a)) (Ret $ Use `t)
+-
+ defsOnly :: Row Lab Term ~&gt; Defs
+ {defsOnly {}r} = []d
+ {defsOnly {Anon=t; r}r} = {defsOnly r}
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000539.html">[Al4nin-commits] r777 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000541.html">[Al4nin-commits] r779 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#540">[ date ]</a>
+              <a href="thread.html#540">[ thread ]</a>
+              <a href="subject.html#540">[ subject ]</a>
+              <a href="author.html#540">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

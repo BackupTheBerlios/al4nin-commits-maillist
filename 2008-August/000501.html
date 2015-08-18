@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r739 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r739%20-%20trunk/purgatory&In-Reply-To=%3C200808060652.m766qpQ2010133%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000500.html">
+   <LINK REL="Next"  HREF="000502.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r739 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r739%20-%20trunk/purgatory&In-Reply-To=%3C200808060652.m766qpQ2010133%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r739 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  6 08:52:51 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000500.html">[Al4nin-commits] r738 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000502.html">[Al4nin-commits] r740 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-08-06 08:52:50 +0200 (Wed, 06 Aug 2008)
+New Revision: 739
+
+Modified:
+   trunk/purgatory/WayMark.lhs
+Log:
+removed step arg from remark, but this is probably a mistake
+
+Modified: trunk/purgatory/WayMark.lhs
+===================================================================
+--- trunk/purgatory/WayMark.lhs	2008-08-06 06:00:13 UTC (rev 738)
++++ trunk/purgatory/WayMark.lhs	2008-08-06 06:52:50 UTC (rev 739)
+@@ -73,12 +73,8 @@
+ The lookup function calls compute' to get the bit pattern and returns also the
+ position of a potential start pointer at which the fresh marks could be reapplied.
+ 
+-&gt; remark :: Int -&gt; Int -&gt; Int -&gt; UsePtr -&gt; Maybe Int
+-
+-   &gt; remark steps pos (Tagged Zero p) = remark (steps + 1) pos p
+-   &gt; remark steps seed (Tagged One p) = compute' (steps + 1) (seed + seed + 1) p
+-
+-&gt; remark steps pos invsteps (Tagged Stop p) = if validcluster requiredSteps p then (if enough pos invsteps then Just pos else Nothing) else remark 0 (pos + 1) invsteps p
++&gt; remark :: Int -&gt; Int -&gt; UsePtr -&gt; Maybe Int
++&gt; remark pos invsteps (Tagged Stop p) = if validcluster requiredSteps p then (if enough pos invsteps then Just pos else Nothing) else remark pos (invsteps + 1) p
+ &gt;     where
+ &gt;       validcluster 0 (Tagged Stop _) = True
+ &gt;       validcluster _ (Tagged Stop _) = False
+@@ -88,7 +84,7 @@
+ &gt;       enough _ invsteps = invsteps &gt;= requiredSteps
+ 
+ &gt;
+-&gt; remark steps pos invsteps (Tagged _ p) = remark (steps + 1) pos' invsteps' p
++&gt; remark pos invsteps (Tagged _ p) = remark pos' invsteps' p
+ &gt;     where (pos', invsteps') = if (pos == 0 &amp;&amp; invsteps == requiredSteps)
+ &gt;                               then (0, requiredSteps + 1)
+ &gt;                               else if (pos == 0 &amp;&amp; invsteps &gt;= requiredSteps)
+@@ -98,7 +94,7 @@
+ &gt;                               else if (invsteps == requiredSteps + 1)
+ &gt;                               then (pos + 1, requiredSteps + 1)
+ &gt;                               else (pos, invsteps + 1)
+-&gt; remark steps pos invsteps (Fin (Val i _)) = Nothing -- ### for NOW
++&gt; remark pos invsteps (Fin (Val i _)) = Nothing -- ### for NOW
+ 
+ 
+ Test section:
+@@ -165,3 +161,8 @@
+ &gt; i = Tagged One
+ &gt; s = Tagged Stop
+ &gt; f = Fin $ Val 0 f
++
++
++&gt; te1 = s $ s $ s $ s $ o $ i $ o $ s $ f
++&gt; te2 = s $ s $ s $ o $ i $ f
++&gt; te3 = i $ o $ i te1
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000500.html">[Al4nin-commits] r738 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000502.html">[Al4nin-commits] r740 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#501">[ date ]</a>
+              <a href="thread.html#501">[ thread ]</a>
+              <a href="subject.html#501">[ subject ]</a>
+              <a href="author.html#501">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r267 - in trunk: found-bugs purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r267%20-%20in%20trunk%3A%20found-bugs%20purgatory&In-Reply-To=%3C200703191639.l2JGdF7l020687%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000028.html">
+   <LINK REL="Next"  HREF="000030.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r267 - in trunk: found-bugs purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r267%20-%20in%20trunk%3A%20found-bugs%20purgatory&In-Reply-To=%3C200703191639.l2JGdF7l020687%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r267 - in trunk: found-bugs purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Mar 19 17:39:15 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000028.html">[Al4nin-commits] r266 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000030.html">[Al4nin-commits] r268 - in trunk: found-bugs purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#29">[ date ]</a>
+              <a href="thread.html#29">[ thread ]</a>
+              <a href="subject.html#29">[ subject ]</a>
+              <a href="author.html#29">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-19 17:39:08 +0100 (Mon, 19 Mar 2007)
+New Revision: 267
+
+Added:
+   trunk/found-bugs/bug2-LLVM.omg
+Removed:
+   trunk/purgatory/LLVM.omg
+Log:
+remember a file that crashes Omega 1.4
+
+
+Copied: trunk/found-bugs/bug2-LLVM.omg (from rev 266, trunk/purgatory/LLVM.omg)
+
+Deleted: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-03-19 16:05:11 UTC (rev 266)
++++ trunk/purgatory/LLVM.omg	2007-03-19 16:39:08 UTC (rev 267)
+@@ -1,180 +0,0 @@
+-{-
+- * Copyright (c) 2007 Gabor Greif
+- *
+- * Permission is hereby granted, free of charge, to any person obtaining a copy
+- * of this software and associated documentation files (the &quot;Software&quot;), to deal
+- * in the Software without restriction, including without limitation the rights
+- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+- * of the Software, and to permit persons to whom the Software is furnished to do
+- * so, subject to the following conditions:
+- *
+- * The above copyright notice and this permission notice shall be
+- * included in all copies or substantial portions of the Software.
+- *
+- * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+- * OR OTHER DEALINGS IN THE SOFTWARE.
+- -}
+-
+-
+-import &quot;LangPrelude.prg&quot;
+-  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal,(==))
+-
+-kind TypeClass :: *1 where
+-  FstClass :: TypeClass
+-  SndClass :: TypeClass
+-
+-kind Returnability :: *1 where
+-  Returnable :: Returnability
+-  Nonreturnable :: Returnability
+-
+-kind Type :: TypeClass ~&gt; Returnability ~&gt; *1 where
+- LVoid :: Type SndClass Returnable
+- LInt :: Nat ~&gt; Type FstClass Returnable
+- LFloat :: Type FstClass Returnable
+- LDouble :: Type FstClass Returnable
+- LPointer :: Type a r ~&gt; Type FstClass Returnable
+- LFunction :: Type FstClass Returnable ~&gt; Type b Returnable ~&gt; Type SndClass Nonreturnable
+- LVector :: Nat ~&gt; Type FstClass Returnable ~&gt; Type FstClass Returnable
+-
+-kind HasLType :: *1 where
+-  HasL :: Tag ~&gt; Type FstClass Returnable ~&gt; HasLType
+-
+---i1 :: a ~&gt; Type FstClass Returnable
+--- {i1 g} = LInt #1
+-
+-kind BB = Entry | Normal
+-
+-kind ComesFrom :: *1 where
+-  From :: Row HasLType ~&gt; ComesFrom
+-
+-data Departures :: forall (c :: TypeClass) . Type FstClass Returnable ~&gt; Type c Returnable ~&gt; Row ComesFrom ~&gt; * where
+-  Nowhere :: Departures prodV t RNil
+-  Comes :: (Value prod, BasicBlock t n' def) -&gt; Departures prod t alts -&gt; Departures prod t (RCons (From def) alts)
+- deriving List(d)
+-
+-data Instr :: forall (c :: TypeClass) . Type c Returnable ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+-  -- Terminators
+-  Unwind :: Instr t n RNil
+-  Branch :: BasicBlock t Normal otherdefs -&gt; Instr t n RNil
+-  Return :: Value a -&gt; Instr a n RNil
+-  Switch :: Value (LInt bits) -&gt; BasicBlock t Normal d1 -&gt; [(Value a, BasicBlock t Normal d2)] -&gt; Instr t n RNil
+-  Unreachable :: Instr t n RNil
+-  -- Value generators
+-  Add :: Label l -&gt; Value (LInt bits) -&gt; Value (LInt bits) -&gt; Instr t n defs -&gt; Instr t n (RCons (HasL l (LInt bits)) defs)
+-  Phi :: Label l -&gt; Departures a t deps -&gt; Instr t n defs -&gt; Instr t Normal (RCons (HasL l a) defs)
+-
+-
+-data BasicBlock :: forall (c :: TypeClass) . Type c Returnable ~&gt; BB ~&gt; Row HasLType ~&gt; * where
+-  BB :: Label bl -&gt; Instr t n defs -&gt; BasicBlock t n defs
+-
+-data Value :: forall (c :: TypeClass) . Type c Returnable ~&gt; * where
+-  Nada :: Value LVoid
+-  LitI :: Int -&gt; Value (LInt #32)
+-  LitB :: Bool -&gt; Value (LInt #1)
+-  Ref :: Label l -&gt; Value t
+-  Undef :: Value t
+-  P :: Value t -&gt; Value (LPointer t)
+-
+-data Function :: Type SndClass Nonreturnable ~&gt; * where
+-  Function :: Value a -&gt; BasicBlock b Entry defs -&gt; Function (LFunction a b)
+-
+-
+-showBB :: BasicBlock t n defs -&gt; String
+-showBB (BB l more) = showLabel l ++ &quot;:&quot; ++ showInstr more
+-
+-showInstr :: Instr t n defs -&gt; String
+-showInstr Unwind = &quot;\tunwind&quot;
+-showInstr (Branch (BB l _)) = &quot;\tbr label &quot; ++ showRef l
+-showInstr (Switch v (BB l _) _) = &quot;\tswitch &quot; ++ showValue v ++ &quot;, label &quot; ++ showRef l ++ &quot; ...&quot;
+-showInstr (Return v) = &quot;\tret &quot; ++ showValue v
+-showInstr Unreachable = &quot;\tunreachable&quot;
+-showInstr (Add l a b more) = &quot;\t&quot; ++ showRef l ++ &quot; = add &quot; ++ showValue a ++ &quot;, &quot; ++ showValue b ++ &quot;\n&quot; ++ showInstr more
+-showInstr (Phi l alts more) = &quot;\t&quot; ++ showRef l ++ &quot; = phi &quot; ++ showDepartures alts ++ &quot;\n&quot; ++ showInstr more
+-
+-showValue :: Value t -&gt; String
+-showValue Nada = &quot;void&quot;
+-showValue (LitB f) = &quot;i1 &quot; ++ show f
+-showValue (LitI n) = &quot;i32 &quot; ++ show n
+-showValue (Ref l) = &quot;i32 &quot; ++ showRef l
+-
+-showLabel l = tail (show l)
+-
+-showRef :: Label l -&gt; String
+-showRef l = '%':tail (show l)
+-
+-showDepartures :: Departures it ft r -&gt; String
+-showDepartures #[(v, BB l _)]d = &quot;[ &quot; ++ showValue v ++ &quot;, &quot; ++ showRef l ++ &quot; ]&quot;
+-showDepartures (Comes (v, BB l _) deps) = &quot;[ &quot; ++ showValue v ++ &quot;, &quot; ++ showRef l ++ &quot; ], &quot; ++ showDepartures deps
+-
+--- ###### TESTS #####
+-
+-t0 = BB `t1 (Phi `tl11 #[(lTrue, BB `other1 (Phi `tl12 #[(Ref `uff, BB `other2 (Branch (BB `other4 Unwind)))]d Unreachable))]d Unreachable)
+-t1 = BB `t1 (Phi `tl11 #[(lTrue, BB `other1 (Phi `tl12 #[(Ref `uff, t1), (Ref `buff, t0)]d Unreachable))]d Unreachable)
+-t2 = BB `t1 (Branch (BB `other1 (Add `ret (LitI 42) (Ref `in) (Return (Ref `ret)))))
+-t3 = BB `t3 (Branch t2)
+-t4 = BB `t4 (Switch (Ref `ggg) t2 [(LitB True, t3)])
+-t5 = BB `t5 (Return Nada)
+-
+-##test &quot;Phis must be of first class type&quot;
+-  p1 = Phi `tl12 #[(Nada, BB `other2 (Branch (BB `other4 Unwind)))]d Unreachable
+-
+-lTrue = LitB True
+-lF = LitB False
+-
+-##test &quot;Phi not allowed in entry basic block&quot;
+-  f1 = Function (LitB True) t1
+-
+-f2 = Function (LitB False) t2
+-f3 = Function (LitI 42) t3
+-f4 = Function (LitI 42) t4
+-f5 = Function (LitI 42) t5
+-
+-
+--- Function for computing live inputs (Label, LType) sequence to a BB --
+-
+-intersectRows :: Row t ~&gt; Row t ~&gt; Row t
+-{ intersectRows RNil rhs } = RNil
+-{ intersectRows (RCons a rest) rhs }
+-  = { appendRows { findInRow a rhs }
+-                      { intersectRows rest rhs } }
+-
+-findInRow :: t ~&gt; Row t ~&gt; Row t
+-{ findInRow a (RCons a rest) } = RCons a { findInRow a rest }
+-{ findInRow a (RCons a' rest) } = { findInRow a rest }
+-{ findInRow a RNil } = RNil
+-
+-appendRows :: Row t ~&gt; Row t ~&gt; Row t
+-{ appendRows RNil rhs } = rhs
+-{ appendRows (RCons head rest) rhs } = RCons head { appendRows rest rhs }
+-
+-
+-prefix :: Nat ~&gt; Nat ~&gt; Nat
+-{ prefix Z Z } = Z
+-{ prefix (S a) (S b) } = S {prefix a b}
+-
+-
+-data Wum :: Row HasLType  ~&gt; * where
+- Wum :: Wum RNil
+- Wum2 :: Wum (RCons (HasL `hh LFloat) RNil)
+-
+---a :: Wum { intersectRows (RCons (HasL `hh LFloat) RNil) (RCons (HasL `hh LFloat) RNil) }
+---a :: Wum { intersectRows (RCons (HasL `hh LFloat) RNil) (RCons (HasL `gg LFloat) (RCons (HasL `hh LFloat) RNil)) }
+-a :: Wum { intersectRows (RCons (HasL `gg LFloat) (RCons (HasL `hh LFloat) RNil)) (RCons (HasL `hh LFloat) RNil) }
+---a :: Wum { intersectRows (RCons (HasL `hh LFloat) RNil) RNil }
+-a = Wum2
+-
+-
+--- make two rows the same if they are only permutations of each other
+--- dabbling with Prop
+-
+-
+-
+-isPermutation :: Row t ~&gt; Row t ~&gt; Prop
+-{ isPermutation r1 r2 } = r1 == { intersectRows r1 r2 }
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000028.html">[Al4nin-commits] r266 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000030.html">[Al4nin-commits] r268 - in trunk: found-bugs purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#29">[ date ]</a>
+              <a href="thread.html#29">[ thread ]</a>
+              <a href="subject.html#29">[ subject ]</a>
+              <a href="author.html#29">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

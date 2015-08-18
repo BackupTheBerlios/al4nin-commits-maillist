@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r409 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r409%20-%20trunk/purgatory&In-Reply-To=%3C200707072311.l67NB7Ch006066%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000170.html">
+   <LINK REL="Next"  HREF="000172.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r409 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r409%20-%20trunk/purgatory&In-Reply-To=%3C200707072311.l67NB7Ch006066%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r409 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Jul  8 01:11:07 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000170.html">[Al4nin-commits] r408 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000172.html">[Al4nin-commits] r410 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-08 01:11:03 +0200 (Sun, 08 Jul 2007)
+New Revision: 409
+
+Modified:
+   trunk/purgatory/Cat.omg
+Log:
+tailMerge should handle all relevant cases now
+
+
+Modified: trunk/purgatory/Cat.omg
+===================================================================
+--- trunk/purgatory/Cat.omg	2007-07-07 22:44:55 UTC (rev 408)
++++ trunk/purgatory/Cat.omg	2007-07-07 23:11:03 UTC (rev 409)
+@@ -306,21 +306,25 @@
+ revThrist' :: Thrist Cat a c -&gt; RevThrist Cat a c
+ revThrist' thr = revThrist RevNil thr
+ 
+-tailMerge :: Thrist Cat [Bool; a]sh b -&gt; RevThrist Cat a c  -&gt; RevThrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat [Bool; a]sh b
+----tailMerge all RevNil RevNil r = r
+---tailMerge all (_, [_]l) (_, []l) r = all
++forwThrist :: RevThrist Cat a b -&gt; Thrist Cat b c -&gt; Thrist Cat a c
++forwThrist RevNil acc = acc
++forwThrist (RevCons prefix a) acc = forwThrist prefix [a; acc]l
+ 
+---tailMerge _ (yes, [Dup]l) (no, [Dup]l) r = [If yes no, Dup; r]l
++forwThrist' :: RevThrist Cat a c -&gt; Thrist Cat a c
++forwThrist' rthr = forwThrist rthr []l
+ 
+-tailMerge _ RevNil RevNil r = [pop; r]l
+------tailMerge _ prefix1 RevNil r = [If (forwThrist prefix1) []l, r]l
+------tailMerge _ RevNil prefix2 r = [If []l $ forwThrist prefix2, r]l
+-tailMerge all (RevCons prefix1 Dup) (RevCons prefix2 Dup) r = tailMerge all prefix1 prefix2 [Dup; r]l
+ 
+-tailMerge all _ _ _ = all
++tailMerge :: Bool -&gt; Thrist Cat [Bool; a]sh b -&gt; RevThrist Cat a c  -&gt; RevThrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat [Bool; a]sh b
+ 
+-tm0 = tailMerge [If [Dup]l [Dup]l, Print]l (revThrist' [Dup]l) (revThrist' [Dup]l) [Print]l
++tailMerge _ _ RevNil RevNil r = [pop; r]l
++tailMerge _ all (RevCons prefix1 Dup) (RevCons prefix2 Dup) r = tailMerge True all prefix1 prefix2 [Dup; r]l
++tailMerge True _ prefix1 prefix2 r = [If (forwThrist' prefix1) (forwThrist' prefix2); r]l
++tailMerge _ all _ _ _ = all
+ 
++tm0 = tailMerge False [If [Dup]l [Dup]l, Print]l (revThrist' [Dup]l) (revThrist' [Dup]l) [Print]l
++tm1 = tailMerge False [If [Dup, Print, Dup]l [Dup]l, Print]l (revThrist' [Dup, Print, Dup]l) (revThrist' [Dup]l) [Print]l
++tm2 = tailMerge False [If [Dup, Dup, Print]l [Dup]l, Print]l (revThrist' [Dup, Dup, Print]l) (revThrist' [Dup]l) [Print]l
++
+ to0 = optimizeCat [If [pushI 42]l [pushI 42]l, Print]l
+ to1 = optimizeCat [If [pushI 42]l [pushI 43]l, Print]l
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000170.html">[Al4nin-commits] r408 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000172.html">[Al4nin-commits] r410 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#171">[ date ]</a>
+              <a href="thread.html#171">[ thread ]</a>
+              <a href="subject.html#171">[ subject ]</a>
+              <a href="author.html#171">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

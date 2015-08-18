@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r439 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r439%20-%20trunk/purgatory&In-Reply-To=%3C200707251412.l6PEClTm008936%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000200.html">
+   <LINK REL="Next"  HREF="000202.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r439 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r439%20-%20trunk/purgatory&In-Reply-To=%3C200707251412.l6PEClTm008936%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r439 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jul 25 16:12:47 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000200.html">[Al4nin-commits] r438 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000202.html">[Al4nin-commits] r440 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#201">[ date ]</a>
+              <a href="thread.html#201">[ thread ]</a>
+              <a href="subject.html#201">[ subject ]</a>
+              <a href="author.html#201">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-07-25 16:12:47 +0200 (Wed, 25 Jul 2007)
+New Revision: 439
+
+Modified:
+   trunk/purgatory/MonadPrime.omg
+Log:
+issue 23 spoils nest
+
+Modified: trunk/purgatory/MonadPrime.omg
+===================================================================
+--- trunk/purgatory/MonadPrime.omg	2007-07-25 13:38:30 UTC (rev 438)
++++ trunk/purgatory/MonadPrime.omg	2007-07-25 14:12:47 UTC (rev 439)
+@@ -100,3 +100,19 @@
+ intersperseThrist i []l = [i]l
+ intersperseThrist i [a; as]l = [i, a; intersperseThrist i as]l
+ 
++
++
++-- Pushing down a function into a specific tuple level
++
++dig :: Nat ~&gt; * ~&gt; *
++{dig Z a} = a
++{dig (S n) (a, b)} = (a, {dig n b})
++
++exch :: Nat ~&gt; * ~&gt; * ~&gt; *
++{exch Z b a} = b
++{exch (S n) b (a, c)} = (a, {exch n b c})
++
++nest :: Nat' n -&gt; ({dig n a} -&gt; b) -&gt; a -&gt; {exch n b a}
++-- does not typecheck, issue23:
++--nest Z f a = check (f a)
++--nest (S n) f (a, c) = (a, nest n f c)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000200.html">[Al4nin-commits] r438 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000202.html">[Al4nin-commits] r440 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#201">[ date ]</a>
+              <a href="thread.html#201">[ thread ]</a>
+              <a href="subject.html#201">[ subject ]</a>
+              <a href="author.html#201">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

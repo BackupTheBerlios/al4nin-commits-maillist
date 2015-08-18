@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r455 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r455%20-%20trunk/purgatory&In-Reply-To=%3C200709212150.l8LLoUae031071%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000216.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r455 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r455%20-%20trunk/purgatory&In-Reply-To=%3C200709212150.l8LLoUae031071%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r455 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep 21 23:50:30 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000216.html">[Al4nin-commits] r454 - trunk/purgatory
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-09-21 23:50:30 +0200 (Fri, 21 Sep 2007)
+New Revision: 455
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+beginnings of application three
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-09-17 13:44:01 UTC (rev 454)
++++ trunk/purgatory/Thrist.lout	2007-09-21 21:50:30 UTC (rev 455)
+@@ -1,6 +1,7 @@
+ @SysInclude { report }
+ @SysInclude { fig }
+ @SysInclude { diag }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SysInclude</A> { tbl }
+ @SysInclude { graph }
+ @SysInclude { eq }
+ @SysInclude { haskell }
+@@ -10,7 +11,6 @@
+ def @Prompt left input right output { { Helvetica Base } @Font { prompt&gt; @Haskell { input } @PP @I { output } } }
+ def @Omega { {@I {@Sym Omega}}mega }
+ 
+-#@Database @Reference { refs }
+ @Report
+   @CoverSheet { No }
+   @ColumnNumber { 2 }
+@@ -18,22 +18,23 @@
+   @DateLine { Yes }
+   @Title { Thrists: Dominoes of Data }
+   @Author { Gabor Greif }
+-  @Institution { <A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">gabor at mac.com</A> }
++  @Institution { &quot;<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">gabor at mac.com</A>&quot; }
+ #  @SectionHeadingFont { Helvetica Bold }
+   @AbstractDisplay { Yes }
+ # @AbstractFormat { @Centre @Title @DP @Body }
+ @Abstract {
+-We develop a novel list-like datastructure (which we name @I Thrist),
++We develop a novel list-like datastructure (which we name @Haskell {Thrist}),
+ that is able to capture the typing rule of function composition.
+-Indeed, we show that when Thrist is parameterized with the function
++Indeed, we show that when @Haskell {Thrist} is parameterized with the function
+ type constructor @Haskell {(-&gt;)} we can provide an interpretation function
+ which completely emulates the classical function composition @Haskell {(.)}.
+-Additionally we can perform pattern matching on our Thrist elements, thus
++Additionally we can perform pattern matching on our @Haskell {Thrist} elements, thus
+ obtaining the ability to do analysis on them. On the practical side
+-we develop two new two-parameter GADTs. The first, when accompanied
+-by an appropriate interpreter, directly model the semantics of the Cat language,
+-while the second caters for a new type of parser combinator libraries.
+-The Thrist approach of exposing the intermediate types where the
++we develop three new two-parameter GADTs for inclusion into {@Haskell {Thrist}}s.
++The first, when accompanied by an appropriate interpreter, directly model the semantics
++of the Cat language, while the second caters for a new type of parser combinator libraries.
++In our third example we demonstrate the use of {@Haskell {Thrist}}s in state machines.
++The @Haskell {Thrist} approach of exposing the intermediate types where the
+ elements are joined together especially shows its potential in the ability to
+ stage the interpreter in a type-safe way and only allows for type correct
+ transformations.
+@@ -44,7 +45,6 @@
+ @Title { Structure of the Paper }
+ @Begin
+ @PP
+-
+ In the first section we motivate our later introduction of Thrist with well known
+ examples. In the third section we develop three practial applications of Thrists.
+ We also present some less useful but entertaining uses. Section four shows
+@@ -152,7 +152,7 @@
+ lost all memories of the fact how it was obtained. But can we create a datastructure
+ that has all properties of function composition, without being amnesiac?
+ @PP
+-Indeed we can, and the rest of this chapter shall explain how.
++Indeed we can, and the rest of this section shall explain how.
+ @PP
+ Our crucial observation from the introduction was that the types at the ends of the function
+ arrows must thread up, intuitively @FootNote { we reconcile the conflict between
+@@ -809,6 +809,60 @@
+    @ListItem { As the execution of the trist proceeds the incrementally more of the token are analysed, condensed and converted. }
+ @EndList
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Figure</A>
++    @Tag { machine }
++    @Caption { State machine fragment }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Diag</A> # vstrut { yes } treehsep { 1c }
++      outline { curvebox }
++{
++
++
++
++    # @HTree { @Box Lout @FirstSub arrow { yes } @Box PostScript }
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Tbl</A>
++    aformat { @Cell A | @Cell B | @Cell C }
++    marginhorizontal { 0.5c }
++    marginvertical { 0.25c }
++{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    B { N:: @Node North }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { W:: @Node West }
++    C { E:: @Node East }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    B { S:: @Node South }
++    C { SE:: @Node Southeast }
++}
++
++|1fx @Tbl
++    #height { 0.7c }
++    aformat { @Cell height { 1c } A }
++{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { @Haskell { North :: State GateClosed SecondaryEnabled Idle } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { @Haskell { West :: State GateClosed SecondaryBlocked NeedAck } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { @Haskell { East :: State GateClosed SecondaryBlocked Requested } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { @Haskell { South :: State GateOpen SecondaryBlocked Idle } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Rowa</A>
++    A { @Haskell { Southeast :: State GateClosed SecondaryBlocked NeedAck } }
++}
++
++
++//
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { N } to { W }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { N } to { E }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { W } to { S }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { E } to { SE }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Arrow</A> from { SE } to { S }
++}
++
++
++
++
+ @End @SubSubSection
+ 
+ @SubSubSection
+@@ -853,12 +907,12 @@
+ @Begin
+ @PP
+ Many interesting other combinators can be defined, my repository contains also
+-
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
+   Seq1 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
+   ButNot1 :: Parse a b -&gt; Parse a b -&gt; Parse a b     -- match first and expect second to fail
+   UpTo :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- scan for c then match b
+-
++}
+ etc.
+ 
+ I think working together with a parsing expert could result in a minimal set of combinators that
+@@ -868,20 +922,127 @@
+ 
+ @EndSubSubSections
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSection
+ 
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSection</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Application three: Actions on State Machine Transitions }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++One popular use of metaprogramming tools is generating code for legacy
++systems, especially when the high-level language's whole feature set is
++too heavy for the application, such as in embedded systems with significant
++resource limitations. We wish a system where very strong guarantees are maintained
++in the model by resorting to typeful data representation and nevertheless
++preserve the ability to convert our model into a lower-level representation
++that is feasible for the target system.
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at BeginSubSubSections</A>
++
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSubSection</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { The Transition System }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++Figure @NumberOf { machine } depicts a fragment of a state machine intended to handle
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> request&quot;/&quot;acknowledge type handshake with an identical remote instance
++of itself. The two instances are communicating solely by message passing
++and originally both inhabit the @I North state. The intention is that the
++two machines control the two ends of a unidirectional communication channel
++that is	@I protected, i.e. two wires exist, carrying a data stream A on the
++first wire{ @FootNote {the second wire can either carry the same data as A (to increase redundancy)
++or the two wires could jointly carry stream A (to increase bandwidth)} },
++and when the first wire does not carry data, the second wire can
++be utilized to carry a lower-priority data stream B. The typical use-case
++is the premium customer paying for A and the bulk customer paying significanly
++less for B. There is an extra twist however: it is forbidden for the data stream A
++to reach the sink of data stream B, even for very short time periods. This invariant
++calls for the request&quot;/&quot;acknowledge handshake, and the transient states on the way to
++the @I South state mirror this protocol.
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSubSection
++
++
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSubSection</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Typed States }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++We intend to equip the states with an orthogonal system of properties
++(which we call {@I facets}), and hope to assemble transition arrows
++from a toolbox of elementary actions which deal with a minimal number
++of facets each.
++To formally introduce the facets, we employ another @Omega feature,
++namely @I { user-defined kinds }, whose alternatives can be used to
++parameterise the @Haskell { State } datatype:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell {
++kind Gate = GateClosed | GateOpen
++kind Secondary = SecondaryEnabled | SecondaryBlocked
++kind Handshake = Idle | NeedAck | Requested
++
++data State :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
++  State :: [Transition g s h] -&gt; State g s h
++}
++
++On its right side, figure @NumberOf { machine } shows
++the states along with the facets and
++the labeling of the transition lists the elementary actions needed
++to ensure the working of the handshaking protocol.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSubSection
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at SubSubSection</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Title</A> { Action Thrists }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Begin</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++We can implement the elementary actions as a GADT:
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at ID</A> @Haskell {
++data Action :: Gate ~&gt; Secondary ~&gt; Handshake ~&gt; * where
++  RequestExclusive :: Action (a, b, Idle) (a, b, NeedAck)
++  AckExclusive :: Action (a, b, Requested) (a, b, Idle)
++  OpenGate :: Action (GateClosed, SecondaryBlocked, c) (GateOpen, SecondaryBlocked, c)
++  BlockSecondary :: Action (a, SecondaryEnabled, c) (a, SecondaryBlocked, c)
++  ...
++}
++
++Then state transitions would correspond to @Haskell { Thrist Action }s.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at PP</A>
++What do we gain with such a declarative description of the state machine at
++hand?
++- First, given a fine-grained encoding of the protocol's and business logic's
++encoding in the state facets, the type system will take care of checking that
++all necessary elementary actions are mentioned in the transition's action thrist.
++This can be an important assurance in case of great statemachines with a complicated
++semantic model. Especially for communicating state machines, as in our example,
++the administrative states arising as a result of the handshaking protocol
++can be daunting. Getting the transition actions right between all these states
++is an error prone task and help from the type system highly welcome.
++- Second, the possibility to pattern-match on the actions that form transitions
++it is possible to enumerate all possible admissible configurations of the communicating
++state machines and use proof techniques to ensure that the principal invariant of
++the system is met{@FootNote { Highlighting this verification aspect is beyond the scope ot this paper } }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at End</A> @SubSubSection
++
++
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at EndSubSections</A>
++
+ @End @SubSection
+ 
++
++
+ @EndSubSections
+ 
+ @End @Section
+ 
+ 
++
++
++
+ @Section
+   @Title { Exotic Uses }
+ @Begin
+ @PP
+-We have already seen @Haskell { Thrist ((,)) } and @Haskell { Thrist (-&gt;) } in the introduction.
++We have already seen @Haskell { Thrist (,) } and @Haskell { Thrist (-&gt;) } in the introduction.
+ But several more common two-parameter datatypes exist that @Haskell { Thrist } can be parametrized with,
+ e.g. @I Either{@FootNote { in @Omega named as @Haskell { (+) } }}, @Haskell { Equal } and so on.
+ In this section we analyse the formal requirements for inclusion into the @Haskell { Thrist } framework,
+@@ -940,7 +1101,7 @@
+ mandates a function argument for the method @Haskell { arr }.
+ @Considerations { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell }
+ @PP
+-Nilsson @Cite { nilsson2005 } embarks on optimization of a GADT-based @Haskell { Arrow } library, but he only
++Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library, but he only
+ considers the identity function as a special case. He observes a substantial
+ speedup in microbenchmarks when the optimizer is able to discover and short-circuit
+ the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
+@@ -968,6 +1129,9 @@
+ @Considerations { a value of type @Haskell { Thrist (Monad' T) } corresponds to the @F { do ... } syntactic sugar expression in Haskell }
+ @Considerations { Unimo? for ensuring that the interpreter obeys monadic semantics,
+  in an Appendix: use Unimo to constuct an @Omega Monad' -&gt; Monad function, hmm this is not correct, unimo :: ??? -&gt; Monad } 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { a word about Unimo: does compilation of the unimo value (staging) give the performance back? probably not,
++the values are included into the data structure, each monadic &quot;do{}&quot; needs to be compiled. In our context the thrists (Parser)
++do not contain &quot;external&quot; values, so no recompilation is necessary. }
+ @Considerations { Comonads?, see paper @Cite {heunenJacobs},
+ Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming }
+ 
+@@ -994,7 +1158,7 @@
+   @Title { Other Work }
+ @Begin
+ @PP
+-Chuan-kai Lin's @I { Unimo } framework @Cite {xxx} is an attempt to describe monads operationally
++Chuan-kai Lin's @I { Unimo } framework @Cite { $lin06.unimo } is an attempt to describe monads operationally
+ by interpreting a datastructure that describes the monad. By the fact that the interpreter
+ is proven to satisfy the monadic laws, a guarantee is given that the monadic semantics
+ is fulfilled, regardless what callback functions the monad's creator supplies. GADTs appear in
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000216.html">[Al4nin-commits] r454 - trunk/purgatory
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#217">[ date ]</a>
+              <a href="thread.html#217">[ thread ]</a>
+              <a href="subject.html#217">[ subject ]</a>
+              <a href="author.html#217">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

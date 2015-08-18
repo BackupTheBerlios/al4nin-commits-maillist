@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1093 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-September/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1093%20-%20trunk/purgatory&In-Reply-To=%3C20110909200256.DC6BE48127F%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000854.html">
+   <LINK REL="Next"  HREF="000856.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1093 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1093%20-%20trunk/purgatory&In-Reply-To=%3C20110909200256.DC6BE48127F%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1093 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Sep  9 22:02:56 CEST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000854.html">[Al4nin-commits] r1092 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000856.html">[Al4nin-commits] r1094 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#855">[ date ]</a>
+              <a href="thread.html#855">[ thread ]</a>
+              <a href="subject.html#855">[ subject ]</a>
+              <a href="author.html#855">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-09-09 22:02:56 +0200 (Fri, 09 Sep 2011)
+New Revision: 1093
+
+Added:
+   trunk/purgatory/pat-term.txt
+Modified:
+   trunk/purgatory/PatTermExp.lhs
+Log:
+add parser, but it does not work yet
+
+Modified: trunk/purgatory/PatTermExp.lhs
+===================================================================
+--- trunk/purgatory/PatTermExp.lhs	2011-09-02 22:48:52 UTC (rev 1092)
++++ trunk/purgatory/PatTermExp.lhs	2011-09-09 20:02:56 UTC (rev 1093)
+@@ -15,6 +15,9 @@
+ 
+ &gt; module Exp where
+ 
++&gt; import Data.Thrist
++&gt; import Text.ParserCombinators.Parsec
++
+ &gt; data Term
+ &gt; data Pattern
+ 
+@@ -44,3 +47,32 @@
+ &gt; test1 = Equal (Var (Name &quot;xx&quot;)) (Lam (Bound (Name &quot;gg&quot;, Var (Name &quot;gg&quot;))))
+ &gt; test2 = Equal (Con &quot;S&quot; [Con &quot;Z&quot; []]) (Con &quot;Z&quot; [])
+ 
++&gt; symbol a = do { spaces
++&gt;               ; string a }
++
++&gt; name :: Parser String
++&gt; name = do spaces
++&gt;           many1 letter
++
++&gt; -- parens  = between (symbol &quot;(&quot;) (symbol &quot;)&quot;)
++
++&gt; lambda = do symbol &quot;\\&quot;
++&gt;             n &lt;- name
++&gt;             symbol &quot;.&quot;
++&gt;             e &lt;- expr
++&gt;             return $ Lam (Bound (Name n, e))
++
++&gt; apply = do e1 &lt;- expr
++&gt;            symbol &quot;@&quot;
++&gt;            e2 &lt;- expr
++&gt;            return $ App e1 e2
++
++&gt; expr = lambda &lt;|&gt; apply
++
++&gt; program = do e &lt;- expr
++&gt;              eof
++
++&gt; main = do e &lt;- parseFromFile program &quot;pat-term.txt&quot;
++&gt;           case e of
++&gt;            Left err -&gt; print err
++&gt;            Right xs  -&gt; print $ show e
+
+Added: trunk/purgatory/pat-term.txt
+===================================================================
+--- trunk/purgatory/pat-term.txt	                        (rev 0)
++++ trunk/purgatory/pat-term.txt	2011-09-09 20:02:56 UTC (rev 1093)
+@@ -0,0 +1,2 @@
++
++\x.x @ \bac.hac
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000854.html">[Al4nin-commits] r1092 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000856.html">[Al4nin-commits] r1094 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#855">[ date ]</a>
+              <a href="thread.html#855">[ thread ]</a>
+              <a href="subject.html#855">[ subject ]</a>
+              <a href="author.html#855">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

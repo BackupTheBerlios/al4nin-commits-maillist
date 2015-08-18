@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r680 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r680%20-%20trunk/purgatory&In-Reply-To=%3C200807071534.m67FYMAr028948%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000442.html">
+   <LINK REL="Next"  HREF="000444.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r680 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r680%20-%20trunk/purgatory&In-Reply-To=%3C200807071534.m67FYMAr028948%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r680 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Jul  7 17:34:22 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000442.html">[Al4nin-commits] r679 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000444.html">[Al4nin-commits] r681 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#443">[ date ]</a>
+              <a href="thread.html#443">[ thread ]</a>
+              <a href="subject.html#443">[ subject ]</a>
+              <a href="author.html#443">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-07 17:34:21 +0200 (Mon, 07 Jul 2008)
+New Revision: 680
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+Arrows ann Monads are done now
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-07 14:24:06 UTC (rev 679)
++++ trunk/purgatory/Thrist.lout	2008-07-07 15:34:21 UTC (rev 680)
+@@ -1265,28 +1265,52 @@
+ composition. It is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
+ our @Haskell { Thrist } definition. 
+ 
++It is fairly easy to see how the Haskell type class @Haskell { Arrow } can be expressed as a thrist.
++Here is a stripped-down definition of @Haskell { Arrow } to its essence:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++class Arrow a where
++  arr :: (b -&gt; c) -&gt; a b c
++  (&gt;&gt;&gt;) :: a b c -&gt; a c d -&gt; a b d
++  first :: a b c -&gt; a (b, d) (c, d)
++}
++The first method (@Haskell {Arrow}) is taking an ordinary  function into the arrow, the second
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Haskell</A> {(&gt;&gt;&gt;)} can be regarded as composition and the third (@Haskell {first}) defines the
++interaction between arrows and pairs. As we have already stated in the introduction (@NumberOf {intro.compose}),
++the @Haskell { Cons } already provides the r{@Char ocircumflex}le of @Haskell {(&gt;&gt;&gt;)}.
++To cover the other two, all we have to do is to provide a three-parameter datatype with two data
++constructors @Haskell {Arr} and @Haskell {First}:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++data Arrow' :: (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * where
++  Arr :: (b -&gt; c) -&gt; Arrow' a b c
++  First :: Arrow' a b c -&gt; Arrow' a (b, d) (c, d)
++}
+ 
+-Obviously any instance of the Haskell type class @Haskell { Arrow } can
+-be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
+-function that is rather canonic, and will be given in the Appendix @NumberOf { arrow.adapter }. This semantics obviously
+-guarantees the arrow laws @Cite { $hughes00.arrows }.
++#Obviously any instance of the Haskell type class @Haskell { Arrow } can
++#be expressed as a thrist.
+ 
+-On the other hand thrists are not always
+-easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
+-to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
+-mandates a function argument for the method @Haskell { arr }.
++To obtain the arrow {@I behaviour}, we have to accompany the @Haskell { Thrist Arrow' }
++with an interpretation function that guarantees the arrow laws @Cite { $hughes00.arrows }.
++Forunately such a semantics can be canonically defined in terms of the enclosed
++arrow's methods. Please consult the Appendix @NumberOf { arrow.adapter } for a slightly
++different, but complete implementation.
+ @PP
+-Nilsson @Cite { $nilsson05.frp } embarks on optimizing a GADT-based @Haskell { Arrow } library,
+-but he only considers the identity function as a special case. He observes a substantial
+-speedup in microbenchmarks when the optimizer is able to discover and short-circuit
+-the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
+-e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
+-significant win in using the former, when compiling to @Haskell { Code } the underlying
+-metaprogramming system in @Omega presumably possesses all the information to recover
+-the identity function from the @Omega interpreter's internals. In case of
+-translation to a different programming system every function inside of @Haskell { Try } and @Haskell { Sure }
+-constructors would need auxiliary denotation anyway, and could be optimized
+-either on export or inside of the external system itself.
++As we can see now, thrists (along with an appropriate semantics) do generalize arrows,
++on the other hand they are not always easily fitted in an arrow.
++It is the @Haskell { arr } method that is problematic to provide.
++Thrists just serve as a container and do not carry a semantics per se, while @Haskell { Arrow }
++instances mandate a function argument for the method @Haskell { arr }.
++#@PP
++#Nilsson @Cite { $nilsson05.frp } embarks on optimizing a GADT-based @Haskell { Arrow } library,
++#but he only considers the identity function as a special case. He observes a substantial
++#speedup in microbenchmarks when the optimizer is able to discover and short-circuit
++#the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
++#e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
++#significant win in using the former, when compiling to @Haskell { Code } the underlying
++#metaprogramming system in @Omega presumably possesses all the information to recover
++#the identity function from the @Omega interpreter's internals. In case of
++#translation to a different programming system every function inside of @Haskell { Try } and @Haskell { Sure }
++#constructors would need auxiliary denotation anyway, and could be optimized
++#either on export or inside of the external system itself.
+ @PP
+ Monads can also be regarded as a specialization to arrows, so we expect that @Haskell { Thrist (Monad' T) }
+ can be canonically derived. Here @Haskell { Monad' T a b } represents the type of a monadic actions
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000442.html">[Al4nin-commits] r679 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000444.html">[Al4nin-commits] r681 - trunk/purgatory/db
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#443">[ date ]</a>
+              <a href="thread.html#443">[ thread ]</a>
+              <a href="subject.html#443">[ subject ]</a>
+              <a href="author.html#443">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

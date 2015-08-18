@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r685 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r685%20-%20trunk/purgatory&In-Reply-To=%3C200807081407.m68E7I43008118%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000447.html">
+   <LINK REL="Next"  HREF="000449.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r685 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r685%20-%20trunk/purgatory&In-Reply-To=%3C200807081407.m68E7I43008118%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r685 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Jul  8 16:07:18 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000447.html">[Al4nin-commits] r684 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000449.html">[Al4nin-commits] r686 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#448">[ date ]</a>
+              <a href="thread.html#448">[ thread ]</a>
+              <a href="subject.html#448">[ subject ]</a>
+              <a href="author.html#448">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-08 16:07:17 +0200 (Tue, 08 Jul 2008)
+New Revision: 685
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+tweaks
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-08 13:52:02 UTC (rev 684)
++++ trunk/purgatory/Thrist.lout	2008-07-08 14:07:17 UTC (rev 685)
+@@ -1309,10 +1309,22 @@
+   Feed :: m b -&gt; Monad' m a b
+   Digest :: (a -&gt; m b) -&gt; Monad' m a b
+ }
+-Her @Haskell {Feed} can be regarded as the moral equivalent of the monadic @Haskell { return },
++Here @Haskell {Feed} can be regarded as the moral equivalent of the monadic @Haskell { return },
+ while @Haskell {Digest} stands for the @I bind operation @Haskell { (&gt;&gt;=) }.
+ @LP Again, we have to provide a semantics, to make the embedding complete:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TODO</A> semantics
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LD</A> @Haskell {
++runM' :: Monad m -&gt; m a -&gt;
++         Thrist (Monad' m) a b -&gt; m b
++runM' _ mon []l = mon
++runM' v _ [Feed m; rest]l = runM' v m rest
++runM' (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">v at Monad</A> _ bind _) mon [Digest f; rest]l
++         = runM' v (bind mon f) rest
++}
++Some words of explanation are in order. For technical reasons @Haskell {runM'} receives a monadic
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> seed argument, this allows to implement the @Haskell {Feed} and @Haskell {Digest} alternatives
++by simple recursion. The presence of the first argument compensates for a current deficiency
++of @Omega (namely the lack of type classes), and is needed for explicit passing of the @Haskell {Monad}
++dictionary.
+ @PP
+ We will stop here, but not without mentioning that recent research has established
+ a connection between dataflow programming and its elegant reformulation using
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000447.html">[Al4nin-commits] r684 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000449.html">[Al4nin-commits] r686 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#448">[ date ]</a>
+              <a href="thread.html#448">[ thread ]</a>
+              <a href="subject.html#448">[ subject ]</a>
+              <a href="author.html#448">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

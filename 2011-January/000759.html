@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r997 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2011-January/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r997%20-%20trunk/purgatory&In-Reply-To=%3C20110113200523.645F9481236%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000758.html">
+   <LINK REL="Next"  HREF="000760.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r997 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r997%20-%20trunk/purgatory&In-Reply-To=%3C20110113200523.645F9481236%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r997 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jan 13 21:05:23 CET 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000758.html">[Al4nin-commits] r996 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000760.html">[Al4nin-commits] r998 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#759">[ date ]</a>
+              <a href="thread.html#759">[ thread ]</a>
+              <a href="subject.html#759">[ subject ]</a>
+              <a href="author.html#759">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2011-01-13 21:05:23 +0100 (Thu, 13 Jan 2011)
+New Revision: 997
+
+Modified:
+   trunk/purgatory/KindingSingleton.omg
+Log:
+add two sigma tests
+
+Modified: trunk/purgatory/KindingSingleton.omg
+===================================================================
+--- trunk/purgatory/KindingSingleton.omg	2011-01-13 19:28:44 UTC (rev 996)
++++ trunk/purgatory/KindingSingleton.omg	2011-01-13 20:05:23 UTC (rev 997)
+@@ -39,8 +39,8 @@
+ --  * outer context (LeftList?)
+ --  * unification of contexts, unifiers
+ --  * sized types (speculative)
+---  * singleton types (+ subtyping)
+---  * definitions as quantifiers (lambda or sigma?)
++--  * subtyping of singleton types (needed in unification?)
++--  * applying sigma types???
+ --  * polynomial datatypes (+ subtyping)
+ --  * beta reduction (normalization) in small- and big-step (horizontals)
+ --  * verticals (unreduced and normalized variants)
+@@ -252,6 +252,14 @@
+ kt7 = (Heart Term, ef)c  -- f 42
+ tkt7 = tau kt7
+ 
++-- (Int, Int), the type of the cartesian product of terms
++kt8 = Sig ((Type)c, Star)q
++tkt8 = [kt8; (Type)c]c
++
++-- (42,25), a cartesian pair of terms
++kt9 = Sig kt8
++tkt9 = [kt9; (Term)c]c
++
+ -- \h (g :: Int-&gt;Int-&gt;Int) -&gt; Int
+ gi = [lambda2Int, lambda2Int; Heart Term]c
+ ha = ((tau gi, Star)q`2)q
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000758.html">[Al4nin-commits] r996 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000760.html">[Al4nin-commits] r998 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#759">[ date ]</a>
+              <a href="thread.html#759">[ thread ]</a>
+              <a href="subject.html#759">[ subject ]</a>
+              <a href="author.html#759">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r503 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r503%20-%20trunk/found-bugs&In-Reply-To=%3C200711091912.lA9JCSff026057%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000264.html">
+   <LINK REL="Next"  HREF="000266.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r503 - trunk/found-bugs</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r503%20-%20trunk/found-bugs&In-Reply-To=%3C200711091912.lA9JCSff026057%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r503 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Nov  9 20:12:28 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000264.html">[Al4nin-commits] r502 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000266.html">[Al4nin-commits] r504 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#265">[ date ]</a>
+              <a href="thread.html#265">[ thread ]</a>
+              <a href="subject.html#265">[ subject ]</a>
+              <a href="author.html#265">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-09 20:12:23 +0100 (Fri, 09 Nov 2007)
+New Revision: 503
+
+Modified:
+   trunk/found-bugs/issue20-ThristParser.omg
+Log:
+fix problem with R, it is reserved to (+).
+
+Modified: trunk/found-bugs/issue20-ThristParser.omg
+===================================================================
+--- trunk/found-bugs/issue20-ThristParser.omg	2007-11-09 16:16:20 UTC (rev 502)
++++ trunk/found-bugs/issue20-ThristParser.omg	2007-11-09 19:12:23 UTC (rev 503)
+@@ -320,7 +320,7 @@
+ 				  drosel (sy:sys) (se:ses) = Wrap [word sy, Sure (\(_, rest) -&gt; (conv se, rest))]l : drosel sys ses
+ 				  drosel [] [] = []
+ 
+-data Token = R Reserved | Str String | Num Int | P Punctuation | H HashWord
++data Token = Resv Reserved | Str String | Num Int | P Punctuation | H HashWord
+ 
+ data Token' = Token Token | Whitespace String | Test (exists (n :: Nat) . Nat' n)
+ 
+@@ -391,7 +391,7 @@
+ 		   , Sure snd
+ 		   ; extendThrist binnum (sureFirst (Token . Num))]l
+ 	    , bulkWords punctSymbols punct (Token . P)
+-	    , bulkWords coreWords core (Token . R)
++	    , bulkWords coreWords core (Token . Resv)
+ 	    , bulkWords hashWords hash (Token . H)
+ 	    , Wrap [Seq (word &quot;//&quot;) (Rep1 $ ButNot1 (Sure id) (letter '\n')), sureFirst (\(boring, comment) -&gt; Whitespace (boring ++ comment))]l
+ 	    , Wrap [Seq (word &quot;/*&quot;) (UpTo (Rep1 $ Sure id) (word &quot;*/&quot;)), sureFirst (\(boring1, (comment, boring2)) -&gt; Whitespace (boring1 ++ comment ++ boring2))]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000264.html">[Al4nin-commits] r502 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000266.html">[Al4nin-commits] r504 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#265">[ date ]</a>
+              <a href="thread.html#265">[ thread ]</a>
+              <a href="subject.html#265">[ subject ]</a>
+              <a href="author.html#265">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r283 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r283%20-%20trunk/purgatory&In-Reply-To=%3C200703261943.l2QJh4As032700%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000044.html">
+   <LINK REL="Next"  HREF="000046.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r283 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r283%20-%20trunk/purgatory&In-Reply-To=%3C200703261943.l2QJh4As032700%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r283 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Mar 26 21:43:04 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000044.html">[Al4nin-commits] r282 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000046.html">[Al4nin-commits] r284 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#45">[ date ]</a>
+              <a href="thread.html#45">[ thread ]</a>
+              <a href="subject.html#45">[ subject ]</a>
+              <a href="author.html#45">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-26 21:43:04 +0200 (Mon, 26 Mar 2007)
+New Revision: 283
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+revamped the representation once again, this time I get an occurs check failed
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-25 15:05:08 UTC (rev 282)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-26 19:43:04 UTC (rev 283)
+@@ -58,39 +58,43 @@
+ -- with lam[0]x:Int.*0 === *0
+ -- tau(Gam, Pi x:Int.Int) === *0
+ 
+-kind Stratum :: *1 where
+-  Ground :: Stratum -- Regular
+-  Up :: Stratum ~&gt; Stratum -- Regular
+-  Push :: Stratum ~&gt; Stratum ~&gt; Nat ~&gt; Stratum -- Admin
+---  Push :: Stratum Regular ~&gt; Stratum x ~&gt; Stratum Admin
+--- deriving Nat(s)
++diff :: Nat ~&gt; Nat ~&gt; Nat
++{ diff Z Z } = Z
++{ diff (S x) (S y) } = { diff x y }
++{ diff (S x) Z } = S { diff x y }
+ 
+-collapsePi :: Nat ~&gt; Stratum ~&gt; Stratum
+---{ collapsePi x y } = x
+-{ collapsePi Z (Push (Up x) y b) } = Ground
+-{ collapsePi Z (Up x) } = (Up x)
+-{ collapsePi Z Ground } = Ground
+-{ collapsePi (S n) x } = x
++--kind Diff :: *1
++--  At 
+ 
++kind Stratum :: Nat ~&gt; *1 where
++  Ground :: Stratum #0
++  Up :: Stratum n ~&gt; Stratum (S n)
++  Binder :: Stratum (S i) ~&gt; Stratum o ~&gt; Nat ~&gt; Stratum o
++--  Binder :: Stratum (S i) ~&gt; Stratum o ~&gt; { diff (S i) o } ~&gt; Stratum o
+ 
+-arr2stratum :: * ~&gt; Stratum
+-{ arr2stratum (a -&gt; b) } = Push (Up Ground) { arr2stratum b } #1
+-{ arr2stratum Int } = Ground
+-{ arr2stratum Bool } = Ground
+-{ arr2stratum () } = Ground
+-{ arr2stratum Float } = Ground
+-{ arr2stratum (a, b) } = Ground
++clean :: Stratum n ~&gt; Stratum n
++{ clean (Up x) } = Up { clean x }
+ 
++-- tau for the type
++collapsePi :: Stratum n ~&gt; Stratum (S n)
++{ collapsePi Ground } = Up Ground
++{ collapsePi (Up Ground) } = Up (Up Ground)
++{ collapsePi (Up (Up x)) } = Up (Up (Up x))
++{ collapsePi (Up (Binder a b Z)) } = Up b --{ clean b }
++--{ collapsePi (Up (Binder a b (S c))) } = Binder a { collapsePi b } c -- dunno yet
++
++
+ prop Tractable :: * ~&gt; * where
+   IntTractable :: Tractable Int
+   PairTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a, b)
+   ArrTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a -&gt; b)
+ 
+-tract2stratum :: * ~&gt; Stratum
+-{ tract2stratum (Tractable (a -&gt; b)) } = Push (Up Ground) { tract2stratum (Tractable b) } #1
+-{ tract2stratum (Tractable Int) } = Ground
+-{ tract2stratum (Tractable (a, b)) } = Ground
++tract2stratum :: * ~&gt; Stratum #1
++{ tract2stratum (Tractable (a -&gt; b)) } = Binder { tract2stratum (Tractable a) } { tract2stratum (Tractable b) } #1
++{ tract2stratum (Tractable Int) } = Up Ground
++{ tract2stratum (Tractable (a, b)) } = Up Ground
+ 
++{-
+ stratDiff :: Stratum ~&gt; Stratum ~&gt; Nat
+ { stratDiff Ground Ground } = #0
+ --{ stratDiff Ground (Up y) } = #0 -- cheating
+@@ -99,29 +103,29 @@
+ { stratDiff (Up x) Ground } = S { stratDiff x Ground }
+ { stratDiff (Push x y b) z } = { stratDiff x z }
+ --{ stratDiff Ground (Up x) } = unreachable
++-}
+ 
+--- --------- From       To
+-data Henk :: Stratum ~&gt; Stratum ~&gt; Nat ~&gt; *0 where
+-  Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) } Ground #0
+-  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) b -&gt; Henk from to #0 -&gt; Henk (Push (Up strat) from b) to { stratDiff (Up strat) to }
+---  Func :: (a-&gt;b) -&gt; Henk (Up Ground) Ground -- use Lit and {arr2stratum + cleaner}
+---  Ref :: Label l -&gt; Henk Ground strat
+---  Type :: Tractable a -&gt; Henk { tract2stratum (Tractable a) } (Up Ground)
+-  Type :: Tractable a -&gt; Henk Ground (Up Ground) #0
+-  Star :: Henk Ground (Up (Up g)) #0
++
++data Henk :: forall (n :: Nat) . Stratum n ~&gt; *0 where
++  Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) }
++---  Bind :: Nat' n -&gt; Label l -&gt; Henk (Up a) -&gt; Henk b -&gt; Henk (Up (Binder a b n))
++--  Bind :: forall (f :: Nat) (t :: Nat) (n :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' n -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Up (Binder from to n))
++  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' { diff (S f) t } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Up (Binder from to { diff (S f) t }))
++  Type :: Tractable a -&gt; Henk (Up Ground)
++  Star :: Henk (Up (Up g))
+   -- Application
+-  App :: Henk (Push (Up s) from b') u b -&gt; Henk Ground s #0 -&gt; Henk from u b'
++---  App :: Henk (Push (Up s) from b') u b -&gt; Henk Ground s #0 -&gt; Henk from u b'
+ 
+ 
+ --a :: Henk Ground Ground
+ --a = Ref `a
+ 
+-reducebind :: Nat ~&gt; Nat
+-{ reducebind Z } = Z
+-{ reducebind (S b) } = b
++--reducebind :: Nat ~&gt; Nat
++--{ reducebind Z } = Z
++--{ reducebind (S b) } = b
+ 
+ 
+-tau :: Henk strat to b -&gt; Henk { collapsePi b strat } (Up to) { reducebind b }
++tau :: Henk a-&gt; Henk { collapsePi a }
+ --tau (Bind l q r) = Bind l q (lazy tau r)
+ --tau (Bind l (q@(Lit _)) (r@(Lit _))) = tau r
+ --tau (Bind l (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">q at Type</A>) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Type</A>)) = Type
+@@ -133,10 +137,10 @@
+ --tau (Lit (ArrTractable a b) f) = Bind `woot (tau (Lit b (f (guess a))))
+ --tau (Lit t _) = Type t
+ 
+-prop Stratum' :: Stratum ~&gt; *0 where
+-  Ground :: Stratum' Ground
+-  Up :: forall (a :: Stratum) . Stratum' a -&gt; Stratum' (Up a)
+-  Push :: forall (a :: Stratum) (b :: Stratum) (n :: Nat) . Stratum' a -&gt; Stratum' b -&gt; Nat' n -&gt; Stratum' (Push a b n)
++--prop Stratum' :: Stratum ~&gt; *0 where
++--  Ground :: Stratum' Ground
++--  Up :: forall (a :: Stratum) . Stratum' a -&gt; Stratum' (Up a)
++--  Push :: forall (a :: Stratum) (b :: Stratum) (n :: Nat) . Stratum' a -&gt; Stratum' b -&gt; Nat' n -&gt; Stratum' (Push a b n)
+ 
+ {-
+ teachZImplies0 :: Nat' #0 -&gt; Stratum' (Push (Up f) i) -&gt; Stratum' (Up g) -&gt; Henk (Push (Up f) i) (Up g) -&gt; Equal {stratDiff (Push (Up f) i) (Up g)} #0
+@@ -145,22 +149,24 @@
+  where theorem indHyp = teachZImplies0 #0 (Push x Ground) y (Bind d l Star Star)
+ -}
+ 
+-
++{-
+ teachZImplies1 :: Nat' #0 -&gt; Nat' {stratDiff (Push (Up f) i b) (Up g)} -&gt; Stratum' (Push (Up f) i b) -&gt; Stratum' (Up g) -&gt; Henk (Push (Up f) i b) (Up g) {stratDiff (Push (Up f) i b) (Up g)} -&gt; Henk (Push (Up f) i b) (Up g) #0 -&gt; Equal {stratDiff (Push (Up f) i b) (Up g)} #0
+ teachZImplies1 #0 #0 (Push (Up (Up Ground)) _ _) (Up (Up Ground)) (Bind d l Star Star) (Bind d l Star Star) = Eq
+ --teachZImplies1 (Push (Up (Up x)) _) (Up (Up y)) (Bind d l Star Star) = check Eq
+ -- where theorem indHyp = teachZImplies1 (Push (Up x) Ground) (Up y) (Bind d l Star Star)
++-}
+ 
+-
+-teachZImplies2 :: Nat' #0 -&gt; Nat' {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g #0 -&gt; Equal {stratDiff (Push (Up f) i b) g} #0
++{-
++teachZImplies2 :: Nat' #0 -&gt; Nat' {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g #0 -&gt; Equal {stratDiff (Up f) g} #0
+ teachZImplies2 #0 #0 (Bind d l Star Star) (Bind d l Star Star) = Eq
+ 
+-teachZImplies3 :: Nat' #0 -&gt; Nat' {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g {stratDiff (Push (Up f) i b) g} -&gt; Henk (Push (Up f) i b) g #0 -&gt; Equal (Up f) g
++teachZImplies3 :: Nat' #0 -&gt; Nat' {stratDiff (Push (Up f) i b) (Up h)} -&gt; Henk (Push (Up f) i b) g {stratDiff (Push (Up f) i b) (Up h)} -&gt; Henk (Push (Up f) i b) g #0 -&gt; Equal {stratDiff (Up f) (Up h)} #0
+ teachZImplies3 #0 #0 (Bind d l Star Star) (Bind d l Star Star) = Eq
++-}
+ 
+ 
+ tau (b@(Bind Z l q r)) = check Star
+- where theorem hyp = teachZImplies2 Z Z b b--, hyp3 = teachZImplies3 Z Z b b
++-- where theorem hyp = teachZImplies2 Z Z b b, hyp3 = teachZImplies3 Z Z b b
+ 
+ 
+ {-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000044.html">[Al4nin-commits] r282 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000046.html">[Al4nin-commits] r284 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#45">[ date ]</a>
+              <a href="thread.html#45">[ thread ]</a>
+              <a href="subject.html#45">[ subject ]</a>
+              <a href="author.html#45">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

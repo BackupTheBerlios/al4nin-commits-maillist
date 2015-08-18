@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r1149 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2012-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1149%20-%20trunk/purgatory&In-Reply-To=%3C20121113095854.BD80E55B0C%40scm.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000910.html">
+   <LINK REL="Next"  HREF="000912.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r1149 - trunk/purgatory</H1>
+    <B>heisenbug at scm.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r1149%20-%20trunk/purgatory&In-Reply-To=%3C20121113095854.BD80E55B0C%40scm.berlios.de%3E"
+       TITLE="[Al4nin-commits] r1149 - trunk/purgatory">heisenbug at scm.berlios.de
+       </A><BR>
+    <I>Tue Nov 13 10:58:54 CET 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000910.html">[Al4nin-commits] r1148 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000912.html">[Al4nin-commits] r1150 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#911">[ date ]</a>
+              <a href="thread.html#911">[ thread ]</a>
+              <a href="subject.html#911">[ subject ]</a>
+              <a href="author.html#911">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2012-11-13 10:58:54 +0100 (Tue, 13 Nov 2012)
+New Revision: 1149
+
+Modified:
+   trunk/purgatory/GetUser.lhs
+Log:
+compute the access sequence
+
+Modified: trunk/purgatory/GetUser.lhs
+===================================================================
+--- trunk/purgatory/GetUser.lhs	2012-11-13 09:32:30 UTC (rev 1148)
++++ trunk/purgatory/GetUser.lhs	2012-11-13 09:58:54 UTC (rev 1149)
+@@ -73,8 +73,8 @@
+ &gt; testcase = dist 10000 []
+ &gt; testcase20 = dist 20 []
+ &gt; accessPatterns20 = [(suff, pref' suff) | suff &lt;- tails testcase20, (not . null) suff]
++&gt; accesses20 = reverse $ map (snd . snd) accessPatterns20
+ &gt; 
+-&gt; 
+ 
+ And a QuickCheck property.
+ 
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000910.html">[Al4nin-commits] r1148 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000912.html">[Al4nin-commits] r1150 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#911">[ date ]</a>
+              <a href="thread.html#911">[ thread ]</a>
+              <a href="subject.html#911">[ subject ]</a>
+              <a href="author.html#911">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

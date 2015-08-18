@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r349 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-May/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r349%20-%20trunk/purgatory&In-Reply-To=%3C200705031750.l43HogGA002285%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000112.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r349 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r349%20-%20trunk/purgatory&In-Reply-To=%3C200705031750.l43HogGA002285%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r349 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu May  3 19:50:42 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000112.html">[Al4nin-commits] r350 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-05-03 19:50:41 +0200 (Thu, 03 May 2007)
+New Revision: 349
+
+Modified:
+   trunk/purgatory/Thrist.omg
+Log:
+first success with IntTractable
+
+Modified: trunk/purgatory/Thrist.omg
+===================================================================
+--- trunk/purgatory/Thrist.omg	2007-04-28 19:15:14 UTC (rev 348)
++++ trunk/purgatory/Thrist.omg	2007-05-03 17:50:41 UTC (rev 349)
+@@ -196,45 +196,18 @@
+   Empty :: Stack RNil
+   Pu :: a -&gt; Stack s -&gt; Stack (RCons a s)
+ 
+-{-
+---blowLike1 :: Nat' f -&gt; Equal {blowLike #(1 + f) g (RCons h i)} (RCons j k) -&gt; Equal {blowLike #(1 + f) (u -&gt; v) (RCons h i)} (RCons j k)
+-blowLike1 :: Nat' n -&gt; Equal {blowLike arty d (RCons c s)} r -&gt; Equal {blowLike (S arty) (c -&gt; d) s} r
+-blowLike1 Z Eq = Eq --:: Equal {blowLike Z d (RCons c s)} r -&gt; Equal {blowLike (S Z) (c -&gt; d) s} r
+-                    --&gt;  Equal               (RCons c s)  r -&gt; Equal {blowLike Z d (RCons c s)} r
+-                    --&gt;  Equal               (RCons c s)  r -&gt; Equal               (RCons c s)  r
+-blowLike1 (S n) Eq = Eq --:: Equal {blowLike (S n) d (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; d) s} r
+-                        --%  Equal {blowLike (S (S n)) (e -&gt; f) (RCons c s)} r -&gt; Equal {blowLike (S (S n)) (c -&gt; (e -&gt; f)) s} r
+-      where theorem because = blowLike1 n
+ 
+-
+--}
+-
+-
+-
+-
+-
+-
+-
+-
+-blowLike1a :: Nat' n -&gt; Equal r {blowLike n d (RCons c s)} -&gt; exists cd . (Equal cd (c -&gt; d), Equal r {blowLike (S n) cd s})
+-blowLike1a Z Eq = Ex (Eq, Eq) --:: Equal r {blowLike Z d (RCons c s)} -&gt; exists cd . (Equal cd (c -&gt; d), Equal r {blowLike (S Z) cd s})
+-                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike (S Z) cd s})
+-                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike (S Z) (c -&gt; d) s})
+-                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s) {blowLike Z d (RCons c s)})
+-                              --&gt;  Equal r               (RCons c s)  -&gt; exists cd . (Equal cd (c -&gt; d), Equal (RCons c s)               (RCons c s))
+-blowLike1a (S n) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">f at Eq</A>) = Ex (Eq, Eq) --:: 
+---      where theorem because1 = blowLike1a n, because2 = blowLike1 (S n) f
+-
+-
+ test234 :: Thrist Cat (Shape a) (Shape b) -&gt; IO (Stack a) -&gt; IO (Stack b)
+ 
+---test234 (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Prim</A> (S (S n)) f) r) act = do
++test234 (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Prim</A> IntTractable f) r) act = do
++                                            Pu a st &lt;- act
++				            test234 r (return (Pu (f a) st))
++                                                where monad ioM
++
++--test234 (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Prim</A> (ArrTractable from to) f) r) act = do
+ --                                            Pu a st &lt;- act
+ --				            check (test234 (Cons (Prim (S n) (f a)) r) (return st))
+ --                                                where monad ioM
+---                                                      theorem blowLike1a
+---                                                      theorem because = blowLike1a (S n)
+---                                                    theorem because = blowLike1a n
+ 
+ 
+ 
+@@ -243,7 +216,6 @@
+ 
+ 
+ 
+-
+ blowLike2 :: Nat' n -&gt; Equal {blowLike (S arty) d (RCons c s)} (RCons u r) -&gt; Equal {blowLike (S (S arty)) (c -&gt; d) s} (RCons u r)
+ blowLike2 Z Eq = Eq --:: Equal {blowLike (S Z) d (RCons c s)} r -&gt; Equal {blowLike (S (S Z)) (c -&gt; d) s} r
+                     --&gt;  Equal               (RCons c s)  r -&gt; Equal {blowLike Z d (RCons c s)} r
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000112.html">[Al4nin-commits] r350 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#111">[ date ]</a>
+              <a href="thread.html#111">[ thread ]</a>
+              <a href="subject.html#111">[ subject ]</a>
+              <a href="author.html#111">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r741 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r741%20-%20trunk/purgatory&In-Reply-To=%3C200808060844.m768iROm020232%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000502.html">
+   <LINK REL="Next"  HREF="000504.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r741 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r741%20-%20trunk/purgatory&In-Reply-To=%3C200808060844.m768iROm020232%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r741 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Aug  6 10:44:27 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000502.html">[Al4nin-commits] r740 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000504.html">[Al4nin-commits] r742 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#503">[ date ]</a>
+              <a href="thread.html#503">[ thread ]</a>
+              <a href="subject.html#503">[ subject ]</a>
+              <a href="author.html#503">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-08-06 10:44:26 +0200 (Wed, 06 Aug 2008)
+New Revision: 741
+
+Modified:
+   trunk/purgatory/WayMark.lhs
+Log:
+reintroduce the countdown argument
+
+Modified: trunk/purgatory/WayMark.lhs
+===================================================================
+--- trunk/purgatory/WayMark.lhs	2008-08-06 08:33:44 UTC (rev 740)
++++ trunk/purgatory/WayMark.lhs	2008-08-06 08:44:26 UTC (rev 741)
+@@ -73,10 +73,11 @@
+ The lookup function calls compute' to get the bit pattern and returns also the
+ position of a potential start pointer at which the fresh marks could be reapplied.
+ 
+-&gt; remark :: Int -&gt; Int -&gt; UsePtr -&gt; Maybe Int
+-&gt; remark pos invsteps (Tagged Stop p) = if validcluster requiredSteps p
+-&gt;                                       then (if enough pos invsteps then Just pos else Nothing)
+-&gt;                                       else remark pos' invsteps' p
++&gt; remark :: Int -&gt; Int -&gt; Int -&gt; UsePtr -&gt; Maybe Int
++&gt; remark 0 _ _ _ = Nothing
++&gt; remark togo pos invsteps (Tagged Stop p) = if validcluster requiredSteps p
++&gt;                                            then (if enough pos invsteps then Just pos else Nothing)
++&gt;                                            else remark (requiredSteps - 1) pos' invsteps' p
+ &gt;     where
+ &gt;       validcluster 0 (Tagged Stop _) = True
+ &gt;       validcluster _ (Tagged Stop _) = False
+@@ -87,7 +88,7 @@
+ &gt;       (pos', invsteps') = if enough pos invsteps then (pos + 1, invsteps) else (pos, invsteps + 1)
+ 
+ &gt;
+-&gt; remark pos invsteps (Tagged _ p) = remark pos' invsteps' p
++&gt; remark togo pos invsteps (Tagged _ p) = remark (togo - 1) pos' invsteps' p
+ &gt;     where (pos', invsteps') = if (pos == 0 &amp;&amp; invsteps == requiredSteps)
+ &gt;                               then (0, requiredSteps + 1)
+ &gt;                               else if (pos == 0 &amp;&amp; invsteps &gt;= requiredSteps)
+@@ -97,7 +98,7 @@
+ &gt;                               else if (invsteps == requiredSteps + 1)
+ &gt;                               then (pos + 1, requiredSteps + 1)
+ &gt;                               else (pos, invsteps + 1)
+-&gt; remark pos invsteps (Fin (Val i _)) = Nothing -- ### for NOW
++&gt; remark _ pos invsteps (Fin (Val i _)) = Nothing -- ### for NOW
+ 
+ 
+ Test section:
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000502.html">[Al4nin-commits] r740 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000504.html">[Al4nin-commits] r742 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#503">[ date ]</a>
+              <a href="thread.html#503">[ thread ]</a>
+              <a href="subject.html#503">[ subject ]</a>
+              <a href="author.html#503">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

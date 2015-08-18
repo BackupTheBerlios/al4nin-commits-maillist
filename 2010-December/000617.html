@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r855 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r855%20-%20trunk/purgatory&In-Reply-To=%3C20101201192242.3508F480AC7%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000616.html">
+   <LINK REL="Next"  HREF="000618.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r855 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r855%20-%20trunk/purgatory&In-Reply-To=%3C20101201192242.3508F480AC7%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r855 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec  1 20:22:40 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000616.html">[Al4nin-commits] r854 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000618.html">[Al4nin-commits] r856 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-01 20:22:40 +0100 (Wed, 01 Dec 2010)
+New Revision: 855
+
+Modified:
+   trunk/purgatory/Kinding.omg
+Log:
+begin defining expressions
+
+Modified: trunk/purgatory/Kinding.omg
+===================================================================
+--- trunk/purgatory/Kinding.omg	2010-12-01 18:23:07 UTC (rev 854)
++++ trunk/purgatory/Kinding.omg	2010-12-01 19:22:40 UTC (rev 855)
+@@ -1,5 +1,7 @@
+ import &quot;LangPrelude.prg&quot;
+ 
++-- walks in the lambda plane
++
+ data Payload :: *1 where
+   None :: Payload
+   Charge :: Nat ~&gt; Nat ~&gt; Payload
+@@ -14,6 +16,8 @@
+  deriving syntax (w) Nat(Origin, Up) Tick(SE) Pair(Pair)
+ 
+ 
++-- types are paramerized by walks
++
+ data Type :: Walk n m p ~&gt; *  where
+   Star :: Type 2w
+   Up :: Type (2+n)w -&gt; Type(3+n)w
+@@ -24,7 +28,14 @@
+  deriving syntax (ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
+ 
+ 
++-- runtime values are represented by expressions
+ 
++data Expr :: * where
++  Lit :: Type 1w -&gt; Expr  -- e.g. 42::Int
++  Lambda :: Type (p`1)w -&gt; Expr -&gt; Expr -- e.g. \a:Int.42
++  Appl :: Expr -&gt; Expr -&gt; Expr
++
++
+ -- Tests
+ 
+ ##test &quot;exclude Term categorizer&quot;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000616.html">[Al4nin-commits] r854 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000618.html">[Al4nin-commits] r856 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#617">[ date ]</a>
+              <a href="thread.html#617">[ thread ]</a>
+              <a href="subject.html#617">[ subject ]</a>
+              <a href="author.html#617">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

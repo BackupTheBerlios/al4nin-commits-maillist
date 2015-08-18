@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r637 - trunk/purgatory/db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r637%20-%20trunk/purgatory/db&In-Reply-To=%3C200806061130.m56BUXle001729%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000399.html">
+   <LINK REL="Next"  HREF="000401.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r637 - trunk/purgatory/db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r637%20-%20trunk/purgatory/db&In-Reply-To=%3C200806061130.m56BUXle001729%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r637 - trunk/purgatory/db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jun  6 13:30:33 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000399.html">[Al4nin-commits] r636 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000401.html">[Al4nin-commits] r638 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#400">[ date ]</a>
+              <a href="thread.html#400">[ thread ]</a>
+              <a href="subject.html#400">[ subject ]</a>
+              <a href="author.html#400">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-06-06 13:30:18 +0200 (Fri, 06 Jun 2008)
+New Revision: 637
+
+Modified:
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+add omega tutorial
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2008-06-05 14:52:33 UTC (rev 636)
++++ trunk/purgatory/db/BibTexDB	2008-06-06 11:30:18 UTC (rev 637)
+@@ -28,6 +28,17 @@
+  }
+ 
+ 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at inproceedings</A>{R4063,
++ tag = {sheard07.omega},
++ author = {Sheard, Tim},
++ title = {Programming in Omega},
++ year = {2007},
++ booktitle = {2nd Central European Functional Programming School},
++ month = {June},
++ URL = {<A HREF="http://web.cecs.pdx.edu/~sheard/">http://web.cecs.pdx.edu/~sheard/</A>}
++}
++
++
+ @inproceedings{1291206,
+  tag = {swierstra07.beast},
+  author = {Wouter Swierstra and Thorsten Altenkirch},
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2008-06-05 14:52:33 UTC (rev 636)
++++ trunk/purgatory/db/acmrefs.ld	2008-06-06 11:30:18 UTC (rev 637)
+@@ -32,6 +32,17 @@
+ 
+ { @Reference
+    @Type { InProceedings }
++   @Tag { sheard07.omega }
++   @Author { Sheard, Tim }
++   @Title { Programming in Omega }
++   @Year { 2007 }
++   @InTitle { 2nd Central European Functional Programming School }
++   @Month { June }
++}
++
++
++{ @Reference
++   @Type { InProceedings }
+    @Tag { swierstra07.beast }
+    @Author { Wouter Swierstra and Thorsten Altenkirch }
+    @Title { Beauty in the beast }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000399.html">[Al4nin-commits] r636 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000401.html">[Al4nin-commits] r638 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#400">[ date ]</a>
+              <a href="thread.html#400">[ thread ]</a>
+              <a href="subject.html#400">[ subject ]</a>
+              <a href="author.html#400">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

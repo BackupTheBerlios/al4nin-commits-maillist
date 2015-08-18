@@ -1,0 +1,336 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r376 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r376%20-%20trunk/found-bugs&In-Reply-To=%3C200706131343.l5DDhTX4013671%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000137.html">
+   <LINK REL="Next"  HREF="000139.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r376 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r376%20-%20trunk/found-bugs&In-Reply-To=%3C200706131343.l5DDhTX4013671%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r376 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Jun 13 15:43:29 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000137.html">[Al4nin-commits] r375 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000139.html">[Al4nin-commits] r377 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#138">[ date ]</a>
+              <a href="thread.html#138">[ thread ]</a>
+              <a href="subject.html#138">[ subject ]</a>
+              <a href="author.html#138">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-13 15:43:28 +0200 (Wed, 13 Jun 2007)
+New Revision: 376
+
+Modified:
+   trunk/found-bugs/bug10-Thrist.omg
+Log:
+convert to 1.4.2, problem gone
+
+Modified: trunk/found-bugs/bug10-Thrist.omg
+===================================================================
+--- trunk/found-bugs/bug10-Thrist.omg	2007-06-13 13:29:42 UTC (rev 375)
++++ trunk/found-bugs/bug10-Thrist.omg	2007-06-13 13:43:28 UTC (rev 376)
+@@ -27,7 +27,7 @@
+ --
+ --  Set up the environment
+ --     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
+---     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.1:$PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
+ --
+ --  Start the omega interpreter by typing
+ --     omega Thrist.omg
+@@ -35,9 +35,14 @@
+ --
+ 
+ import &quot;LangPrelude.prg&quot; 
+-  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal,
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Eq,Equal,
+   listM)
+ 
++data RRow:: *1 ~&gt; *1 where
++  RRNil:: RRow a
++  RRCons:: k ~&gt; RRow k ~&gt; RRow k
++ deriving List(sh)
++
+ kind Doe = Wi | So
+ 
+ data DooBiDoo :: Doe ~&gt; Doe ~&gt; *0 where
+@@ -79,17 +84,17 @@
+ 
+ {- Example session:
+ 
+-prompt&gt; #[]l
+- #[]l : forall (a:*1) (b:a ~&gt; a ~&gt; *0) (c:a:*1).Thrist b c c
+-prompt&gt; #[ToWi]l
+- #[ToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
+-prompt&gt; #[ToWi,WiToWi]l
+- #[ToWi,WiToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
+-prompt&gt; #[ToWi,WiToWi,ToSo]l
+- #[ToWi,WiToWi,ToSo]l : forall (a:Doe).Thrist DooBiDoo a So
+-prompt&gt; #[ToWi,WiToWi,ToSo,SoTo]l
+- #[ToWi,WiToWi,ToSo,SoTo]l : forall (a:Doe) (b:Doe).Thrist DooBiDoo a b
+-prompt&gt; #[ToWi, WiTo]l
++prompt&gt; []l
++ []l : forall (a:*1) (b:a ~&gt; a ~&gt; *0) (c:a:*1).Thrist b c c
++prompt&gt; [ToWi]l
++ [ToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
++prompt&gt; [ToWi,WiToWi]l
++ [ToWi,WiToWi]l : forall (a:Doe).Thrist DooBiDoo a Wi
++prompt&gt; [ToWi,WiToWi,ToSo]l
++ [ToWi,WiToWi,ToSo]l : forall (a:Doe).Thrist DooBiDoo a So
++prompt&gt; [ToWi,WiToWi,ToSo,SoTo]l
++ [ToWi,WiToWi,ToSo,SoTo]l : forall (a:Doe) (b:Doe).Thrist DooBiDoo a b
++prompt&gt; [ToWi, WiTo]l
+  In the expression: Cons WiTo Nil
+  the result type: Thrist ShuBiDoo Wi b
+  was not what was expected: Thrist DooBiDoo Wi a
+@@ -97,7 +102,7 @@
+ -}
+ 
+ ##test &quot;different constants: ShubiDoo   !=   DooBiDoo&quot;
+- fail0 = #[ToWi, WiTo]l
++ fail0 = [ToWi, WiTo]l
+ 
+ cat :: Thrist DooBiDoo a b -&gt; String
+ cat Nil = &quot;&quot;
+@@ -111,12 +116,12 @@
+ -- Cat thrist
+ -- See: <A HREF="http://en.wikipedia.org/wiki/Cat_%28programming_language%29">http://en.wikipedia.org/wiki/Cat_%28programming_language%29</A>
+ 
+-blow :: Nat ~&gt; Row *0 ~&gt; Row *0
++blow :: Nat ~&gt; RRow *0 ~&gt; RRow *0
+ {blow Z s} = s
+-{blow (S n) s} = RCons t {blow n s}
++{blow (S n) s} = RRCons t {blow n s}
+ 
+-blowLike :: Nat ~&gt; *0 ~&gt; Row *0 ~&gt; Row *0
+-{blowLike (S arty) (c -&gt; d) s} = RCons c {blowLike arty d s}
++blowLike :: Nat ~&gt; *0 ~&gt; RRow *0 ~&gt; RRow *0
++{blowLike (S arty) (c -&gt; d) s} = RRCons c {blowLike arty d s}
+ {blowLike Z a s} = s
+ 
+ range :: Nat ~&gt; *0 ~&gt; *0
+@@ -127,14 +132,14 @@
+ {arity Z c} = c
+ {arity (S n) (c -&gt; d) } = c -&gt; {arity n d}
+ 
+-kind CatShape = Shape (Row *0)
++kind CatShape = Shape (RRow *0)
+ 
+ countArr :: *0 ~&gt; Nat
+-{countArr Int} = #0
+-{countArr Bool} = #0
+-{countArr Char} = #0
+-{countArr (a, b)} = #0
+-{countArr [a]} = #0
++{countArr Int} = 0t
++{countArr Bool} = 0t
++{countArr Char} = 0t
++{countArr (a, b)} = 0t
++{countArr [a]} = 0t
+ {countArr (a-&gt;b)} = S {countArr b}
+ 
+ prop Tractable :: * ~&gt; * where
+@@ -147,23 +152,23 @@
+ 
+ 
+ data Cat :: CatShape ~&gt; CatShape ~&gt; *0 where
+-  Push :: Tractable a -&gt; a -&gt; Cat (Shape s) (Shape (RCons a s))
+-  Prim :: Tractable c -&gt; (a -&gt; c) -&gt; Cat (Shape (RCons a {blowLike {countArr c} c s})) (Shape (RCons {range {countArr c} c} s))
+-  Dup :: Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
+---  Dig :: Pick Row Nat -&gt; Cat (Shape (RCons t s)) (Shape (RCons t (RCons t s)))
+-  Print :: Cat (Shape (RCons t s)) (Shape s)
++  Push :: Tractable a -&gt; a -&gt; Cat (Shape s) (Shape (RRCons a s))
++  Prim :: Tractable c -&gt; (a -&gt; c) -&gt; Cat (Shape (RRCons a {blowLike {countArr c} c s})) (Shape (RRCons {range {countArr c} c} s))
++  Dup :: Cat (Shape (RRCons t s)) (Shape (RRCons t (RRCons t s)))
++--  Dig :: Pick RRow Nat -&gt; Cat (Shape (RRCons t s)) (Shape (RRCons t (RRCons t s)))
++  Print :: Cat (Shape (RRCons t s)) (Shape s)
+   PopN :: Nat' (S n) -&gt; Cat (Shape {blow (S n) s}) (Shape s)
+-  Swap :: Cat (Shape (RCons a (RCons b s))) (Shape (RCons b (RCons a s)))
+--- Perm :: Pick Row Nat -- TODO
+-  Add :: Cat (Shape (RCons Int (RCons Int s))) (Shape (RCons Int s))      -- use Prim instead
+-  Greater :: Cat (Shape (RCons Int (RCons Int s))) (Shape (RCons Bool s)) -- use Prim instead
++  Swap :: Cat (Shape (RRCons a (RRCons b s))) (Shape (RRCons b (RRCons a s)))
++-- Perm :: Pick RRow Nat -- TODO
++  Add :: Cat (Shape (RRCons Int (RRCons Int s))) (Shape (RRCons Int s))      -- use Prim instead
++  Greater :: Cat (Shape (RRCons Int (RRCons Int s))) (Shape (RRCons Bool s)) -- use Prim instead
+   If :: Thrist Cat (Shape s) (Shape t) -&gt;
+         Thrist Cat (Shape s) (Shape t) -&gt;
+-        Cat (Shape (RCons Bool s)) (Shape t)
++        Cat (Shape (RRCons Bool s)) (Shape t)
+ 
+ 
+ strTract = ListTractable CharTractable
+-te1 = #[Push IntTractable 42, Dup, Greater, If #[pop, Push strTract &quot;hh&quot;]l #[Push IntTractable 42, Add, Print, Push strTract &quot;hh&quot;]l]l
++te1 = [Push IntTractable 42, Dup, Greater, If [pop, Push strTract &quot;hh&quot;]l [Push IntTractable 42, Add, Print, Push strTract &quot;hh&quot;]l]l
+ 
+ {- This needs more magic:
+ showThrist :: (t a b -&gt; String) -&gt; Thrist t a b -&gt; String
+@@ -183,9 +188,9 @@
+ cat' (Cons Greater r) = &quot;Greater&quot; ++ &quot;\n&quot; ++ cat' r
+ cat' (Cons (If yes no) r) = &quot;If &quot; ++ show yes ++ &quot; ELSE &quot; ++ show no ++ &quot;\n&quot; ++ cat' r
+ 
+-data Stack :: Row *0 ~&gt; *0 where
+-  Empty :: Stack RNil
+-  Pu :: a -&gt; Stack s -&gt; Stack (RCons a s)
++data Stack :: RRow *0 ~&gt; *0 where
++  Empty :: Stack RRNil
++  Pu :: a -&gt; Stack s -&gt; Stack (RRCons a s)
+ 
+ 
+ proveRange :: Tractable d -&gt; Tractable e -&gt; Equal {range {countArr (e -&gt; d)} (e -&gt; d)} {range {countArr d} d}
+@@ -198,7 +203,7 @@
+                                       where theorem because = proveRange to
+ 
+ 
+-interpretCat :: (forall a . Thrist Cat (Shape a) (Shape a)) -&gt; IO (Stack RNil)
++interpretCat :: (forall a . Thrist Cat (Shape a) (Shape a)) -&gt; IO (Stack RRNil)
+ interpretCat thr = interpretCat' thr (returnIO Empty)
+ 
+ interpretCat' :: Thrist Cat (Shape a) (Shape b) -&gt; IO (Stack a) -&gt; IO (Stack b)
+@@ -257,7 +262,7 @@
+ 				     interpretCat' r (if cond then interpretCat' yes act' else interpretCat' no act')
+       where monad ioM
+ 
+-pop = PopN #1
++pop = PopN 1v
+ 
+ popMore :: Nat' n -&gt; Stack {blow n b} -&gt; IO (Stack b)
+ popMore Z st = return st
+@@ -275,12 +280,12 @@
+ pushC = Push CharTractable
+ pushStr = Push (ListTractable CharTractable)
+ 
+-te3 = interpretCat #[pushI 23, pop]l
+-te4 = interpretCat #[pushI 42, pushI 11, Greater, If #[pushB True]l #[pushB False]l, Print]l
+-te5 = interpretCat #[pushI 42, pushI 32, pushI 1, Add, Swap, Print, Print]l
+-te6 = interpretCat #[pushI 42, pushI 32, pushI 1, Add, Swap, Print, Dup, PopN #2]l
+-te7 = interpretCat #[pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) map, Print]l
+-te8 = interpretCat #[pushC 'Z', Prim IntTractable ord, pushI 2, Prim (ArrTractable IntTractable IntTractable) (+), Print]l
++te3 = interpretCat [pushI 23, pop]l
++te4 = interpretCat [pushI 42, pushI 11, Greater, If [pushB True]l [pushB False]l, Print]l
++te5 = interpretCat [pushI 42, pushI 32, pushI 1, Add, Swap, Print, Print]l
++te6 = interpretCat [pushI 42, pushI 32, pushI 1, Add, Swap, Print, Dup, PopN 2v]l
++te7 = interpretCat [pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) map, Print]l
++te8 = interpretCat [pushC 'Z', Prim IntTractable ord, pushI 2, Prim (ArrTractable IntTractable IntTractable) (+), Print]l
+ 
+ 
+ optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
+@@ -290,10 +295,10 @@
+ optimizeCat Nil = Nil
+ 
+ splitOff :: Thrist Cat (Shape a) (Shape c) -&gt; Thrist Cat (Shape a) (Shape c) -&gt; exists b . (Thrist Cat (Shape a) (Shape b), Thrist Cat (Shape b) (Shape c))
+---splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> rep1 a1) r1) (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p2 at Push</A> rep2 a2) r2) = check (Ex (#[p1]l, r2))
+-splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> IntTractable a1) r1) (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p2 at Push</A> IntTractable a2) r2) = check (Ex (#[p1]l, r2))
++--splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> rep1 a1) r1) (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p2 at Push</A> rep2 a2) r2) = check (Ex ([p1]l, r2))
++splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> IntTractable a1) r1) (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p2 at Push</A> IntTractable a2) r2) = check (Ex ([p1]l, r2))
+ 
+-optimizeIf :: Thrist Cat (Shape (RCons Bool a)) b -&gt; Thrist Cat (Shape a) (Shape c) -&gt; Thrist Cat (Shape a) (Shape c) -&gt; Thrist Cat (Shape c) b -&gt; Thrist Cat (Shape (RCons Bool a)) b
++optimizeIf :: Thrist Cat (Shape (RRCons Bool a)) b -&gt; Thrist Cat (Shape a) (Shape c) -&gt; Thrist Cat (Shape a) (Shape c) -&gt; Thrist Cat (Shape c) b -&gt; Thrist Cat (Shape (RRCons Bool a)) b
+ 
+ 
+ -- @@@REPORT this!!
+@@ -309,14 +314,14 @@
+ 
+ optimizeIf all _ _ _ = all
+ 
+-to0 = optimizeCat #[If #[Push 42]l #[Push 42]l, Print]l
+-to1 = optimizeCat #[If #[Push 42]l #[Push 43]l, Print]l
++to0 = optimizeCat [If [Push 42]l [Push 42]l, Print]l
++to1 = optimizeCat [If [Push 42]l [Push 43]l, Print]l
+ 
+ 
+ 
+ ##test &quot;Mixup in Decs (not reported yet)&quot;
+  Weee :: CatShape
+- type Weee = Shape (Row *0)
++ type Weee = Shape (RRow *0)
+ 
+ 
+ 
+@@ -325,7 +330,7 @@
+ --$ a-&gt;b, b-&gt;c into a thrist:
+ 
+ --{
+-funThrist = #[ord, (+) 2, chr]l
++funThrist = [ord, (+) 2, chr]l
+ 
+ runThrist :: Thrist (-&gt;) a b -&gt; a -&gt; b
+ runThrist Nil b = b
+@@ -336,7 +341,7 @@
+ -- Example session:
+ 
+ prompt&gt; funThrist
+- #[&lt;primfun to1&gt;,&lt;fn&gt;,&lt;primfun to1&gt;]l : Thrist (-&gt;) Char Char
++ [&lt;primfun to1&gt;,&lt;fn&gt;,&lt;primfun to1&gt;]l : Thrist (-&gt;) Char Char
+ prompt&gt; runThrist funThrist
+  &lt;fn&gt; : Char -&gt; Char
+ prompt&gt; runThrist funThrist 'x'
+@@ -380,7 +385,7 @@
+ impliesZero :: Nat' n -&gt; Nat' m -&gt; Equal {plus n m} m -&gt; Equal m Z
+ 
+ {-
+-##test &quot;current refinement fails because _a != {plus #0 _a}&quot;
++##test &quot;current refinement fails because _a != {plus 0t _a}&quot;
+  impliesZero Z m Eq = Eq --? Equal {plus Z m} m -&gt; Equal m Z
+                         --&gt; Equal m m -&gt; Equal m Z
+ -}
+@@ -411,13 +416,13 @@
+ 
+ {-
+ hyp1 :: Nat' a -&gt; Nat' (S b) -&gt; Equal a (S b)
+-hyp1 #1 #1 = Eq
++hyp1 1v 1v = Eq
+ hyp1 (S a) (S b) = Eq
+   where theorem because = hyp1 a b
+ -}
+ 
+ ##test &quot;Does not work yet&quot;
+- eqThrist = #[Eq :: Equal a (S b)
++ eqThrist = [Eq :: Equal a (S b)
+            , Eq :: Equal (S b) (S c)
+            , Eq :: (S c) a
+            ]l
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000137.html">[Al4nin-commits] r375 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000139.html">[Al4nin-commits] r377 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#138">[ date ]</a>
+              <a href="thread.html#138">[ thread ]</a>
+              <a href="subject.html#138">[ subject ]</a>
+              <a href="author.html#138">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

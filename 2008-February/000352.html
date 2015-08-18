@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r589 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-February/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r589%20-%20trunk/purgatory&In-Reply-To=%3C200802061456.m16EuHpx003817%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000351.html">
+   <LINK REL="Next"  HREF="000353.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r589 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r589%20-%20trunk/purgatory&In-Reply-To=%3C200802061456.m16EuHpx003817%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r589 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Feb  6 15:56:17 CET 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000351.html">[Al4nin-commits] r588 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000353.html">[Al4nin-commits] r590 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#352">[ date ]</a>
+              <a href="thread.html#352">[ thread ]</a>
+              <a href="subject.html#352">[ subject ]</a>
+              <a href="author.html#352">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-02-06 15:56:17 +0100 (Wed, 06 Feb 2008)
+New Revision: 589
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+LLVM GEP as thrist
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-02-06 00:21:37 UTC (rev 588)
++++ trunk/purgatory/Thrist.lout	2008-02-06 14:56:17 UTC (rev 589)
+@@ -1259,7 +1259,7 @@
+ to present thrists in a uniform and aestetical way, well alike {@I Haskell}'s syntax
+ for lists, with the same ease of pattern matching and construction.
+ @PP
+-Although the above provides sufficient evidence of the usefullness of thrists, there
++Although the above provides sufficient evidence of the usefulness of thrists, there
+ is still plenty to find out.
+ @LP what other useful @Haskell { p }s in @Haskell { Thrist p a b } exist?
+ Since the @Haskell { a } and @Haskell { b } parameters can encode
+@@ -1270,6 +1270,13 @@
+ Explicitly tracking def-use information paired with annotation preserving
+ transformations might pave the way to certified compilers, but apperars to
+ be a challenging task.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A> LLVM has a @I getelementpointer instruction, which allows to do offset calculations
++into deeply nested data structures. The decent from the encompassing pointer, array or
++structure type can be conveniently encoded as a thrist, where the underlying GADT
++provides constructors for dereferencing of pointers, picking of array elements
++and skipping over (resp. selecting) of structure members. This thrist can then
++easily converted into the sequence of integers that represents the intended
++datastructure part in the getelementpointer instruction.
+ @LP is parametricity in the first parameter useful? I.e.
+ can we formulate sensible functions on @Haskell { Thrist p a b }, where
+ p is left universal?
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000351.html">[Al4nin-commits] r588 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000353.html">[Al4nin-commits] r590 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#352">[ date ]</a>
+              <a href="thread.html#352">[ thread ]</a>
+              <a href="subject.html#352">[ subject ]</a>
+              <a href="author.html#352">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r401 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r401%20-%20trunk/purgatory&In-Reply-To=%3C200706282147.l5SLlVir028562%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000162.html">
+   <LINK REL="Next"  HREF="000164.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r401 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r401%20-%20trunk/purgatory&In-Reply-To=%3C200706282147.l5SLlVir028562%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r401 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Jun 28 23:47:31 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000162.html">[Al4nin-commits] r400 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000164.html">[Al4nin-commits] r402 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-28 23:47:31 +0200 (Thu, 28 Jun 2007)
+New Revision: 401
+
+Modified:
+   trunk/purgatory/LLVM.omg
+   trunk/purgatory/PowerPC.omg
+Log:
+status quo. do not expect this to compile
+
+Modified: trunk/purgatory/LLVM.omg
+===================================================================
+--- trunk/purgatory/LLVM.omg	2007-06-28 17:54:04 UTC (rev 400)
++++ trunk/purgatory/LLVM.omg	2007-06-28 21:47:31 UTC (rev 401)
+@@ -25,8 +25,10 @@
+ import &quot;LangPrelude.prg&quot;
+   (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Row,HasType,RCons,RNil,Eq,Equal,(==))
+ 
++{-
+ import &quot;Thrist.omg&quot;
+-  (Lisead, l, Nil, Cons)
++  (Thrist, l, Nil, Cons)
++-}
+ 
+ kind TypeClass :: *2 where
+   FstClass :: TypeClass
+
+Modified: trunk/purgatory/PowerPC.omg
+===================================================================
+--- trunk/purgatory/PowerPC.omg	2007-06-28 17:54:04 UTC (rev 400)
++++ trunk/purgatory/PowerPC.omg	2007-06-28 21:47:31 UTC (rev 401)
+@@ -47,7 +47,7 @@
+   PPC :: Arch
+   ARM :: Arch
+ 
+-kind Regnames = R0 | R1 | R2 | R3 | CR1
++kind Regnames = R0 | R1 | R2 | R3 | CR1 | LR
+ 
+ data Reg :: Regnames ~&gt; *0 where
+   R0 :: Reg R0
+@@ -55,19 +55,18 @@
+   R2 :: Reg R2
+   R3 :: Reg R3
+   CR1 :: Reg CR1
++  LR :: Reg LR
+ 
+ kind Registers :: Arch ~&gt; *1 where
+   PPCRegs :: Regnames ~&gt; Regnames ~&gt; Registers PPC
+ 
+---registers :: Arch ~&gt; PPCRegisters
+---{registers a} = Regs R0 R1 R2 R3
+-
+ --                         v-known-infos v-live-regs
+ kind CPU (a :: Arch) = Cpu (Registers a) (Row Regnames)
+ 
+ data PowerPC :: (CPU PPC) ~&gt; (CPU PPC) ~&gt; *0 where
+   B :: PowerPC a b
+-  ADD :: Nat' r1 -&gt; Nat' r2 -&gt; Reg r3 -&gt; PowerPC (Cpu rs live) (Cpu rs' (RCons r3 live))
++  ADD :: Reg r1 -&gt; Reg r2 -&gt; Reg r3 -&gt; PowerPC (Cpu rs (RCons r2 (RCons r1 live))) (Cpu rs' (RCons r3 (RCons r2 (RCons r1 live))))
++  RET :: PowerPC (Cpu rs (RCons LR live)) (Cpu rs (RCons LR live))
+ 
+ 
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000162.html">[Al4nin-commits] r400 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000164.html">[Al4nin-commits] r402 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

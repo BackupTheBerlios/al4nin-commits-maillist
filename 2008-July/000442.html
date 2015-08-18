@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r679 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2008-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r679%20-%20trunk/purgatory&In-Reply-To=%3C200807071424.m67EO7dM020123%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000441.html">
+   <LINK REL="Next"  HREF="000443.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r679 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r679%20-%20trunk/purgatory&In-Reply-To=%3C200807071424.m67EO7dM020123%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r679 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Jul  7 16:24:07 CEST 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000441.html">[Al4nin-commits] r678 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000443.html">[Al4nin-commits] r680 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#442">[ date ]</a>
+              <a href="thread.html#442">[ thread ]</a>
+              <a href="subject.html#442">[ subject ]</a>
+              <a href="author.html#442">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2008-07-07 16:24:06 +0200 (Mon, 07 Jul 2008)
+New Revision: 679
+
+Modified:
+   trunk/purgatory/Thrist.lout
+Log:
+cleanups to Arrows ann Monads
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2008-07-07 13:10:42 UTC (rev 678)
++++ trunk/purgatory/Thrist.lout	2008-07-07 14:24:06 UTC (rev 679)
+@@ -1260,16 +1260,21 @@
+     F { no }
+ }
+ 
+-Since arrows in the Haskell world also originated from the generalization of function
+-composition it is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
+-our @Haskell { Thrist } data structure. Obviously any instance of the Haskell type class @Haskell { Arrow } can
++
++In the Haskell world, @I arrows @Cite { $hughes00.arrows } also originated from the attempt to generalize function
++composition. It is helpful to give a comparison of the @Haskell { Arrow } @I { type class } in Haskell and
++our @Haskell { Thrist } definition. 
++
++
++Obviously any instance of the Haskell type class @Haskell { Arrow } can
+ be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
+ function that is rather canonic, and will be given in the Appendix @NumberOf { arrow.adapter }. This semantics obviously
+-guarantees the arrow laws @Cite { $hughes00.arrows }. On the other hand thrists are not always
++guarantees the arrow laws @Cite { $hughes00.arrows }.
++
++On the other hand thrists are not always
+ easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
+ to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
+ mandates a function argument for the method @Haskell { arr }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell @Cite { $paterson01.notation }}
+ @PP
+ Nilsson @Cite { $nilsson05.frp } embarks on optimizing a GADT-based @Haskell { Arrow } library,
+ but he only considers the identity function as a special case. He observes a substantial
+@@ -1289,24 +1294,15 @@
+ @Haskell { a -&gt; T b }.
+ @LP We can define the adapter @Haskell { Monad' } to have three parameters, the first fixing the @Haskell { Monad }
+ and the last two to accomodate for the @Haskell { Thrist } interface:
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at TODO</A>
+ @LD @Haskell {
+ data Monad' :: (* ~&gt; *) ~&gt; * ~&gt; * ~&gt; * where
+   Feed :: m b -&gt; Monad' m a b
+   Digest :: (a -&gt; m b) -&gt; Monad' m a b
+ }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at PP</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a value of type @Haskell { Thrist (Monad' T) } corresponds to the @F { do ... } syntactic sugar expression in Haskell }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Unimo? for ensuring that the interpreter obeys monadic semantics,
+- in an Appendix: use Unimo to constuct an @Omega Monad' -&gt; Monad function, hmm this is not correct, unimo :: ??? -&gt; Monad } 
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a word about Unimo: does compilation of the unimo value (staging) give the performance back? probably not,
+-the values are included into the data structure, each monadic &quot;do{}&quot; needs to be compiled. In our context the thrists (Parser)
+-do not contain &quot;external&quot; values, so no recompilation is necessary. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Comonads?, see paper @Cite { $heunenjacobs.monoid },
+-Uustalu&quot;&amp;&quot;Vene:The Essence of Dataflow Programming @Cite { $uustaluvene05.dataflow } }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { since thrists do not provide a binding construct like the do-notation
+-one has to resort to point-free passing of intermediate values (i.e. returning tuples) }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { Control.Applicative ? }
++We will stop here, but not without mentioning that recent research has established
++a connection between dataflow programming and its elegant reformulation using
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> comonads @Cite { $uustaluvene05.dataflow }. An adapter for comonads is just
++as straightforward to put down as @Haskell { Monad' } above.
+ @End @SubSection
+ 
+ 
+@@ -1459,7 +1455,7 @@
+ for a wide range of regular data structures, we should be able to use similar higher-order functions too.
+ @LP While the syntax presented here is already quite palatable, it remains to be seen how thrists can be
+ given syntactic sugar along the lines of the monadic ''do`` (or even arrow{
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at FootNote</A> { @I {arrow syntax} is available in certain Haskell implementations, but not in @Omega}}) notation
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at FootNote</A> { @I {arrow syntax} @Cite { $paterson01.notation } is available in certain Haskell implementations, but not in @Omega}}) notation
+ used in current Haskell implementations.
+ @PP We intend to tackle these theoretical and practical questions as a follow-on.
+ @End @Section
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000441.html">[Al4nin-commits] r678 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000443.html">[Al4nin-commits] r680 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#442">[ date ]</a>
+              <a href="thread.html#442">[ thread ]</a>
+              <a href="subject.html#442">[ subject ]</a>
+              <a href="author.html#442">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

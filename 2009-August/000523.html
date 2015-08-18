@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r761 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r761%20-%20trunk/purgatory&In-Reply-To=%3C200908031932.n73JWJw7020734%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000522.html">
+   <LINK REL="Next"  HREF="000524.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r761 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r761%20-%20trunk/purgatory&In-Reply-To=%3C200908031932.n73JWJw7020734%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r761 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Aug  3 21:32:19 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000522.html">[Al4nin-commits] r760 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000524.html">[Al4nin-commits] r762 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#523">[ date ]</a>
+              <a href="thread.html#523">[ thread ]</a>
+              <a href="subject.html#523">[ subject ]</a>
+              <a href="author.html#523">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-03 21:32:17 +0200 (Mon, 03 Aug 2009)
+New Revision: 761
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+defs are now propagated downstreams, while uses propagate upstreams
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-03 19:16:25 UTC (rev 760)
++++ trunk/purgatory/LLVM2step.omg	2009-08-03 19:32:17 UTC (rev 761)
+@@ -19,7 +19,7 @@
+ --
+ data Prim :: Term ~&gt; Init ~&gt; Uses ~&gt; * where
+   Add :: Use cn -&gt; Use cn' -&gt; Prim Regular b {trackUses2 cn cn' []u}
+-  Ret :: Use cn -&gt; Prim Terminator b {trackUses2 cn Const []u}
++  Ret :: Use cn -&gt; Prim Terminator b {trackUses1 cn []u}
+ 
+ kind Lab = Named Tag | Anon
+ 
+@@ -47,12 +47,19 @@
+   AddUse :: Tag ~&gt; Uses ~&gt; Uses
+  deriving List(u)
+ 
++trackUses1 :: Origin ~&gt; Uses ~&gt; Uses
++{trackUses1 Const us} = us
++{trackUses1 (Defined t) us} = [t; us]u
++
+ trackUses2 :: Origin ~&gt; Origin ~&gt; Uses ~&gt; Uses 
+ {trackUses2 Const Const us} = us
+ {trackUses2 Const (Defined t) us} = [t; us]u
+ {trackUses2 (Defined t) Const us} = [t; us]u
+ {trackUses2 (Defined t) (Defined t') us} = [t, t'; us]u
+ 
++appendUses :: Uses ~&gt; Uses ~&gt; Uses
++{appendUses []u us} = us
++{appendUses [t; r]u us} = [t; {appendUses r us}]u
+ 
+ 
+ -- defs
+@@ -67,10 +74,11 @@
+   A :: Defs ~&gt; Uses ~&gt; Props
+ 
+ data Instr :: Props ~&gt; Props ~&gt; * where
+-  Def :: Label t -&gt; Prim Regular i us -&gt; Instr (A d u) (A [t; d]d us)
+-  Exec :: Prim Regular i us -&gt; Instr (A d u) (A d u)
+-  Term :: Prim Terminator i us -&gt; Instr (A d u) (A d u)
++  Def :: Label t -&gt; Prim Regular i us -&gt; Instr (A d {appendUses us u}) (A [t; d]d u)
++  Exec :: Prim Regular i us -&gt; Instr (A d {appendUses us u}) (A d u)
++  Term :: Prim Terminator i us -&gt; Instr (A d {appendUses us u}) (A d u)
+ 
+ test3 = Term $ Ret (Const 42)
+ test4 = Def `a $ Add (Const 40) (Const 2)
+-test5 = Def `a $ Add (Const 40) (Use `b)
+\ No newline at end of file
++test5 = Def `a $ Add (Const 40) (Use `b)
++test6 = Def `a $ Add (Use `b) (Use `c)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000522.html">[Al4nin-commits] r760 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000524.html">[Al4nin-commits] r762 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#523">[ date ]</a>
+              <a href="thread.html#523">[ thread ]</a>
+              <a href="subject.html#523">[ subject ]</a>
+              <a href="author.html#523">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

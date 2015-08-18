@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r566 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r566%20-%20trunk/found-bugs&In-Reply-To=%3C200712120137.lBC1bZoH002697%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000328.html">
+   <LINK REL="Next"  HREF="000330.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r566 - trunk/found-bugs</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r566%20-%20trunk/found-bugs&In-Reply-To=%3C200712120137.lBC1bZoH002697%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r566 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 12 02:37:35 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000328.html">[Al4nin-commits] r565 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000330.html">[Al4nin-commits] r567 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#329">[ date ]</a>
+              <a href="thread.html#329">[ thread ]</a>
+              <a href="subject.html#329">[ subject ]</a>
+              <a href="author.html#329">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-12 02:37:31 +0100 (Wed, 12 Dec 2007)
+New Revision: 566
+
+Modified:
+   trunk/found-bugs/issue45-SetEmulation.omg
+   trunk/found-bugs/issue46-SetEmulation.omg
+Log:
+simplifications
+
+Modified: trunk/found-bugs/issue45-SetEmulation.omg
+===================================================================
+--- trunk/found-bugs/issue45-SetEmulation.omg	2007-12-12 00:52:16 UTC (rev 565)
++++ trunk/found-bugs/issue45-SetEmulation.omg	2007-12-12 01:37:31 UTC (rev 566)
+@@ -38,20 +38,9 @@
+ {exclude `a (RCons `c v r)} = RCons `c v {exclude `a r}
+ {exclude `b (RCons `c v r)} = RCons `c v {exclude `b r}
+ 
+-{-
+ 
+-strip :: Nat ~&gt; Row Nat Nat ~&gt; Nat ~&gt; Row Nat Nat
+-{strip a RNil n} = RNil
+-{strip a (RCons Z m r) Z} = {strip Z r a}
+-{strip a (RCons Z m r) (S n)} = RCons a m {strip Z r {plus a (S n)}}
+-{strip a (RCons (S n) m r) Z} = RCons {plus a (S n)} m {strip Z r a}
+-{strip a (RCons (S n) m r) (S n')} = {strip (S a) (RCons n m r) n'}
+-
+--}
+-
+ data SingleLabel :: Row Tag * ~&gt; * where
+   None :: SingleLabel RNil
+-  -- {- &quot;not prop&quot; -}More :: ({exclude rest l} == rest) =&gt; Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
+   More :: Equal {exclude l rest} rest =&gt; Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
+  deriving Record(s)
+ 
+@@ -67,18 +56,6 @@
+  t4 = {`a=25,`a=25}s
+ 
+ 
+-data SingleLabel' :: Row Tag * ~&gt; * where
+-  None' :: SingleLabel' RNil
+-  More' ::  Label l -&gt; Equal {exclude l rest} rest -&gt; SingleLabel' rest -&gt; SingleLabel' {l=t;rest}r
+- deriving Record(sl)
+-
+-
+--- this is not understood yet
+---
+-##test &quot;occurs check&quot;
+-  t100 = {`hh=Eq}sl
+-
+-
+ -- Some basic operations on SingleLabel records:
+ ------------------------------------------------
+ 
+@@ -90,54 +67,8 @@
+ apart {l=v; rest}s = Just (l, v, rest, Eq)
+ 
+ {-
+-**** Near line: 89 column: 1
++**** Near line: 66 column: 1
+ 
+ While parsing a type constructor, unknown type: More, at line: 89 column: 1
+ -}
+ 
+-
+-{- STILL TOO HARD FOR ME
+--- pulling stuff to front
+-
+-{-
+-toFront :: Label a -&gt; SingleLabel row -&gt; (SingleLabel {a=v; {exclude a row}}r + SingleLabel {exclude a row})
+-toFront a (e@{}s) = R e
+-toFront a (got@{f=v; rest}s) = case labelEq a f of
+-			       Nothing -&gt; case toFront a rest of
+-					  R free -&gt; R {f=v; free}s
+-					  L {a'=v; rest'}s -&gt; L {a'=v', f=v; rest'}s
+-			       Just Eq -&gt; L got
+--}
+-
+-extendLemma :: Label l -&gt; Equal a b -&gt; Equal {exclude l a} {exclude l b}
+-extendLemma l Eq = Eq
+-
+--- unsound:
+---contractLemma :: Label l -&gt; Equal {exclude l a} {exclude l b} -&gt; Equal a b
+---contractLemma l Eq = Eq
+-
+-idempotenceLemma :: Label l -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
+-idempotenceLemma l Eq = undefined -- Eq CHEAT
+-
+-idempotenceLemma' :: Label l -&gt; SingleLabel {exclude l a} -&gt; SingleLabel b -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
+-idempotenceLemma' l s sb Eq = undefined -- Eq CHEAT
+-
+-
+-------but, the current refinement fails because _c != {exclude _b _c}   vvvvvvvvvvvv
+---peel :: Label a -&gt; Equal row {exclude a row} -&gt; SingleLabel {exclude a row} -&gt; SingleLabel row
+---peel a Eq s = s
+-
+-peel :: Label a -&gt; Equal {exclude a row} b -&gt; SingleLabel {exclude a row} -&gt; SingleLabel b
+-peel a Eq s = s
+-
+-toFront :: Label a -&gt; SingleLabel row -&gt; (SingleLabel {a=v; {exclude a row}}r + (SingleLabel {exclude a row}, Equal {exclude a row} row))
+-toFront a (e@{}s) = R (e, Eq)
+-toFront a (got@{f=v; rest}s) = case labelEq a f of
+-			       Nothing -&gt; case toFront a rest of
+-					  --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (check {f=v; free}s, Eq) where theorem t, idem = idempotenceLemma' f
+-                                          --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (got, Eq)
+-                                          R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (peel f t got, Eq)
+-					  L {a'=v'; rest'}s -&gt; L {a'=v', f=v; rest'}s
+-			       Just Eq -&gt; L got
+-
+--}
+\ No newline at end of file
+
+Modified: trunk/found-bugs/issue46-SetEmulation.omg
+===================================================================
+--- trunk/found-bugs/issue46-SetEmulation.omg	2007-12-12 00:52:16 UTC (rev 565)
++++ trunk/found-bugs/issue46-SetEmulation.omg	2007-12-12 01:37:31 UTC (rev 566)
+@@ -38,101 +38,19 @@
+ {exclude `a (RCons `c v r)} = RCons `c v {exclude `a r}
+ {exclude `b (RCons `c v r)} = RCons `c v {exclude `b r}
+ 
+-{-
+ 
+-strip :: Nat ~&gt; Row Nat Nat ~&gt; Nat ~&gt; Row Nat Nat
+-{strip a RNil n} = RNil
+-{strip a (RCons Z m r) Z} = {strip Z r a}
+-{strip a (RCons Z m r) (S n)} = RCons a m {strip Z r {plus a (S n)}}
+-{strip a (RCons (S n) m r) Z} = RCons {plus a (S n)} m {strip Z r a}
+-{strip a (RCons (S n) m r) (S n')} = {strip (S a) (RCons n m r) n'}
+-
+--}
+-
+ data SingleLabel :: Row Tag * ~&gt; * where
+   None :: SingleLabel RNil
+-  -- {- &quot;not prop&quot; -}More :: ({exclude rest l} == rest) =&gt; Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
+   More :: Equal {exclude l rest} rest =&gt; Label l -&gt; t -&gt; SingleLabel rest -&gt; SingleLabel {l=t;rest}r
+  deriving Record(s)
+ 
+-t1 :: SingleLabel {`a=Int}r
+-t1 = {`a=25}s
+-
+-##test &quot;not solvable&quot;
+- t2 = {`a=25;undefined}s
+-
+-t3 = {`a=25,`b=42}s
+-
+-##test &quot;duplicate tags&quot;
+- t4 = {`a=25,`a=25}s
+-
+-
+-data SingleLabel' :: Row Tag * ~&gt; * where
+-  None' :: SingleLabel' RNil
+-  More' ::  Label l -&gt; Equal {exclude l rest} rest -&gt; SingleLabel' rest -&gt; SingleLabel' {l=t;rest}r
+- deriving Record(sl)
+-
+-
+--- this is not understood yet
+---
+-##test &quot;occurs check&quot;
+-  t100 = {`hh=Eq}sl
+-
+-
+ -- Some basic operations on SingleLabel records:
+ ------------------------------------------------
+ 
+ --- separate the head of the record and assemble it again after that.
+ 
+ 
+-apart :: SingleLabel row -&gt; exists a v . Maybe (Label a, v, SingleLabel tail{-, Equal {a=v; tail}r row-})
++apart :: SingleLabel row -&gt; exists a v . Maybe (Label a, v, SingleLabel tail)
+ apart {}s = Ex Nothing
+-apart {l=v; rest}s = Ex (check (Just (l, v, rest{-, Eq-})))
++apart {l=v; rest}s = Ex (check (Just (l, v, rest)))
+ 
+-
+-
+-{- STILL TOO HARD FOR ME
+--- pulling stuff to front
+-
+-{-
+-toFront :: Label a -&gt; SingleLabel row -&gt; (SingleLabel {a=v; {exclude a row}}r + SingleLabel {exclude a row})
+-toFront a (e@{}s) = R e
+-toFront a (got@{f=v; rest}s) = case labelEq a f of
+-			       Nothing -&gt; case toFront a rest of
+-					  R free -&gt; R {f=v; free}s
+-					  L {a'=v; rest'}s -&gt; L {a'=v', f=v; rest'}s
+-			       Just Eq -&gt; L got
+--}
+-
+-extendLemma :: Label l -&gt; Equal a b -&gt; Equal {exclude l a} {exclude l b}
+-extendLemma l Eq = Eq
+-
+--- unsound:
+---contractLemma :: Label l -&gt; Equal {exclude l a} {exclude l b} -&gt; Equal a b
+---contractLemma l Eq = Eq
+-
+-idempotenceLemma :: Label l -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
+-idempotenceLemma l Eq = undefined -- Eq CHEAT
+-
+-idempotenceLemma' :: Label l -&gt; SingleLabel {exclude l a} -&gt; SingleLabel b -&gt; Equal {exclude l a} b -&gt; Equal {exclude l {exclude l a}} b
+-idempotenceLemma' l s sb Eq = undefined -- Eq CHEAT
+-
+-
+-------but, the current refinement fails because _c != {exclude _b _c}   vvvvvvvvvvvv
+---peel :: Label a -&gt; Equal row {exclude a row} -&gt; SingleLabel {exclude a row} -&gt; SingleLabel row
+---peel a Eq s = s
+-
+-peel :: Label a -&gt; Equal {exclude a row} b -&gt; SingleLabel {exclude a row} -&gt; SingleLabel b
+-peel a Eq s = s
+-
+-toFront :: Label a -&gt; SingleLabel row -&gt; (SingleLabel {a=v; {exclude a row}}r + (SingleLabel {exclude a row}, Equal {exclude a row} row))
+-toFront a (e@{}s) = R (e, Eq)
+-toFront a (got@{f=v; rest}s) = case labelEq a f of
+-			       Nothing -&gt; case toFront a rest of
+-					  --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (check {f=v; free}s, Eq) where theorem t, idem = idempotenceLemma' f
+-                                          --R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (got, Eq)
+-                                          R (free, (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">t at Eq</A>)) -&gt; R (peel f t got, Eq)
+-					  L {a'=v'; rest'}s -&gt; L {a'=v', f=v; rest'}s
+-			       Just Eq -&gt; L got
+-
+--}
+\ No newline at end of file
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000328.html">[Al4nin-commits] r565 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000330.html">[Al4nin-commits] r567 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#329">[ date ]</a>
+              <a href="thread.html#329">[ thread ]</a>
+              <a href="subject.html#329">[ subject ]</a>
+              <a href="author.html#329">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

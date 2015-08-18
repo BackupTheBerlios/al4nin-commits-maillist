@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r279 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r279%20-%20trunk/purgatory&In-Reply-To=%3C200703222105.l2ML5vC9021092%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000040.html">
+   <LINK REL="Next"  HREF="000042.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r279 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r279%20-%20trunk/purgatory&In-Reply-To=%3C200703222105.l2ML5vC9021092%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r279 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Thu Mar 22 22:05:57 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000040.html">[Al4nin-commits] r278 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000042.html">[Al4nin-commits] r280 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#41">[ date ]</a>
+              <a href="thread.html#41">[ thread ]</a>
+              <a href="subject.html#41">[ subject ]</a>
+              <a href="author.html#41">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-22 22:05:56 +0100 (Thu, 22 Mar 2007)
+New Revision: 279
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+the to type of the Pi is conflicting with the Up Up g of star
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-22 17:36:49 UTC (rev 278)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-22 21:05:56 UTC (rev 279)
+@@ -95,11 +95,12 @@
+ { stratDiff Ground Ground } = #0
+ { stratDiff (Up x) (Up y)} = { stratDiff x y }
+ { stratDiff (Up x) Ground } = S { stratDiff x Ground }
++{ stratDiff (Push x y) z } = { stratDiff x z }
+ 
+ -- --------- From       To
+ data Henk :: Stratum ~&gt; Stratum ~&gt; *0 where
+   Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) } Ground
+-  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk { collapsePi { stratDiff (Up strat) to } (Push (Up strat) from) } to
++  Bind :: Nat' { stratDiff (Up strat) to } -&gt; Label l -&gt; Henk Ground (Up strat) -&gt; Henk from to -&gt; Henk (Push (Up strat) from) to
+ --  Func :: (a-&gt;b) -&gt; Henk (Up Ground) Ground -- use Lit and {arr2stratum + cleaner}
+ --  Ref :: Label l -&gt; Henk Ground strat
+ --  Type :: Tractable a -&gt; Henk { tract2stratum (Tractable a) } (Up Ground)
+@@ -153,12 +154,29 @@
+ sameStrat0 Ground Eq = Eq
+ sameStrat0 (Up g) Eq = unreachable
+ 
++sameStrat2 :: forall (a :: Stratum) (b :: Stratum) . Stratum' a -&gt; Stratum' b -&gt; Equal { stratDiff (Up a) b } #0 -&gt; Equal b (Up a)
++sameStrat2 Ground Ground Eq = unreachable
++sameStrat2 Ground (Up Ground) Eq = Eq
++--sameStrat2 Ground (Up (Up b)) Eq = unreachable
++--sameStrat2 (Up a) Ground Eq = unreachable
++--sameStrat2 a (Up a) (Up Ground) = Eq
++
++
+ --sameStratUp :: Stratum' a -&gt; Equal { stratDiff a  } #0 -&gt; Equal a a
+ 
+ 
+ tau (Bind Z l q r) = check Star
+- where theorem sameStrat0, sameStrat1
++ where theorem sameStrat0, sameStrat2
+ 
++
++{-
++:set solving
++:set predicate_emission
++:set narrowing
++:set theorem
++:set
++-}
++
+ -----###tau (Type _) = Star
+ -----###tau Star = Star
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000040.html">[Al4nin-commits] r278 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000042.html">[Al4nin-commits] r280 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#41">[ date ]</a>
+              <a href="thread.html#41">[ thread ]</a>
+              <a href="subject.html#41">[ subject ]</a>
+              <a href="author.html#41">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

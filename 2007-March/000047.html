@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r285 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r285%20-%20trunk/purgatory&In-Reply-To=%3C200703270347.l2R3lYlm009390%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000046.html">
+   <LINK REL="Next"  HREF="000048.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r285 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r285%20-%20trunk/purgatory&In-Reply-To=%3C200703270347.l2R3lYlm009390%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r285 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Mar 27 05:47:34 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000046.html">[Al4nin-commits] r284 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000048.html">[Al4nin-commits] r286 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#47">[ date ]</a>
+              <a href="thread.html#47">[ thread ]</a>
+              <a href="subject.html#47">[ subject ]</a>
+              <a href="author.html#47">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-27 05:47:33 +0200 (Tue, 27 Mar 2007)
+New Revision: 285
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+trying something stupidly simple
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-26 19:45:09 UTC (rev 284)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-27 03:47:33 UTC (rev 285)
+@@ -78,10 +78,9 @@
+ -- tau for the type
+ collapsePi :: Stratum n ~&gt; Stratum (S n)
+ { collapsePi Ground } = Up Ground
+-{ collapsePi (Up Ground) } = Up (Up Ground)
+-{ collapsePi (Up (Up x)) } = Up (Up (Up x))
+-{ collapsePi (Up (Binder a b Z)) } = Up b --{ clean b }
+---{ collapsePi (Up (Binder a b (S c))) } = Binder a { collapsePi b } c -- dunno yet
++{ collapsePi (Up x) } = Up (Up x)
++{ collapsePi (Binder a b Z) } = Up b --{ clean b }
++{ collapsePi (Binder a b (S c)) } = Binder a { collapsePi b } c -- dunno yet
+ 
+ 
+ prop Tractable :: * ~&gt; * where
+@@ -110,11 +109,12 @@
+   Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) }
+ ---  Bind :: Nat' n -&gt; Label l -&gt; Henk (Up a) -&gt; Henk b -&gt; Henk (Up (Binder a b n))
+ --  Bind :: forall (f :: Nat) (t :: Nat) (n :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' n -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Up (Binder from to n))
+-  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' { diff (S f) t } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Up (Binder from to { diff (S f) t }))
++  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' { diff (S f) t } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Binder from to { diff (S f) t })
+   Type :: Tractable a -&gt; Henk (Up Ground)
+-  Star :: Henk (Up (Up g))
++---  Star :: Henk (Up (Up g))
++  Star :: forall (f :: Nat) (g :: Stratum (S f)) . Henk (Up g)
+   -- Application
+----  App :: Henk (Push (Up s) from b') u b -&gt; Henk Ground s #0 -&gt; Henk from u b'
++  App :: Henk (Binder from to d) -&gt; Henk from -&gt; Henk to
+ 
+ 
+ --a :: Henk Ground Ground
+@@ -125,7 +125,7 @@
+ --{ reducebind (S b) } = b
+ 
+ 
+-tau :: Henk a-&gt; Henk { collapsePi a }
++tau :: Henk a -&gt; Henk { collapsePi a }
+ --tau (Bind l q r) = Bind l q (lazy tau r)
+ --tau (Bind l (q@(Lit _)) (r@(Lit _))) = tau r
+ --tau (Bind l (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">q at Type</A>) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">r at Type</A>)) = Type
+@@ -164,12 +164,40 @@
+ teachZImplies3 #0 #0 (Bind d l Star Star) (Bind d l Star Star) = Eq
+ -}
+ 
++sss :: forall (a :: *) . a -&gt; a
++ida a = a
+ 
+-tau (b@(Bind Z l q r)) = check Star
+--- where theorem hyp = teachZImplies2 Z Z b b, hyp3 = teachZImplies3 Z Z b b
+ 
++-- we need a theorem over diff: when result is Z then the arguments are the same
++zeroDiff :: forall (f :: Nat) (t :: Nat) . Nat' f -&gt; Nat' t -&gt; Nat' { diff t f } -&gt; Equal { diff t f } Z -&gt; Equal f t
++zeroDiff Z Z Z Eq = Eq
++zeroDiff (S a) Z _ Eq = unreachable
++zeroDiff Z (S a) _ Eq = unreachable
++zeroDiff (S a) (S b) Z Eq = check Eq
++ where theorem hyp = zeroDiff a b
+ 
+ {-
++
++teachZImplies1 :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (to2 :: Stratum (S f)) . Henk (Binder from to Z) -&gt; Henk (Binder from to2 Z) -&gt; Equal to2 to
++--teachZImplies1 :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (to2 :: Stratum (S f)) . Henk (Binder from to Z) -&gt; Henk (Binder from to2 Z) -&gt; Equal (S f) t
++-- teachZImplies1 (Bind d l (Type IntTractable) (Type IntTractable)) (Bind d l (Type IntTractable) (Type IntTractable)) = Eq
++teachZImplies1 (b@(Bind d l Star Star)) (c@(Bind d l Star Star)) =  (forcesame b c Eq)
++
++forcesame :: a -&gt; a -&gt; Equal b c -&gt; Equal b c
++forcesame _ _ e = e
++
++
++teachZImplies :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) . Nat' { diff (S f) t } -&gt; Henk (Binder from to { diff (S f) t }) -&gt; Henk (Binder from to Z) -&gt; Equal { diff (S f) t } Z
++--teachZImplies Z (b@(Bind d l Star Star)) (c@(Bind d l Star Star)) = Eq
++teachZImplies Z (b@(Bind d l (Type IntTractable) (Type IntTractable))) (c@(Bind d l (Type IntTractable) (Type IntTractable))) = Eq
++ where theorem hyp = teachZImplies1 b c
++
++
++tau (b@(Bind Z l q r)) = Star
++ where theorem hyp = teachZImplies Z b b, hyp2 = teachZImplies1 b b
++-}
++
++{-
+ :set solving
+ :set predicate_emission
+ :set narrowing
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000046.html">[Al4nin-commits] r284 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000048.html">[Al4nin-commits] r286 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#47">[ date ]</a>
+              <a href="thread.html#47">[ thread ]</a>
+              <a href="subject.html#47">[ subject ]</a>
+              <a href="author.html#47">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

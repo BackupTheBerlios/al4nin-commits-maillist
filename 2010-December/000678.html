@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r916 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r916%20-%20trunk/purgatory&In-Reply-To=%3C20101213224058.129A94801A9%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000677.html">
+   <LINK REL="Next"  HREF="000679.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r916 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r916%20-%20trunk/purgatory&In-Reply-To=%3C20101213224058.129A94801A9%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r916 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Mon Dec 13 23:40:57 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000677.html">[Al4nin-commits] r915 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000679.html">[Al4nin-commits] r917 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#678">[ date ]</a>
+              <a href="thread.html#678">[ thread ]</a>
+              <a href="subject.html#678">[ subject ]</a>
+              <a href="author.html#678">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-13 23:40:57 +0100 (Mon, 13 Dec 2010)
+New Revision: 916
+
+Modified:
+   trunk/purgatory/Kinding.omg
+Log:
+halfway define tau (on contexts) using upc and a spineContext lemma; more to come
+
+Modified: trunk/purgatory/Kinding.omg
+===================================================================
+--- trunk/purgatory/Kinding.omg	2010-12-10 21:51:20 UTC (rev 915)
++++ trunk/purgatory/Kinding.omg	2010-12-13 22:40:57 UTC (rev 916)
+@@ -73,7 +73,7 @@
+   Lam :: Qual p {up p} -&gt; Qual (p`1)w {up (p`1)w}
+  deriving syntax (ty) Nat(Star, Up) Tick(Lam) Pair(Ext)
+ 
+--- tau: calculate classifier
++-- tau': calculate a qualifier's classifier
+ up :: Walk n m p ~&gt; Walk (1+n)t m' p'
+ {up (c, h)w} = {up h}
+ {up ((c, h)w`1)w} = h
+@@ -81,14 +81,14 @@
+ {up (1+n)w} = (2+n)w
+ {up 0w} = 1w
+ 
+-tau :: Qual a ta -&gt; Qual ta {up ta}
+-tau (c, h)ty = tau h
+-tau ((c, h)ty`1)ty = h
+-tau (p`2)ty = (p`1)ty
+-tau (1+n)ty = (2+n)ty
+-tau 0ty = 1ty
+-tau Type = Star
+-tau Term = Type
++tau' :: Qual a ta -&gt; Qual ta {up ta}
++tau' (c, h)ty = tau' h
++tau' ((c, h)ty`1)ty = h
++tau' (p`2)ty = (p`1)ty
++tau' (1+n)ty = (2+n)ty
++tau' 0ty = 1ty
++tau' Type = Star
++tau' Term = Type
+ 
+ -- extract payload from lambda
+ charge :: Walk n m {k=l;p}p ~&gt; Walk k l p
+@@ -112,19 +112,50 @@
+   Empty :: Context Floating []ws
+   Heart :: Qual n (1+n)w -&gt; Context Anchored [n]ws
+   Qualify :: Qual (v`1)w {up (v`1)w} -&gt; Context f ws -&gt; Context f [(v`1)w; ws]ws
+-  Appl' :: Equal {charge f} b
+-           =&gt; Qual a b
+-           -&gt; Context Anchored [f; r]ws
+-           -&gt; Context Anchored r
+- deriving syntax (c) List(Empty, Qualify) Pair(Appl')
++  Appl :: Equal {charge f} b
++          =&gt; Qual a b
++          -&gt; Context Anchored [f; r]ws
++          -&gt; Context Anchored r
++ deriving syntax (c) List(Empty, Qualify) Pair(Appl)
+ 
++-- tau: classify context
++upc :: Walks n ~&gt; Walks (1+n)t
++{upc []ws} = []ws
++{upc [0w; ws]ws} = [1w; {upc ws}]ws
++{upc [(1+n)w; ws]ws} = [(2+n)w; {upc ws}]ws
++{upc [((c, h)w`1)w; ws]ws} = {upc ws}
++{upc [(w`2)w; ws]ws} = [(w`1)w; {upc ws}]ws
++
++-- we want to show: Equal {upc [_c]ws} [(1+_c)w]ws
++spineLemma :: Qual n (1+n)w -&gt; Equal (1+n)w {up n}
++spineLemma Term = Eq
++spineLemma Type = Eq
++spineLemma 0ty = Eq
++spineLemma (1+n)ty = Eq
++
++spineContext :: Qual c (1+c)w -&gt; Context Anchored [c]ws -&gt; Equal {upc [c]ws} [(1+c)w]ws
++spineContext Term (Heart Term) = Eq
++spineContext Type (Heart Type) = Eq
++spineContext 0ty (Heart 0ty) = Eq
++spineContext (1+n)ty (Heart (1+n)ty) = Eq
++
++tau :: Context f ws -&gt; Context f {upc ws}
++tau Empty = Empty
++tau (Heart q) = Heart (tau' q)
++  where theorem because = spineContext q (Heart q) -- spineLemma q
++tau (Qualify ((_,t)ty`1)ty c) = tau c
++tau (Qualify (t`2)ty c) = Qualify (t`1)ty (tau c)
++--tau (Appl q c) = Appl (tau' q) (tau c)
++
++
++
+ -- runtime values are represented by expressions
+ 
+ {-
+ data Expr :: Walks n ~&gt; * where
+   Lit :: Qual a b -&gt; Expr [a]ws  -- e.g. 42::Int
+   Lambda :: Context Anchored [a, b; r]ws -&gt; Expr [a, b; r]ws -- e.g. \a:Int.42
+-  Appl :: Equal {charge f} {up a} =&gt; Expr [a]ws -&gt; Expr [f; r]ws -&gt; Expr r
++  Appl' :: Equal {charge f} {up a} =&gt; Expr [a]ws -&gt; Expr [f; r]ws -&gt; Expr r
+ -}
+ 
+ -- Tests
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000677.html">[Al4nin-commits] r915 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000679.html">[Al4nin-commits] r917 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#678">[ date ]</a>
+              <a href="thread.html#678">[ thread ]</a>
+              <a href="subject.html#678">[ subject ]</a>
+              <a href="author.html#678">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

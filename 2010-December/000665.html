@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r903 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r903%20-%20trunk/purgatory&In-Reply-To=%3C20101210182641.71C47480EA1%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000664.html">
+   <LINK REL="Next"  HREF="000666.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r903 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r903%20-%20trunk/purgatory&In-Reply-To=%3C20101210182641.71C47480EA1%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r903 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Dec 10 19:26:41 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000664.html">[Al4nin-commits] r902 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000666.html">[Al4nin-commits] r904 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#665">[ date ]</a>
+              <a href="thread.html#665">[ thread ]</a>
+              <a href="subject.html#665">[ subject ]</a>
+              <a href="author.html#665">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-10 19:26:41 +0100 (Fri, 10 Dec 2010)
+New Revision: 903
+
+Modified:
+   trunk/purgatory/Kinding2.omg
+Log:
+change all tests to new Context-internal application, Expr is not needed at the moment
+
+Modified: trunk/purgatory/Kinding2.omg
+===================================================================
+--- trunk/purgatory/Kinding2.omg	2010-12-10 16:55:22 UTC (rev 902)
++++ trunk/purgatory/Kinding2.omg	2010-12-10 18:26:41 UTC (rev 903)
+@@ -122,12 +122,13 @@
+ 
+ -- runtime values are represented by expressions
+ 
++{-
+ data Expr :: Walks n ~&gt; * where
+   Lit :: Qual a b -&gt; Expr [a]ws  -- e.g. 42::Int
+   Lambda :: Context Anchored [a, b; r]ws -&gt; Expr [a, b; r]ws -- e.g. \a:Int.42
+   Appl :: Equal {charge f} {up a} =&gt; Expr [a]ws -&gt; Expr [f; r]ws -&gt; Expr r
++-}
+ 
+-
+ -- Tests
+ 
+ -- TODO ##test &quot;exclude Term categorizer&quot;
+@@ -135,15 +136,15 @@
+ 
+ -- regular lambda2 : \x:Int.42
+ lambda2Int = ((Type, Star)ty`2)ty
+-kt1 = Appl (Lit Term) (Lambda [lambda2Int; Heart Term]c)
++kt1 = (Term, [lambda2Int; Heart Term]c)c
+ 
+ -- regular PI1 : pi (x:Int).Int
+ pi1Int = ((Type, Star)ty`1)ty
+-kt2 = Appl (Lit Term) (Lambda [pi1Int; Heart Type]c)
++kt2 = (Term, [pi1Int; Heart Type]c)c
+ 
+ -- type-level lambda2 : /\x:*:Int
+ lambda2star = ((0ty, 1ty)ty`2)ty
+-kt3 = Appl (Lit Type) (Lambda [lambda2star; Heart Type]c)
++kt3 = (Type, [lambda2star; Heart Type]c)c
+ 
+ -- mixed form: \f:Int-&gt;Int.f 42
+ lambda2Int_Int = ((pi1Int, 0ty)ty`2)ty
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000664.html">[Al4nin-commits] r902 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000666.html">[Al4nin-commits] r904 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#665">[ date ]</a>
+              <a href="thread.html#665">[ thread ]</a>
+              <a href="subject.html#665">[ subject ]</a>
+              <a href="author.html#665">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

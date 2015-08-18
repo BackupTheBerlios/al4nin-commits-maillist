@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r365 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r365%20-%20trunk/purgatory&In-Reply-To=%3C200706011340.l51DeZ7u028398%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000128.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r365 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r365%20-%20trunk/purgatory&In-Reply-To=%3C200706011340.l51DeZ7u028398%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r365 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jun  1 15:40:35 CEST 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000128.html">[Al4nin-commits] r366 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-01 15:40:34 +0200 (Fri, 01 Jun 2007)
+New Revision: 365
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+implemented UpTo
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-05-30 17:47:55 UTC (rev 364)
++++ trunk/purgatory/ThristParser.omg	2007-06-01 13:40:34 UTC (rev 365)
+@@ -61,9 +61,9 @@
+   Seq :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- parse front first then second
+   Seq1 :: Parse a b -&gt; Parse a c -&gt; Parse [a] ((b, c), [a]) -- same, but with single-elem first and second
+   ButNot1 :: Parse a b -&gt; Parse a b -&gt; Parse a b     -- match first and expect second to fail
++  UpTo :: Parse [a] (b, [a]) -&gt; Parse [a] (c, [a]) -&gt; Parse [a] ((b, c), [a]) -- scan for c then match b
+ 
+ 
+---letter = (Atom :: Char -&gt; Parse Char Char)
+ letter a = Pred (\(c :: Char) -&gt; ord c == ord a)
+ ---char = Sure (id :: Char -&gt; Char)
+ 
+@@ -150,12 +150,27 @@
+ 			      (Just b1) -&gt; parse r b1
+ 			      Nothing -&gt; do { b2 &lt;- parse #[p2]l a; parse r b2 } where monad maybeM
+ 
++-- probably redundant, use Pred instead
+ parse (Cons (ButNot1 p1 p2) r) a = case parse #[p1]l a of
+ 				   Nothing -&gt; Nothing
+ 				   (Just b1) -&gt; case parse #[p2]l a of
+ 						Nothing -&gt; parse r b1
+ 						_ -&gt; Nothing
+ 
++parse (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">u at UpTo</A> p1 p2) r) a = case parse' a [] of
++				  Nothing -&gt; Nothing
++				  Just (fill, (b2, rest)) -&gt; case parse #[p1]l fill of
++							     Nothing -&gt; Nothing
++							     Just (b1, []) -&gt; parse r ((b1, b2), rest)
++							     _ -&gt; Nothing
++    where
++    --parse' :: [a] -&gt; [a] -&gt; Maybe ([a], c)
++    parse' [] acc = case parse #[p2]l [] of
++		    Nothing -&gt; Nothing
++		    Just b2 -&gt; Just (acc, b2)
++    parse' (food@(head:tail)) acc = case parse #[p2]l food of
++				    Nothing -&gt; parse' tail (head:acc)
++				    Just b2 -&gt; Just (acc, b2)
+ 
+ -- ##########################################
+ -- ############ pattern compiler ############
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000128.html">[Al4nin-commits] r366 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#127">[ date ]</a>
+              <a href="thread.html#127">[ thread ]</a>
+              <a href="subject.html#127">[ subject ]</a>
+              <a href="author.html#127">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r387 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-June/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r387%20-%20trunk/found-bugs&In-Reply-To=%3C200706221401.l5ME1GNE004581%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000148.html">
+   <LINK REL="Next"  HREF="000150.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r387 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r387%20-%20trunk/found-bugs&In-Reply-To=%3C200706221401.l5ME1GNE004581%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r387 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Jun 22 16:01:16 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000148.html">[Al4nin-commits] r386 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000150.html">[Al4nin-commits] r388 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-06-22 16:01:11 +0200 (Fri, 22 Jun 2007)
+New Revision: 387
+
+Added:
+   trunk/found-bugs/issue12-Cat.omg
+Log:
+document a case where local type inference could prove the hypothesis
+
+Copied: trunk/found-bugs/issue12-Cat.omg (from rev 386, trunk/purgatory/Cat.omg)
+===================================================================
+--- trunk/purgatory/Cat.omg	2007-06-22 13:10:08 UTC (rev 386)
++++ trunk/found-bugs/issue12-Cat.omg	2007-06-22 14:01:11 UTC (rev 387)
+@@ -0,0 +1,317 @@
++-- -*-Haskell-*-
++
++{-
++ * Copyright (c) 2007 Gabor Greif
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the &quot;Software&quot;), to deal
++ * in the Software without restriction, including without limitation the rights
++ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
++ * of the Software, and to permit persons to whom the Software is furnished to do
++ * so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
++ * OR OTHER DEALINGS IN THE SOFTWARE.
++ -}
++
++-- Usage:
++--
++--  Set up the environment
++--     setenv LD_LIBRARY_PATH /opt/exp/gnu/lib:$LD_LIBRARY_PATH
++--     setenv PATH /home/ggreif/%NoBackup%/Omega1.4.2:$PATH
++--
++--  Start the omega interpreter by typing
++--     omega Cat.omg
++--  and run your commands on the prompt
++--
++
++import &quot;LangPrelude.prg&quot; 
++  (head,tail,lookup,member,fst,snd,map,Monad,maybeM,id,ioM,Eq,Equal,
++  listM, (!=), (==))
++
++
++import &quot;Thrist.omg&quot; 
++  (Thrist, Nil, Cons, syntax List(l))
++
++
++data Prod:: *1 ~&gt; *1 where
++  PNil:: Prod a
++  PCons:: k ~&gt; Prod k ~&gt; Prod k
++ deriving List(sh)
++
++
++
++-- Cat thrist
++-- See: <A HREF="http://en.wikipedia.org/wiki/Cat_%28programming_language%29">http://en.wikipedia.org/wiki/Cat_%28programming_language%29</A>
++
++blow :: Nat ~&gt; Prod *0 ~&gt; Prod *0
++{blow Z s} = s
++{blow (S n) s} = PCons t {blow n s}
++
++blowLike :: Nat ~&gt; *0 ~&gt; Prod *0 ~&gt; Prod *0
++{blowLike (S arty) (c -&gt; d) s} = PCons c {blowLike arty d s}
++{blowLike Z a s} = s
++
++range :: Nat ~&gt; *0 ~&gt; *0
++{range (S arty) (c -&gt; d)} = {range arty d}
++{range Z a} = a
++
++countArr :: *0 ~&gt; Nat
++{countArr Int} = 0t
++{countArr Bool} = 0t
++{countArr Char} = 0t
++{countArr (a, b)} = 0t
++{countArr [a]} = 0t
++{countArr (a-&gt;b)} = S {countArr b}
++
++data Tractable :: * ~&gt; * where
++  IntTractable :: Tractable Int
++  BoolTractable :: Tractable Bool
++  CharTractable :: Tractable Char
++  PairTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a, b)
++  ListTractable :: Tractable a -&gt; Tractable [a]
++  ArrTractable :: Tractable a -&gt; Tractable b -&gt; Tractable (a -&gt; b)
++  CatTractable :: ShapeTractable a -&gt; ShapeTractable b -&gt; Tractable (Cat a b)
++
++data Primitive
++    = Padd
++    | Psub
++    | Pmul
++    | Pdiv
++    | Pgt
++    | Plt
++    | Pgteq
++    | Plteq
++    | Pneg
++    | Peq
++    | Pneq
++    | Pmin
++    | Pmax
++    | Pmap -- made up
++    | Pord
++
++
++data Cat :: (Prod *0) ~&gt; (Prod *0) ~&gt; *0 where
++  Push :: Tractable a -&gt; a -&gt; Cat s (PCons a s)
++  Prim :: Tractable c -&gt; Primitive -&gt; (a -&gt; c) -&gt; Cat (PCons a {blowLike {countArr c} c s}) (PCons {range {countArr c} c} s)
++  Dup :: Cat (PCons t s) (PCons t (PCons t s))
++--  Dig :: Pick Prod Nat -&gt; Cat (PCons t s) (PCons t (PCons t s))
++  Print :: Cat (PCons t s) s
++  PopN :: Nat' (S n) -&gt; Cat {blow (S n) s} s
++  Swap :: Cat (PCons a (PCons b s)) (PCons b (PCons a s))
++-- Perm :: Pick Prod Nat -- TODO
++  Block :: Thrist Cat b c -&gt; Cat a (PCons (Cat b c) a)
++  Quote :: Thrist Cat a b -&gt; Cat a b
++  Eval :: Cat (PCons (Cat a b) a) b
++  If :: Thrist Cat s t -&gt;
++        Thrist Cat s t -&gt;
++        Cat (PCons Bool s) t
++
++
++data ShapeTractable :: (Prod *0) ~&gt; * where
++  Opaque :: ShapeTractable a
++  Ontop :: Tractable b -&gt; ShapeTractable a -&gt; ShapeTractable (PCons b a)
++ deriving List(st)
++  
++tc0 = (let a = Opaque in (CatTractable a (Ontop IntTractable a))) :: Tractable (Cat a (PCons Int a))
++tc1 = [Push tc0 (Push IntTractable 42)]l
++tc2 = [Push tc0 (Push IntTractable 42), Eval]l
++tc3 = [Push tc0 (Push IntTractable 42), Eval, Print]l
++
++strTract = ListTractable CharTractable
++
++intPrim = Prim (ArrTractable IntTractable IntTractable)
++add = intPrim Padd (+)
++sub = intPrim Psub (-)
++
++intPred = Prim (ArrTractable IntTractable BoolTractable)
++gt = intPred Pgt (&gt;)
++gteq = intPred Pgteq (&gt;=)
++
++pop = PopN #1
++
++te1 = [Push IntTractable 42, Dup, gt, If [pop, Push strTract &quot;hh&quot;]l [Push IntTractable 42, add, Print, Push strTract &quot;hh&quot;]l]l
++
++{- This needs more magic:
++showThrist :: (t a b -&gt; String) -&gt; Thrist t a b -&gt; String
++showThrist f Nil = &quot;&quot;
++showThrist f (Cons t r) = f t ++ showThrist f r
++-}
++
++cat' :: Thrist Cat a b -&gt; String
++cat' []l = &quot;&quot;
++cat' [Push _ a; r]l = &quot;Push &quot; ++ show a ++ &quot;\n&quot; ++ cat' r
++cat' [Prim _ Padd _; r]l = &quot;add\n&quot; ++ cat' r
++cat' [Prim _ Psub _; r]l = &quot;sub\n&quot; ++ cat' r
++cat' [Prim _ Pgt  _; r]l = &quot;gt\n&quot; ++ cat' r
++cat' [Dup; r]l = &quot;Dup\n&quot; ++ cat' r
++cat' [Print; r]l = &quot;Print\n&quot; ++ cat' r
++cat' [PopN n; r]l = &quot;PopN &quot; ++ show n ++ &quot;\n&quot; ++ cat' r
++cat' [Swap; r]l = &quot;Swap\n&quot; ++ cat' r
++cat' [If yes no; r]l = &quot;If &quot; ++ show yes ++ &quot; ELSE &quot; ++ show no ++ &quot;\n&quot; ++ cat' r
++
++data Stack :: Prod *0 ~&gt; *0 where
++  Empty :: Stack PNil
++  Pu :: a -&gt; Stack s -&gt; Stack (PCons a s)
++ deriving List(s)
++
++{-
++proveRange :: Tractable d -&gt; Tractable e -&gt; Equal {range {countArr (e -&gt; d)} (e -&gt; d)} {range {countArr d} d}
++proveRange IntTractable e = Eq
++proveRange BoolTractable e = Eq
++proveRange CharTractable e = Eq
++proveRange (ListTractable _) e = Eq
++proveRange (PairTractable _ _) e = Eq
++proveRange (ArrTractable from to) e = Eq
++                                      where theorem because = proveRange to
++-}
++
++interpretCat :: (forall a . Thrist Cat a a) -&gt; IO (Stack PNil)
++interpretCat thr = interpretCat' thr (returnIO Empty)
++
++interpretCat' :: Thrist Cat a b -&gt; IO (Stack a) -&gt; IO (Stack b)
++
++interpretCat' []l act = act
++
++interpretCat' thr act =
++    case thr of
++	     [Push rep a; r]l -&gt; do
++				 st &lt;- act
++				 interpretCat' r (return (Pu a st))
++	     [PopN (S n); r]l -&gt; do
++				 Pu _ st &lt;- act
++				 interpretCat' r (popMore n st)
++	     [Print; r]l -&gt; do
++			    Pu a st &lt;- act
++			    new &lt;- putStr (show a)
++			    interpretCat' r (return st)
++	     [Dup; r]l -&gt; do
++			  Pu a st &lt;- act
++  			  interpretCat' r (return (Pu a (Pu a st)))
++	     [Swap; r]l -&gt; do
++			   Pu a st &lt;- act
++			   let (Pu b st') = st
++			   interpretCat' r (return (Pu b (Pu a st')))
++	     [Prim (ArrTractable x y) p f; r]l -&gt; do
++	                                          Pu a st &lt;- act
++						  interpretCat' [Prim y p (f a); r]l (return st)
++                                                         -- where theorem because = proveRange y x
++	     [Prim IntTractable _ f; r]l -&gt; do
++	                                    Pu a st &lt;- act
++					    interpretCat' r (return (Pu (f a) st))
++	     [Prim BoolTractable _ f; r]l -&gt; do
++	                                     Pu a st &lt;- act
++					     interpretCat' r (return (Pu (f a) st))
++	     [Prim CharTractable _ f; r]l -&gt; do
++	                                     Pu a st &lt;- act
++					     interpretCat' r (return (Pu (f a) st))
++	     [Prim (PairTractable _ _) _ f; r]l -&gt; do
++	                                           Pu a st &lt;- act
++						   interpretCat' r (return (Pu (f a) st))
++	     [Prim (ListTractable _) _ f; r]l -&gt; do
++	                                         Pu a st &lt;- act
++						 interpretCat' r (return (Pu (f a) st))
++	     [If yes no; r]l -&gt; do
++				Pu cond st &lt;- act
++				let act' = return st
++				interpretCat' r (if cond then interpretCat' yes act' else interpretCat' no act')
++	     [Block thr; r]l -&gt; do
++				st &lt;- act
++				interpretCat' r (return (Pu (Quote thr) st))
++	     [Eval; r]l -&gt; do
++			   Pu (Quote thr) st &lt;- act
++			   let act' = return st
++			   interpretCat' r (interpretCat' thr act')
++    where monad ioM
++
++popMore :: Nat' n -&gt; Stack {blow n b} -&gt; IO (Stack b)
++popMore Z st = return st
++    where monad ioM
++popMore (S n) st = do
++		   let (Pu _ st') = st
++		   popMore n st'
++    where monad ioM
++
++##test &quot;was not what was expected&quot;
++  te2 = interpretCat (Cons (Push 11) te1)
++
++pushI = Push IntTractable
++pushB = Push BoolTractable
++pushC = Push CharTractable
++pushStr = Push (ListTractable CharTractable)
++
++te3 = interpretCat [pushI 23, pop]l
++te4 = interpretCat [pushI 42, pushI 11, gt, If [pushB True]l [pushB False]l, Print]l
++te5 = interpretCat [pushI 42, pushI 32, pushI 1, add, Swap, Print, Print]l
++te6 = interpretCat [pushI 42, pushI 32, pushI 1, add, Swap, Print, Dup, PopN #2]l
++te7 = interpretCat [pushStr &quot;Fun&quot;, Push (ArrTractable CharTractable IntTractable) ord, Prim (ArrTractable (ListTractable CharTractable) (ListTractable IntTractable)) Pmap map, Print]l
++te8 = interpretCat [pushC 'Z', Prim IntTractable Pord ord, pushI 2, add, Print]l
++te9 = interpretCat [pushI 42, Block [Print]l, Eval]l
++
++optimizeCat :: Thrist Cat a b -&gt; Thrist Cat a b
++optimizeCat (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">i at Cons</A> (If yes no) r) = optimizeIf i yes no r
++optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Push</A> rep a; r]l = [p; optimizeCat r]l
++optimizeCat [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p at Swap</A>; r]l = [p; optimizeCat r]l
++optimizeCat []l = []l
++
++sameTractable :: Tractable a -&gt; Tractable b -&gt; Maybe (Equal a b)
++sameTractable IntTractable IntTractable = Just Eq
++
++sameValue :: Tractable a -&gt; a -&gt; a -&gt; Bool
++sameValue IntTractable a b = a == b
++
++splitOff :: Thrist Cat a c -&gt; Thrist Cat a c -&gt; exists b . Maybe (Cat a b, Thrist Cat b c, Thrist Cat b c)
++splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">p1 at Push</A> rep1 a1) r1) (Cons (Push rep2 a2) r2) = case sameTractable rep1 rep2 of
++								Just Eq -&gt; Ex (Just (p1, r1, r2))
++splitOff (Cons (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">s at Swap</A>) r1) (Cons Swap r2) =  Ex (Just (s, r1, r2))
++
++
++
++optimizeIf :: Thrist Cat (PCons Bool a) b -&gt; Thrist Cat a c -&gt; Thrist Cat a c -&gt; Thrist Cat c b -&gt; Thrist Cat (PCons Bool a) b
++
++optimizeIf all (Cons (Push rep1 a1) t1) (Cons (Push rep2 a2) t2) rest = case sameTractable rep1 rep2 of
++                                                                          Just Eq -&gt; if sameValue rep1 a1 a2 then optimizeCat $ Cons (Push rep1 a1) (Cons Swap (Cons (If t1 t2) rest)) else all
++                                                                          _ -&gt; all
++----optimizeIf all a b rest = case splitOff a b of
++----                            Just (Ex (p, t1, t2)) -&gt; 
++
++
++--optimizeIf all (Cons (Push rep1 a1) t1) (Cons (Push rep2 a2) t2) rest = if eqStr (show a1) (show a2) then optimizeCat $ Cons (Push rep1 a1) (Cons Swap (Cons (If t1 t2) rest)) else all
++--           where theorem splitOff
++
++optimizeIf _ []l []l rest = [pop; rest]l
++
++
++optimizeIf all _ _ _ = all
++
++to0 = optimizeCat [If [pushI 42]l [pushI 42]l, Print]l
++to1 = optimizeCat [If [pushI 42]l [pushI 43]l, Print]l
++
++
++
++compile :: Thrist Cat a b -&gt; Code (IO (Stack a) -&gt; IO (Stack b))
++
++compile []l = lift id
++
++compile [Push rep a; r]l = [| \act -&gt; let monad ioM in do
++                                      st &lt;- act
++				      $(compile r) (return (Pu a st)) |]
++
++compile [<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">ZZ at PopN</A> (S n); r]l = [| \act -&gt; let monad ioM in do
++			              Pu _ st &lt;- act
++				      $compiledRest (return st) |]
++		where compiledRest = case check n of
++				     Z -&gt; check (compile r)
++			--	     S o -&gt; check (compile [PopN (S o); r]l)
++
++
++
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000148.html">[Al4nin-commits] r386 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000150.html">[Al4nin-commits] r388 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#149">[ date ]</a>
+              <a href="thread.html#149">[ thread ]</a>
+              <a href="subject.html#149">[ subject ]</a>
+              <a href="author.html#149">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

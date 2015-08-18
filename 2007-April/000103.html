@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r341 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-April/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r341%20-%20trunk/purgatory&In-Reply-To=%3C200704241504.l3OF4dgT014710%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000102.html">
+   <LINK REL="Next"  HREF="000104.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r341 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r341%20-%20trunk/purgatory&In-Reply-To=%3C200704241504.l3OF4dgT014710%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r341 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Apr 24 17:04:39 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000102.html">[Al4nin-commits] r340 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000104.html">[Al4nin-commits] r342 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-04-24 17:04:39 +0200 (Tue, 24 Apr 2007)
+New Revision: 341
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+diff also implemented
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-04-24 14:34:28 UTC (rev 340)
++++ trunk/purgatory/ThristParser.omg	2007-04-24 15:04:39 UTC (rev 341)
+@@ -335,13 +335,27 @@
+ isQuestion (Token (P Pquestion)) = True
+ isQuestion _ = False
+ 
++isDot :: Token' -&gt; Bool
++isDot (Token (P Pdot)) = True
++isDot _ = False
+ 
+-natuator :: Thrist Parse [Token'] (exists (n :: Nat) . Nat' n, [Token'])
+-natuator = #[Group [Pred isTest, Pred isQuestion, Pred isTest], sureFirst (\ [Test a, _, Test b] -&gt; sum a b)]l
+ 
++natuator :: Thrist Parse [Token'] (Maybe (exists (n :: Nat) . Nat' n), [Token'])
++natuator = #[Or (Wrap #[Group [Pred isTest, Pred isQuestion, Pred isTest], sureFirst (\ [Test a, _, Test b] -&gt; Just $ sum a b)]l)
++	        (Wrap #[Group [Pred isTest, Pred isDot, Pred isTest], sureFirst (\ [Test a, _, Test b] -&gt; diff a b)]l)]l
++
+ sum :: (exists (m :: Nat) . Nat' m) -&gt; (exists (n :: Nat) . Nat' n) -&gt; (exists (o :: Nat) . Nat' o)
+ sum (Ex Z) rhs = rhs
+ sum lhs (Ex Z) = lhs
+ sum (Ex (S a)) (Ex b) = sum (Ex a) (Ex (S b))
+ 
++
++diff :: (exists (m :: Nat) . Nat' m) -&gt; (exists (n :: Nat) . Nat' n) -&gt; Maybe (exists (o :: Nat) . Nat' o)
++diff (Ex Z) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">z at Ex</A> Z) = Just z
++diff (Ex Z) _ = Nothing
++diff z (Ex Z) = Just z
++diff (Ex (S a)) (Ex (S b)) = diff (Ex a) (Ex b)
++
+ (Just (natu0, [])) = parse lexer' &quot;!23?!42&quot;
++(Just (natu1, [])) = parse lexer' &quot;!23.!42&quot;
++(Just (natu2, [])) = parse lexer' &quot;!42.!23&quot;
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000102.html">[Al4nin-commits] r340 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000104.html">[Al4nin-commits] r342 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r883 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r883%20-%20trunk/purgatory&In-Reply-To=%3C20101207170511.6831F480D89%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000644.html">
+   <LINK REL="Next"  HREF="000646.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r883 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r883%20-%20trunk/purgatory&In-Reply-To=%3C20101207170511.6831F480D89%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r883 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Dec  7 18:05:11 CET 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000644.html">[Al4nin-commits] r882 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000646.html">[Al4nin-commits] r884 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#645">[ date ]</a>
+              <a href="thread.html#645">[ thread ]</a>
+              <a href="subject.html#645">[ subject ]</a>
+              <a href="author.html#645">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-12-07 18:05:11 +0100 (Tue, 07 Dec 2010)
+New Revision: 883
+
+Removed:
+   trunk/purgatory/Fairouz.omg
+Log:
+superseded by Kinding*.omg
+
+Deleted: trunk/purgatory/Fairouz.omg
+===================================================================
+--- trunk/purgatory/Fairouz.omg	2010-12-07 15:21:12 UTC (rev 882)
++++ trunk/purgatory/Fairouz.omg	2010-12-07 17:05:11 UTC (rev 883)
+@@ -1,40 +0,0 @@
+-import &quot;LangPrelude.prg&quot;
+-
+--- SEE ALSO: HenkTest.omg
+-data B :: *1 where
+-  St :: Nat ~&gt; B
+-  Bi :: B ~&gt; B
+-
+-data Star :: B ~&gt; * where
+-  Star0 :: Star (St Z)
+-  Star :: Star (St n) -&gt; Star (St (1 + n)t)
+- deriving Nat(s)
+-
+-star :: Nat' n -&gt; Star (St n)
+-star Z = Star0
+-star (1 + n)v = Star (star n)
+-
+-data Thing :: Nat ~&gt; * where
+-  Spine :: Star (St n) -&gt; Thing (2 + n)t
+-  Pi :: Thing (S n) -&gt; Thing (S n) -&gt; Thing (S n)
+-  Lam :: Thing (S (S n)) -&gt; Thing (S (S n)) -&gt; Thing (S n)
+-  Int :: Thing 1t
+-  Val :: Int -&gt; Thing Z
+-  -- Binder :: Nat' d -&gt; Thing (d + n) -&gt; Thing (d + n) -&gt; Thing n
+-
+-tau :: Thing n -&gt; Thing (S n)
+-tau (Spine s) = Spine (Star s)
+-tau (Lam x y) = (Pi x y)
+-tau (Pi _ y) = tau y
+-tau Int = Spine Star0
+-tau (Val _) = Int
+-
+--- data Type :: 
+-
+--- Pi is a 1-binder, i.e. the distance
+--- between the levels of ingress and egress is 1:
+--- P_:Int&gt;Int  (this is normally written Int-&gt;Int:*)
+--- Lam is a 2-binder.
+--- tau takes an (n+1)-binder to an n-binder
+---           a 0-binder to a 0-binder
+-
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000644.html">[Al4nin-commits] r882 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000646.html">[Al4nin-commits] r884 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#645">[ date ]</a>
+              <a href="thread.html#645">[ thread ]</a>
+              <a href="subject.html#645">[ subject ]</a>
+              <a href="author.html#645">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

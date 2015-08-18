@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r832 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2010-July/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r832%20-%20trunk/purgatory&In-Reply-To=%3C20100720213825.D2E5E48026F%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000593.html">
+   <LINK REL="Next"  HREF="000595.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r832 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r832%20-%20trunk/purgatory&In-Reply-To=%3C20100720213825.D2E5E48026F%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r832 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Jul 20 23:38:25 CEST 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000593.html">[Al4nin-commits] r831 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000595.html">[Al4nin-commits] r833 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2010-07-20 23:38:25 +0200 (Tue, 20 Jul 2010)
+New Revision: 832
+
+Modified:
+   trunk/purgatory/GetUser.lhs
+Log:
+added (untested) 3-bit encoder
+
+
+Modified: trunk/purgatory/GetUser.lhs
+===================================================================
+--- trunk/purgatory/GetUser.lhs	2010-07-19 23:07:52 UTC (rev 831)
++++ trunk/purgatory/GetUser.lhs	2010-07-20 21:38:25 UTC (rev 832)
+@@ -81,11 +81,9 @@
+ - 'x'        --&gt; two-bits encoding 01 but also being start and stop (both valued)
+ - 'y'        --&gt; two-bits as start (valued 10) and unvalued stop
+ 
+-
+ Special rules:
+-'s' followed by '0' is three bits 100,
+-'s' followed by 'x' is three bits 101,
+-'s' followed by 'y' is three bits 110.
++- 's' followed by '0' is three bits 100,
++- 'x', 'y' followed by any stop has fixed value (special full-stop)
+ 
+ &gt; stop 'S' = True
+ &gt; stop 's' = True
+@@ -120,6 +118,20 @@
+ &gt; t32 = &quot;sy3sy0s1x0syxS&quot;
+ &gt; t3Length = length t3
+ 
++&gt; di3its :: Int -&gt; [Char] -&gt; [Char]
++&gt; di3its 0 acc = '0' : acc
++&gt; di3its 1 acc = '1' : acc
++&gt; di3its 2 acc = '2' : acc
++&gt; di3its 3 acc = '3' : acc
++&gt; di3its n acc = di3its (n `div` 4) $ di3its (n `mod` 4) acc
++&gt; 
++&gt; di3t :: Int -&gt; [Char] -&gt; [Char]
++&gt; di3t 0 [] = ['S']
++&gt; di3t 0 acc = acc
++&gt; di3t 1 acc = let r = di3t 0 acc in 's' : di3its (length r) r
++&gt; di3t n acc = di3t (n - 1) $ di3t 1 acc
++
++
+ A similar property
+ 
+ &gt; i3Prop n' = n &gt; 0 &amp;&amp; n &lt;= t3Length ==&gt; n == pref3 arr
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000593.html">[Al4nin-commits] r831 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000595.html">[Al4nin-commits] r833 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

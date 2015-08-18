@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r286 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-March/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r286%20-%20trunk/purgatory&In-Reply-To=%3C200703271502.l2RF2CjH015240%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000047.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r286 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r286%20-%20trunk/purgatory&In-Reply-To=%3C200703271502.l2RF2CjH015240%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r286 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Mar 27 17:02:12 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000047.html">[Al4nin-commits] r285 - trunk/purgatory
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#48">[ date ]</a>
+              <a href="thread.html#48">[ thread ]</a>
+              <a href="subject.html#48">[ subject ]</a>
+              <a href="author.html#48">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-03-27 17:02:12 +0200 (Tue, 27 Mar 2007)
+New Revision: 286
+
+Modified:
+   trunk/purgatory/StratifiedHenk.omg
+Log:
+keep this. Introduced Signed' but dunno id this will buy us anything
+
+Modified: trunk/purgatory/StratifiedHenk.omg
+===================================================================
+--- trunk/purgatory/StratifiedHenk.omg	2007-03-27 03:47:33 UTC (rev 285)
++++ trunk/purgatory/StratifiedHenk.omg	2007-03-27 15:02:12 UTC (rev 286)
+@@ -58,11 +58,17 @@
+ -- with lam[0]x:Int.*0 === *0
+ -- tau(Gam, Pi x:Int.Int) === *0
+ 
+-diff :: Nat ~&gt; Nat ~&gt; Nat
+-{ diff Z Z } = Z
++kind Signed = Positive Nat | Negative
++
++diff :: Nat ~&gt; Nat ~&gt; Signed
++{ diff Z Z } = Positive Z
++{ diff Z (S y) } = Negative
+ { diff (S x) (S y) } = { diff x y }
+-{ diff (S x) Z } = S { diff x y }
++{ diff (S x) Z } = Positive (S x)
+ 
++extractPos :: Signed ~&gt; Nat
++{ extractPos (Positive n) } = n
++
+ --kind Diff :: *1
+ --  At 
+ 
+@@ -109,7 +115,8 @@
+   Lit :: Tractable a -&gt; a -&gt; Henk { tract2stratum (Tractable a) }
+ ---  Bind :: Nat' n -&gt; Label l -&gt; Henk (Up a) -&gt; Henk b -&gt; Henk (Up (Binder a b n))
+ --  Bind :: forall (f :: Nat) (t :: Nat) (n :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' n -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Up (Binder from to n))
+-  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' { diff (S f) t } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Binder from to { diff (S f) t })
++--  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Nat' { extractPos { diff (S f) t } } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Binder from to { extractPos { diff (S f) t } })
++  Bind :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (l :: Tag). Signed' { diff (S f) t } -&gt; Label l -&gt; Henk from -&gt; Henk to -&gt; Henk (Binder from to { extractPos { diff (S f) t } })
+   Type :: Tractable a -&gt; Henk (Up Ground)
+ ---  Star :: Henk (Up (Up g))
+   Star :: forall (f :: Nat) (g :: Stratum (S f)) . Henk (Up g)
+@@ -167,15 +174,29 @@
+ sss :: forall (a :: *) . a -&gt; a
+ ida a = a
+ 
++prop Signed' :: Signed ~&gt; *0 where
++  Positive :: Nat' n -&gt; Signed' (Positive n)
++  Negative :: Signed' Negative
+ 
++
+ -- we need a theorem over diff: when result is Z then the arguments are the same
+-zeroDiff :: forall (f :: Nat) (t :: Nat) . Nat' f -&gt; Nat' t -&gt; Nat' { diff t f } -&gt; Equal { diff t f } Z -&gt; Equal f t
+-zeroDiff Z Z Z Eq = Eq
+-zeroDiff (S a) Z _ Eq = unreachable
+-zeroDiff Z (S a) _ Eq = unreachable
+-zeroDiff (S a) (S b) Z Eq = check Eq
+- where theorem hyp = zeroDiff a b
++--zeroDiff :: forall (f :: Nat) (t :: Nat) . Nat' f -&gt; Nat' t -&gt; Nat' { extractPos { diff t f } } -&gt; Equal { extractPos { diff t f } } Z -&gt; Equal f t
++zeroDiffRewrite :: forall (f :: Nat) (t :: Nat) . Nat' f -&gt; Nat' t -&gt; Signed' { diff t f } -&gt; Equal { extractPos { diff t f } } Z
++zeroDiffRewrite Z Z (Positive Z) = Eq
++zeroDiffRewrite (S a) Z (Positive Z) = unreachable
++zeroDiffRewrite Z (S a) (Positive Z) = unreachable
++zeroDiffRewrite (S a) (S b) (Positive Z) = Eq
++ where theorem hyp = zeroDiffRewrite a b (Positive Z)
+ 
++
++zeroDiff :: forall (f :: Nat) (t :: Nat) . Nat' f -&gt; Nat' t -&gt; Signed' { diff t f } -&gt; Equal { extractPos { diff t f } } Z -&gt; Equal f t
++zeroDiff Z Z (Positive Z) Eq = Eq
++zeroDiff (S a) Z (Positive Z) Eq = unreachable
++zeroDiff Z (S a) (Positive Z) Eq = unreachable
++zeroDiff (S a) (S b) (Positive Z) Eq = check Eq
++ where theorem zeroDiff, hyp = zeroDiffRewrite a b
++-- where theorem hyp = zeroDiff a b (Positive Z)
++
+ {-
+ 
+ teachZImplies1 :: forall (f :: Nat) (t :: Nat) (from :: Stratum (S f)) (to :: Stratum t) (to2 :: Stratum (S f)) . Henk (Binder from to Z) -&gt; Henk (Binder from to2 Z) -&gt; Equal to2 to
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000047.html">[Al4nin-commits] r285 - trunk/purgatory
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#48">[ date ]</a>
+              <a href="thread.html#48">[ thread ]</a>
+              <a href="subject.html#48">[ subject ]</a>
+              <a href="author.html#48">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

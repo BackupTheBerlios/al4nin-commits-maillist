@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r577 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r577%20-%20trunk/found-bugs&In-Reply-To=%3C200712192154.lBJLsxLj025042%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000339.html">
+   <LINK REL="Next"  HREF="000341.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r577 - trunk/found-bugs</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r577%20-%20trunk/found-bugs&In-Reply-To=%3C200712192154.lBJLsxLj025042%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r577 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 19 22:54:59 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000339.html">[Al4nin-commits] r576 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000341.html">[Al4nin-commits] r578 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#340">[ date ]</a>
+              <a href="thread.html#340">[ thread ]</a>
+              <a href="subject.html#340">[ subject ]</a>
+              <a href="author.html#340">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-19 22:54:57 +0100 (Wed, 19 Dec 2007)
+New Revision: 577
+
+Modified:
+   trunk/found-bugs/issue47-SetEmulation.omg
+Log:
+fix the Nothing leg
+
+Modified: trunk/found-bugs/issue47-SetEmulation.omg
+===================================================================
+--- trunk/found-bugs/issue47-SetEmulation.omg	2007-12-18 20:37:16 UTC (rev 576)
++++ trunk/found-bugs/issue47-SetEmulation.omg	2007-12-19 21:54:57 UTC (rev 577)
+@@ -57,5 +57,5 @@
+ 
+ apartAndTogether :: SingleLabel row -&gt; SingleLabel row
+ apartAndTogether s = case apart s of
+-		     --Ex Nothing -&gt; {}s
++		     Ex Nothing -&gt; s
+ 		     Ex (Just (l, v, r, eq, entire)) -&gt; check {l=v; r}s where theorem eq, entire
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000339.html">[Al4nin-commits] r576 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000341.html">[Al4nin-commits] r578 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#340">[ date ]</a>
+              <a href="thread.html#340">[ thread ]</a>
+              <a href="subject.html#340">[ subject ]</a>
+              <a href="author.html#340">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

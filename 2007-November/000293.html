@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r530 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-November/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r530%20-%20trunk/purgatory&In-Reply-To=%3C200711132229.lADMTQE5024880%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000292.html">
+   <LINK REL="Next"  HREF="000294.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r530 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r530%20-%20trunk/purgatory&In-Reply-To=%3C200711132229.lADMTQE5024880%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r530 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Tue Nov 13 23:29:26 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000292.html">[Al4nin-commits] r529 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000294.html">[Al4nin-commits] r531 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-11-13 23:29:02 +0100 (Tue, 13 Nov 2007)
+New Revision: 530
+
+Modified:
+   trunk/purgatory/ThristParser.omg
+Log:
+compileParse [Seq ... added, trying to debug cycles
+
+Modified: trunk/purgatory/ThristParser.omg
+===================================================================
+--- trunk/purgatory/ThristParser.omg	2007-11-13 20:31:02 UTC (rev 529)
++++ trunk/purgatory/ThristParser.omg	2007-11-13 22:29:02 UTC (rev 530)
+@@ -227,6 +227,11 @@
+ 						     (ps', rest) &lt;- $(compileParse [Group ps]l) as'
+ 						     $(compileParse r) (p':ps', rest) |]
+ 
++compileParse [Seq p1 p2; r]l = [| \as -&gt; let monad maybeM in do
++                                                             (b1, as') &lt;- $(compileParse [p1]l) as
++                                                             (b2, rest) &lt;- $(compileParse [p2]l) as'
++                                                             $(compileParse r) ((b1, b2), rest) |]
++
+ compileParse [Or p1 p2; r]l = [| \a -&gt;
+ 			       case $parseP1 a of
+ 			       Just b1 -&gt; $parseR b1
+@@ -587,7 +592,7 @@
+ 	  isLit _ = Nothing
+ 	  isDot (P Pdot:t) = Just ((), t)
+ 	  isDot _ = Nothing
+-	  isParen (P PparenthesisOpen:t) = Just ((), t)
++	  isParen (P PparenthesisOpen:t) = Just ((), trace (show t) t)
+ 	  isParen _ = Nothing
+ 	  isClosingParen (P PparenthesisOpen:t) = Just ((), t)
+ 	  isClosingParen _ = Nothing
+@@ -613,7 +618,7 @@
+ 
+ tExpr0 = parse [parseExpression]l tExpr
+ 
+-tExprParens = [U Unot, Num 42, B Bplus, P PparenthesisOpen, Num 25, B Band, H Ht]
++tExprParens = [U Unot, Num 42, B Bplus, P PparenthesisOpen, Num 25, B Band, H Ht, P PparenthesisClose]
+ 
+ -- ############### Cat syntax ###############
+ 
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000292.html">[Al4nin-commits] r529 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000294.html">[Al4nin-commits] r531 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#293">[ date ]</a>
+              <a href="thread.html#293">[ thread ]</a>
+              <a href="subject.html#293">[ subject ]</a>
+              <a href="author.html#293">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

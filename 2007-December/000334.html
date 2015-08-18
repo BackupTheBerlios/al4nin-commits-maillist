@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r571 - trunk/found-bugs
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-December/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r571%20-%20trunk/found-bugs&In-Reply-To=%3C200712121701.lBCH1Dbx030487%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000333.html">
+   <LINK REL="Next"  HREF="000335.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r571 - trunk/found-bugs</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r571%20-%20trunk/found-bugs&In-Reply-To=%3C200712121701.lBCH1Dbx030487%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r571 - trunk/found-bugs">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Wed Dec 12 18:01:13 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000333.html">[Al4nin-commits] r570 - trunk/found-bugs
+</A></li>
+        <LI>Next message: <A HREF="000335.html">[Al4nin-commits] r572 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-12-12 18:01:12 +0100 (Wed, 12 Dec 2007)
+New Revision: 571
+
+Modified:
+   trunk/found-bugs/issue46b-SetEmulation.omg
+Log:
+return more evidence
+
+Modified: trunk/found-bugs/issue46b-SetEmulation.omg
+===================================================================
+--- trunk/found-bugs/issue46b-SetEmulation.omg	2007-12-12 16:20:52 UTC (rev 570)
++++ trunk/found-bugs/issue46b-SetEmulation.omg	2007-12-12 17:01:12 UTC (rev 571)
+@@ -50,12 +50,12 @@
+ --- separate the head of the record and its tail, and return evidence that they fit together
+ 
+ 
+-apart :: SingleLabel row -&gt; exists a v tail . Maybe (Label a, v, SingleLabel tail, Equal {exclude a tail} tail)
++apart :: SingleLabel row -&gt; exists a v tail . Maybe (Label a, v, SingleLabel tail, Equal {exclude a tail} tail, Equal {a=v; tail}r row)
+ apart {}s = Ex Nothing
+-apart {l=v; rest}s = Ex (Just (l, v, rest, Eq))
++apart {l=v; rest}s = Ex (Just (l, v, rest, Eq, Eq))
+ 
+ 
+ apartAndTogether :: SingleLabel row -&gt; SingleLabel row
+ apartAndTogether s = case apart s of
+ 		     --Ex Nothing -&gt; {}s
+-		     Ex (Just (l, v, r, eq)) -&gt; check {l=v; r}s where theorem eq
++		     Ex (Just (l, v, r, eq, entire)) -&gt; check {l=v; r}s where theorem eq, entire
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000333.html">[Al4nin-commits] r570 - trunk/found-bugs
+</A></li>
+	<LI>Next message: <A HREF="000335.html">[Al4nin-commits] r572 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#334">[ date ]</a>
+              <a href="thread.html#334">[ thread ]</a>
+              <a href="subject.html#334">[ subject ]</a>
+              <a href="author.html#334">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

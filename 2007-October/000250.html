@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r488 - in trunk/purgatory: . db
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r488%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200710280207.l9S27R1H001804%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000249.html">
+   <LINK REL="Next"  HREF="000251.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r488 - in trunk/purgatory: . db</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r488%20-%20in%20trunk/purgatory%3A%20.%20db&In-Reply-To=%3C200710280207.l9S27R1H001804%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r488 - in trunk/purgatory: . db">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Oct 28 03:07:27 CET 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000249.html">[Al4nin-commits] r487 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000251.html">[Al4nin-commits] r489 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#250">[ date ]</a>
+              <a href="thread.html#250">[ thread ]</a>
+              <a href="subject.html#250">[ subject ]</a>
+              <a href="author.html#250">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-28 03:07:24 +0100 (Sun, 28 Oct 2007)
+New Revision: 488
+
+Modified:
+   trunk/purgatory/Thrist.lout
+   trunk/purgatory/db/BibTexDB
+   trunk/purgatory/db/acmrefs.ld
+Log:
+add two more references
+
+Modified: trunk/purgatory/Thrist.lout
+===================================================================
+--- trunk/purgatory/Thrist.lout	2007-10-28 02:06:15 UTC (rev 487)
++++ trunk/purgatory/Thrist.lout	2007-10-28 02:07:24 UTC (rev 488)
+@@ -839,7 +839,7 @@
+     C { SE:: @Node SouthEast }
+ }
+ 
+-|1fx { Base -2p } @Font @Tbl
++||1fx { Base -2p } @Font @Tbl
+     aformat { @Cell A }
+ {
+ @Rowa
+@@ -952,9 +952,9 @@
+ @Begin
+ @PP
+ Figure @NumberOf { machine } depicts a fragment of a state machine intended to handle
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at I</A> request&quot;/&quot;acknowledge type handshake with an identical remote instance
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at I</A> { request&quot;/&quot;acknowledge } type handshake with an identical remote instance
+ of itself. The two instances are communicating solely by message passing
+-and originally both inhabit the @I North state. The intention is that the
++and originally both inhabit the @I NorthWest state. The intention is that the
+ two machines control the ends of a unidirectional communication channel
+ that is {@I protected}, i.e. two wires exist, carrying a data stream A on the
+ first wire{ @FootNote {the second wire can either carry the same data as A (to increase redundancy),
+@@ -965,7 +965,7 @@
+ less for B. There is an extra twist however: it is forbidden for the data stream A
+ to reach the sink of data stream B, even for very short time periods. This invariant
+ calls for the request&quot;/&quot;acknowledge handshake, and the transient states on the way to
+-the @I South state mirror this protocol.
++the @I SouthEast state mirror this protocol.
+ 
+ @End @SubSubSection
+ 
+@@ -1016,18 +1016,22 @@
+ @PP
+ What do we gain with such a declarative description of the state machine at
+ hand?
+-- First, given a fine-grained encoding of the protocol's and business logic's
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at LP</A>
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at DashList</A>
++   @ListItem { First, given a fine-grained encoding of the protocol's and business logic's
+ encoding in the state facets, the type system will take care of checking that
+ all necessary elementary actions are mentioned in the transition's action thrist.
+ This can be an important assurance in case of great statemachines with a complicated
+ semantic model. Especially for communicating state machines, as in our example,
+ the administrative states arising as a result of the handshaking protocol
+ can be daunting. Getting the transition actions right between all these states
+-is an error prone task and help from the type system highly welcome.
+-- Second, the possibility to pattern-match on the actions that form transitions
++is an error prone task and help from the type system highly welcome. }
++   @ListItem { Second, the possibility to pattern-match on the actions that form transitions
+ it is possible to enumerate all possible admissible configurations of the communicating
+ state machines and use proof techniques to ensure that the principal invariant of
+-the system is met{@FootNote { Highlighting this verification aspect is beyond the scope ot this paper } }.
++the system is met{@FootNote { Highlighting this verification aspect is beyond the scope ot this paper } }. }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at EndList</A>
++
+ @End @SubSubSection
+ 
+ 
+@@ -1102,14 +1106,14 @@
+ our Thrist datastructure. Obviously any instance of the Haskell type class @Haskell { Arrow } can
+ be expressed as a thrist. We have to accompany the @Haskell { Thrist Arrow } with an interpretation
+ function that is rather canonic, and will be given in the Appendix. This semantics obviously
+-guarantees the arrow laws {@Cite { hughes19xx } }. On the other hand thrists are not always
++guarantees the arrow laws @Cite { $hughes00.arrows }. On the other hand thrists are not always
+ easily fitted in an arrow. It is the @Haskell { arr } instance method that is problematic
+ to provide. Thrists just serve as a container and do not carry a semantics, while @Haskell { arr }
+ mandates a function argument for the method @Haskell { arr }.
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">- at Considerations</A> { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell }
+<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">+ at Considerations</A> { a value of type @Haskell { Thrist Arrow } corresponds to the @F { do ... proc ... } syntactic sugar expression in Haskell @Cite { $paterson01.notation }}
+ @PP
+-Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library, but he only
+-considers the identity function as a special case. He observes a substantial
++Nilsson @Cite { $nilsson05.frp } embarks on optimization of a GADT-based @Haskell { Arrow } library,
++but he only considers the identity function as a special case. He observes a substantial
+ speedup in microbenchmarks when the optimizer is able to discover and short-circuit
+ the identity arrow. In @Haskell { ParseThrist } the identity can be written in several ways,
+ e.g. as @Haskell { Wrap Nil } or as @Haskell { Sure id }. When interpreting, there is probably no
+
+Modified: trunk/purgatory/db/BibTexDB
+===================================================================
+--- trunk/purgatory/db/BibTexDB	2007-10-28 02:06:15 UTC (rev 487)
++++ trunk/purgatory/db/BibTexDB	2007-10-28 02:07:24 UTC (rev 488)
+@@ -44,6 +44,7 @@
+ 
+ 
+ @article{hughes:arrows,
++ tag = {hughes00.arrows},
+  title = {Generalising Monads to Arrows},
+  author = {John Hughes},
+  journal = {Science of Computer Programming},
+@@ -55,6 +56,7 @@
+ }
+ 
+ @inproceedings{PatersonRA:notation,
++ tag = {paterson01.notation},
+  title = {A New Notation for Arrows},
+  author = {Ross Paterson},
+  booktitle = {International Conference on Functional Programming},
+
+Modified: trunk/purgatory/db/acmrefs.ld
+===================================================================
+--- trunk/purgatory/db/acmrefs.ld	2007-10-28 02:06:15 UTC (rev 487)
++++ trunk/purgatory/db/acmrefs.ld	2007-10-28 02:07:24 UTC (rev 488)
+@@ -48,6 +48,7 @@
+ 
+ { @Reference
+    @Type { Article }
++   @Tag { hughes00.arrows }
+    @Title { Generalising Monads to Arrows }
+    @Author { John Hughes }
+    @Journal { Science of Computer Programming }
+@@ -61,6 +62,7 @@
+ 
+ { @Reference
+    @Type { InProceedings }
++   @Tag { paterson01.notation }
+    @Title { A New Notation for Arrows }
+    @Author { Ross Paterson }
+    @InTitle { International Conference on Functional Programming }
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000249.html">[Al4nin-commits] r487 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000251.html">[Al4nin-commits] r489 - trunk/purgatory
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#250">[ date ]</a>
+              <a href="thread.html#250">[ thread ]</a>
+              <a href="subject.html#250">[ subject ]</a>
+              <a href="author.html#250">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

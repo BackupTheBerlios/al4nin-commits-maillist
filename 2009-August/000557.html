@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r795 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2009-August/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r795%20-%20trunk/purgatory&In-Reply-To=%3C200908071640.n77GeDOh006370%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000556.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r795 - trunk/purgatory</H1>
+    <B>heisenbug at mail.berlios.de</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r795%20-%20trunk/purgatory&In-Reply-To=%3C200908071640.n77GeDOh006370%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r795 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Fri Aug  7 18:40:13 CEST 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000556.html">[Al4nin-commits] r794 - trunk/purgatory
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#557">[ date ]</a>
+              <a href="thread.html#557">[ thread ]</a>
+              <a href="subject.html#557">[ subject ]</a>
+              <a href="author.html#557">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2009-08-07 18:40:05 +0200 (Fri, 07 Aug 2009)
+New Revision: 795
+
+Modified:
+   trunk/purgatory/LLVM2step.omg
+Log:
+classify origins by scope. not sure that this buys us anything. also attach module and function names to uses if appropriate
+
+Modified: trunk/purgatory/LLVM2step.omg
+===================================================================
+--- trunk/purgatory/LLVM2step.omg	2009-08-07 15:50:01 UTC (rev 794)
++++ trunk/purgatory/LLVM2step.omg	2009-08-07 16:40:05 UTC (rev 795)
+@@ -5,15 +5,22 @@
+ -- approach
+ 
+ kind Term = Terminator | Regular
+-kind Init = InitBlock | SuccBlock
++kind Init = EntryBlock | SuccBlock
++kind Scope = Universe | Mod | Func
+ 
+-kind Origin = Const | Defined Tag | Module Tag Tag
++kind Origin :: Scope ~&gt; *1 where
++  Const :: Origin Universe
++  Linkable :: Tag ~&gt; Tag ~&gt; Origin Mod
++  Defined :: Tag ~&gt; Tag ~&gt; Tag ~&gt; Origin Func
+ 
+-data Use :: Origin ~&gt; * where
++data Use :: Origin s ~&gt; * where
+   Const :: Int -&gt; Use Const
+-  Use :: Label t -&gt; Use (Defined t)
+-  Global :: Label mod -&gt; Label t -&gt; Use (Module mod t)
++  Use :: Label m -&gt; Label f -&gt; Label t -&gt; Use (Defined m f t)
++  Global :: Label mod -&gt; Label t -&gt; Use (Linkable mod t)
+ 
++-- for now simplify it
++use = Use `module `id
++
+ ---------------
+ -- primitives
+ -- these can be parsed from a text file for example
+@@ -37,7 +44,7 @@
+  deriving Record(b)
+ 
+ test1 = {Anon=Ret $ Const 5}b
+-test2 = {Tag `a=Add (Const 40) (Const 2), Anon=Ret $ Use `a}b
++test2 = {Tag `a=Add (Const 40) (Const 2), Anon=Ret $ use `a}b
+ 
+ ---------------
+ -- instructions
+@@ -51,15 +58,15 @@
+   AddUse :: Tag ~&gt; Uses ~&gt; Uses
+  deriving List(u)
+ 
+-trackUses1 :: Origin ~&gt; Uses ~&gt; Uses
++trackUses1 :: Origin s ~&gt; Uses ~&gt; Uses
+ {trackUses1 Const us} = us
+-{trackUses1 (Defined t) us} = [t; us]u
++{trackUses1 (Defined m f t) us} = [t; us]u
+ 
+-trackUses2 :: Origin ~&gt; Origin ~&gt; Uses ~&gt; Uses 
++trackUses2 :: Origin s ~&gt; Origin u ~&gt; Uses ~&gt; Uses 
+ {trackUses2 Const Const us} = us
+-{trackUses2 Const (Defined t) us} = [t; us]u
+-{trackUses2 (Defined t) Const us} = [t; us]u
+-{trackUses2 (Defined t) (Defined t') us} = [t, t'; us]u
++{trackUses2 Const (Defined m f t) us} = [t; us]u
++{trackUses2 (Defined m f t) Const us} = [t; us]u
++{trackUses2 (Defined m f t) (Defined m' f' t') us} = [t, t'; us]u
+ 
+ appendUses :: Uses ~&gt; Uses ~&gt; Uses
+ {appendUses []u us} = us
+@@ -90,8 +97,8 @@
+ 
+ test3 = Term $ Ret (Const 42)
+ test4 = Def `a $ Add (Const 40) (Const 2)
+-test5 = Def `a $ Add (Const 40) (Use `b)
+-test6 = Def `a $ Add (Use `b) (Use `c)
++test5 = Def `a $ Add (Const 40) (use `b)
++test6 = Def `a $ Add (use `b) (use `c)
+ 
+ data Thrist :: forall (l :: *1) . (l ~&gt; l ~&gt; *)  ~&gt; l ~&gt; l ~&gt; * where
+   Nil :: Thrist k a a
+@@ -145,11 +152,11 @@
+ 
+ collectUses :: Prim b i us -&gt; UseEvidence r -&gt; UseEvidence {appendUses us r}
+ collectUses (Ret (Const _)) ev =  ev
+-collectUses (Ret (Use l)) ev = [l; ev]ue
++collectUses (Ret (Use _ _ l)) ev = [l; ev]ue
+ collectUses (Add (Const _) (Const _)) ev =  ev
+-collectUses (Add (Const _) (Use l)) ev = [l; ev]ue
+-collectUses (Add (Use l) (Const _)) ev = [l; ev]ue
+-collectUses (Add (Use l) (Use m)) ev = [l, m; ev]ue
++collectUses (Add (Const _) (Use _ _ l)) ev = [l; ev]ue
++collectUses (Add (Use _ _ l) (Const _)) ev = [l; ev]ue
++collectUses (Add (Use _ _  l) (Use _ _  m)) ev = [l, m; ev]ue
+ collectUses (Phi []ue) ev = ev
+ collectUses (Phi [l; r]ue) ev = [l; collectUses (Phi r) ev]ue
+ collectUses (Branch _) ev = ev
+@@ -182,10 +189,10 @@
+ buildBasicBlock _ _ = Ex Nothing
+ 
+ 
+-test13 = buildBasicBlock []de {Anon=(Ret (Use `a))}b
+-test14 = buildBasicBlock [`a]de {Tag `b=Add (Use `a) (Const 40), Anon=(Ret (Use `b))}b
+-test15 = buildBasicBlock [`a]de {Tag `b=Add (Use `a) (Const 40), Tag `c=Add (Const 2) (Use `b), Anon=(Ret (Use `c))}b
+-test16 = buildBasicBlock []de {Tag `a=Phi [`n]ue, Anon=Ret $ Use `a}b
++test13 = buildBasicBlock []de {Anon=(Ret (use `a))}b
++test14 = buildBasicBlock [`a]de {Tag `b=Add (use `a) (Const 40), Anon=(Ret (use `b))}b
++test15 = buildBasicBlock [`a]de {Tag `b=Add (use `a) (Const 40), Tag `c=Add (Const 2) (use `b), Anon=(Ret (use `c))}b
++test16 = buildBasicBlock []de {Tag `a=Phi [`n]ue, Anon=Ret $ use `a}b
+ 
+ 
+ ---------------
+@@ -226,7 +233,7 @@
+   EntryBlock :: Arguments a -&gt; Label l -&gt; Thrist Instr (A {argumentDefs a} u Regular) (A d []u Terminator) -&gt; UseEvidence u -&gt; DefEvidence d -&gt; BasicBlocks {F l a=b}r
+   SuccessorBlock :: FreeName (B l) r =&gt; Label l -&gt; DefEvidence d -&gt; Thrist Instr (A d u Regular) (A d' []u Terminator) -&gt; UseEvidence u -&gt; DefEvidence d' -&gt; BasicBlocks r -&gt; BasicBlocks {B l=b; r}r
+ 
+-test19 = EntryBlock {`n=DontCare}a `id [Term (Ret (Use `n))]l [`n]ue [`n]de
++test19 = EntryBlock {`n=DontCare}a `id [Term (Ret (use `n))]l [`n]ue [`n]de
+ test20 = SuccessorBlock `dead []de [Term (Ret (Const 42))]l []ue []de test19
+ 
+ functionName :: Row Target b ~&gt; Tag
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000556.html">[Al4nin-commits] r794 - trunk/purgatory
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#557">[ date ]</a>
+              <a href="thread.html#557">[ thread ]</a>
+              <a href="subject.html#557">[ subject ]</a>
+              <a href="author.html#557">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>

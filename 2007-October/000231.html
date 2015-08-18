@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Al4nin-commits] r469 - trunk/purgatory
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/al4nin-commits/2007-October/index.html" >
+   <LINK REL="made" HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r469%20-%20trunk/purgatory&In-Reply-To=%3C200710132222.l9DMMDxl016788%40sheep.berlios.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000230.html">
+   <LINK REL="Next"  HREF="000232.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Al4nin-commits] r469 - trunk/purgatory</H1>
+    <B>heisenbug at BerliOS</B> 
+    <A HREF="mailto:al4nin-commits%40lists.berlios.de?Subject=Re%3A%20%5BAl4nin-commits%5D%20r469%20-%20trunk/purgatory&In-Reply-To=%3C200710132222.l9DMMDxl016788%40sheep.berlios.de%3E"
+       TITLE="[Al4nin-commits] r469 - trunk/purgatory">heisenbug at mail.berlios.de
+       </A><BR>
+    <I>Sun Oct 14 00:22:13 CEST 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000230.html">[Al4nin-commits] r468 - trunk/purgatory
+</A></li>
+        <LI>Next message: <A HREF="000232.html">[Al4nin-commits] r470 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#231">[ date ]</a>
+              <a href="thread.html#231">[ thread ]</a>
+              <a href="subject.html#231">[ subject ]</a>
+              <a href="author.html#231">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Author: heisenbug
+Date: 2007-10-14 00:22:12 +0200 (Sun, 14 Oct 2007)
+New Revision: 469
+
+Modified:
+   trunk/purgatory/HenkTest.omg
+Log:
+(tau constfive) now same as tau_constfive
+
+Modified: trunk/purgatory/HenkTest.omg
+===================================================================
+--- trunk/purgatory/HenkTest.omg	2007-10-13 21:39:40 UTC (rev 468)
++++ trunk/purgatory/HenkTest.omg	2007-10-13 22:22:12 UTC (rev 469)
+@@ -81,8 +81,11 @@
+ --tau (Bind cl (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) b) = Bind (NW cl) a (tau b)
+ --tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">cl at Binder</A>' 2v 0v) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) b) = Bind (NW cl) a (tau b)
+ --tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">cl at Binder</A>' 2v 0v) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) b) = Bind (NW cl) a (tau b)
+-tau (Bind (LV cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Value</A>)) = Bind cl a (tau b)
++tau (Bind (LV cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Lit</A> (Spine' 1v))) = Lit cl
+ 
++--Equal {discipline (Spine 1t) {climb (Binder 1t 0t)}} (Spine 1t)
++-- = Equal {discipline (Spine 1t) (Spine 1t)} (Spine 1t)
++tau (Bind (SE cl) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> (Spine' 1v)) (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">b at Value</A>)) = Bind cl a (tau b)
+ 
+ --tau (Bind (<A HREF="https://lists.berlios.de/mailman/listinfo/al4nin-commits">a at Lit</A> _) (Lit b)) = Bind a (Lit (UP b))
+ --- tau (Bind Type Type) = Star
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000230.html">[Al4nin-commits] r468 - trunk/purgatory
+</A></li>
+	<LI>Next message: <A HREF="000232.html">[Al4nin-commits] r470 - trunk/found-bugs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#231">[ date ]</a>
+              <a href="thread.html#231">[ thread ]</a>
+              <a href="subject.html#231">[ subject ]</a>
+              <a href="author.html#231">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/al4nin-commits">More information about the Al4nin-commits
+mailing list</a><br>
+</body></html>
